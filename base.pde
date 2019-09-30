@@ -1,5 +1,5 @@
 final String appname = "Raumplaner 2020";
-final String appversion = "0.4.0";
+final String appversion = "0.5.1";
 
 class Point {
 	int xpos=0;

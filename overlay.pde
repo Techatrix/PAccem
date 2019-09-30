@@ -24,7 +24,23 @@ class Overlay {
 		ListItem[] toolbarbuttons = new ListItem[6];
 		toolbarbuttons[0] = new ListItem("0", true) {@ Override public void action() {rm.tool = 0;}};
 		toolbarbuttons[1] = new ListItem("1", true) {@ Override public void action() {rm.tool = 1;}};
-		toolbarbuttons[2] = new ListItem("2", true) {@ Override public void action() {rm.tool = 2;}};
+		toolbarbuttons[2] = new ListItem("2", true) {@ Override public void action() {
+			rm.tool = 2;
+				ListItem[] listitems = new ListItem[2];
+				listitems[0] = new ListItem("New Width", true, 2, true) {@ Override public void action() {}};
+				listitems[1] = new ListItem("New height",true, 2, true) {@ Override public void action() {}};
+
+				popup = new Popup(250,150, listitems) {
+					@ Override public void ontrue() {
+						rm.newfurniturewidth = int(values[0].bv.value);
+						rm.newfurnitureheight = int(values[1].bv.value);
+					}
+					@ Override public void onfalse() {}
+				};
+				popup.text = "Select Size";
+				popup.truetext = "Confirm";
+				popup.falsetext = "Cancel";
+		}};
 		toolbarbuttons[3] = new ListItem("3", true) {@ Override public void action() {rm.tool = 3;}};
 		toolbarbuttons[4] = new ListItem("4", true) {@ Override public void action() {rm.tool = 4;}};
 		toolbarbuttons[5] = new ListItem("5", true) {@ Override public void action() {rm.tool = 5;}};
@@ -41,10 +57,8 @@ class Overlay {
 
 				popup = new Popup(250,150, listitems) {
 					@ Override public void ontrue() {
-						int x = int(values[0].bv.value);
-						int y = int(values[1].bv.value);
-						rm.xgridsize = x;
-						rm.ygridsize = y;
+						rm.xgridsize = int(values[0].bv.value);
+						rm.ygridsize = int(values[1].bv.value);
 						rm.reset();
 					}
 					@ Override public void onfalse() {}
