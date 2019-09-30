@@ -87,7 +87,7 @@ void draw() {
 	if(!st.booleans[2]._boolean) {
 		ov.draw();
 	}
-	String date = str(millis() % 1000)+"."+str(second())+"."+str(minute())+"."+str(hour())+"."+str(day())+"."+str(month())+"."+str(year());
+	String date = str(day())+"."+str(month())+"."+str(year());
 	fill(0);
 	textAlign(RIGHT, CENTER);
 	text(date, width-12.5, 12.5);
