@@ -19,13 +19,15 @@ class Roommanager {
 	ArrayList<int[]> dragtiles = new ArrayList<int[]>();
 	boolean dragstate;
 
+	int newfurniturewidth = 1;
+	int newfurnitureheight = 1;
 
 	Roommanager() {
 		load("");
 		name = st.strings[0]._string;
 	}
 	Roommanager(String name) {
-		rm.name = name;
+		this.name = name;
 		load(name);
 	}
 
@@ -75,18 +77,30 @@ class Roommanager {
 	}
 	void mousePressed() {
 		if(mouseButton == LEFT && !viewmode) {
+			selectionid = -1;
 			if(tool == 1) {
 				int x = floor(getxpos(mouseX));
 				int y = floor(getypos(mouseY));
 				roomgrid.settilestate(!roomgrid.gettilestate(x,y), x,y);
 			}
 			if(tool == 2) {
-				int x = floor(rm.getxpos(mouseX));
-				int y = floor(rm.getypos(mouseY));
-				rm.furnitures.add(new Furniture(2, 2, x, y));
+				int xpos = floor(getxpos(mouseX));
+				int ypos = floor(getypos(mouseY));
+
+				boolean hit = false;
+				for (int x=0;x<newfurniturewidth;x++) {
+					for (int y=0;y<newfurnitureheight;y++) {
+						if(isfurniture(xpos+x,ypos+y)) {
+							hit = true;
+							break;
+						}
+					}
+				}
+				if(!hit) {
+					furnitures.add(new Furniture(newfurniturewidth, newfurnitureheight, xpos, ypos));
+				}
 			}
 			if(tool == 3) {
-				selectionid = -1;
 				boolean found = false;
 				for (int i=0; i<furnitures.size(); i++) {
 					if(found == false) {
@@ -112,6 +126,14 @@ class Roommanager {
 		}
 	}
 	void keyPressed() {
+		if(key == 127) {
+			for (int i=0; i<furnitures.size(); i++) {
+				if(selectionid == i) {
+					furnitures.remove(i);
+					selectionid = -1;
+				}
+			}
+		}
 		if(tool == 5 && (key == '1' || key == '2'|| key == '3'|| key == '4')) {
 			int x = floor(getxpos(mouseX));
 			int y = floor(getypos(mouseY));
@@ -134,9 +156,9 @@ class Roommanager {
 		}
 		if((keyCode == UP || keyCode == DOWN || keyCode == LEFT || keyCode == RIGHT) && !viewmode) {
 			Furniture f = new Furniture(0,0);
-			for (int i=0; i<rm.furnitures.size(); i++) {
-				if(rm.selectionid == i) {
-					f = rm.furnitures.get(i);
+			for (int i=0; i<furnitures.size(); i++) {
+				if(selectionid == i) {
+					f = furnitures.get(i);
 				}
 			}
 			int dx = 0;
@@ -159,7 +181,7 @@ class Roommanager {
 				boolean m = true;
 				for (int x=dx;x<f._width+dx;x++) {
 					for (int y=dy;y<f._height+dy;y++) {
-						if(!rm.roomgrid.gettilestate(f.xpos+x,f.ypos+y)) {
+						if(!roomgrid.gettilestate(f.xpos+x,f.ypos+y)) {
 							m = false;
 							break;
 						}
@@ -185,6 +207,22 @@ class Roommanager {
 	float getypos(int mousey) {
 		return (mousey-yoff-ov._height)/gridtilesize/scale;
 	}
+	boolean isfurniture(int xpos, int ypos) {
+		for (int i=0; i<furnitures.size(); i++) {
+			Furniture f = furnitures.get(i);
+			for (int x=0;x<f._width;x++) {
+				for (int y=0;y<f._height;y++) {
+					if(f.xpos+x == xpos && f.ypos+y == ypos) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+
+
 
 	String[] loadrooms() {
 		File f1 = new File(sketchPath("data/rooms.json"));
