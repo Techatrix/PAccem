@@ -19,7 +19,7 @@ class Overlay {
 	}
 
 	void refresh() {
-		float scale = st.floats[1]._float;
+		float scale = st.floats[1].getvalue();
 		// Toolbar
 		ListItem[] toolbarbuttons = new ListItem[6];
 		toolbarbuttons[0] = new ListItem("0", true) {@ Override public void action() {rm.tool = 0;}};
@@ -100,28 +100,37 @@ class Overlay {
 		ListItem[] savebuttons = new ListItem[2];
 		savebuttons[0] = new ListItem("Name", true, 3, -99) {@ Override public void action() {}};
 		savebuttons[1] = new ListItem("Save") {@ Override public void action() {
-			rm.save(rm.name);
 
-			File f1 = new File(sketchPath("data/rooms.json"));
-			JSONArray json;
-	  		boolean exists = false;
-			if (f1.exists())
-			{
-	  			json = loadJSONArray("data/rooms.json");
-	  			for (int i=0;i<json.size() ;i++ ) {
-	  				if(rm.name.equals(json.getString(i))) {
-	  					exists = true;
-	  				}
-	  			}
-			} else {
-				json = new JSONArray();
-				exists = false;
+			if(rm.name == st.strings[0].getvalue()) {
+				popup = new Popup(250, 150) {
+					@ Override public void ontrue() {
+						rm.save(rm.name);
+
+						File f1 = new File(sketchPath("data/rooms.json"));
+						JSONArray json;
+				  		boolean exists = false;
+						if (f1.exists())
+						{
+				  			json = loadJSONArray("data/rooms.json");
+				  			for (int i=0;i<json.size() ;i++ ) {
+				  				if(rm.name.equals(json.getString(i))) {
+				  					exists = true;
+				  				}
+				  			}
+						} else {
+							json = new JSONArray();
+							exists = false;
+						}
+						if(!exists) {
+							json.append(rm.name);
+						}
+			  			saveJSONArray(json, "data/rooms.json");
+			  			ov.refresh();
+					}
+					@ Override public void onfalse() {}
+				};
+				popup.text = "Overwrite default Room?";
 			}
-			if(!exists) {
-				json.append(rm.name);
-			}
-  			saveJSONArray(json, "data/rooms.json");
-  			ov.refresh();
 		}};
 
 		// Room Groups
@@ -141,20 +150,28 @@ class Overlay {
 	}
 
 	void draw() {
-		push();
-		scale(st.floats[1]._float);
-		if(sidebarid != -1) {
-			sidebars[sidebarid].draw();
+		if(!st.booleans[2].getvalue()) {
+			push();
+			scale(st.floats[1].getvalue());
+			if(sidebarid != -1) {
+				sidebars[sidebarid].draw();
+			}
+			toolbar.draw();
+			tabbar.draw();
+			if(popup != null) {
+				popup.draw();
+			}
+
+			String date = str(day())+"."+str(month())+"."+str(year());
+			fill(0);
+			textAlign(RIGHT, CENTER);
+			text(date, ceil(width/st.floats[1].getvalue())-12.5, 12.5);
+
+			pop();
 		}
-		toolbar.draw();
-		tabbar.draw();
-		if(popup != null) {
-			popup.draw();
-		}
-		pop();
 	}
 	boolean mousePressed() {
-		float scale = st.floats[1]._float;
+		float scale = st.floats[1].getvalue();
 		if(popup != null) {
 			if(popup.mousePressed()) {
 				return true;
@@ -187,16 +204,29 @@ class Overlay {
 			sb.mouseDragged();
 		}
 	}
-	void keyPressed() {
+	boolean keyPressed() {
+		boolean hit = false;
 		if(popup != null) {
 			if(popup.visible) {
-				popup.keyPressed();
+				if(popup.keyPressed()) {
+					hit = true;
+				}
 			}
 		}
 		if(sidebarid != -1) {
 			ButtonList sb = sidebars[sidebarid];
-			sb.keyPressed();
+			if(sb.keyPressed()) {
+				hit = true;
+			}
 		}
+		if(!hit && key == 'h') {
+			st.booleans[2].setvalue(!st.booleans[2].getvalue());
+			if(!st.booleans[2].getvalue()) {
+				refresh();
+				st.save();
+			}
+		}
+		return hit;
 	}
 }
 
@@ -273,7 +303,7 @@ class ButtonList extends PWH{
 		pushMatrix();
 		translate(0,off);
 		noStroke();
-		fill(st.colors[1]._color);
+		fill(st.colors[1].getvalue());
 		rect(xpos, ypos, _width, _height);
 		for (int i=0;i<listitems.length;i++) {
 			if(direction) {
@@ -308,10 +338,15 @@ class ButtonList extends PWH{
 			off = constrain(off, _height-listheight, 0);
 		}
 	}
-	void keyPressed() {
+	boolean keyPressed() {
+		boolean hit = false;
 		for (ListItem li : listitems) {
-			li.keyPressed();
+			if(li.keyPressed()) {
+				hit = true;
+			}
+
 		}
+		return hit;
 	}
 }
 
@@ -345,7 +380,7 @@ abstract class ListItem {
 			textSize(16);
 			textAlign(CENTER, CENTER);
 			noStroke();
-			fill(st.colors[2]._color);
+			fill(st.colors[2].getvalue());
 			rect(xpos,ypos,_width, _height);
 			if(checkraw(xpos, ypos, _width, _height)) {
 				fill(0, 50);
@@ -365,7 +400,7 @@ abstract class ListItem {
 	abstract void action();
 
 	boolean checkraw(int xpos, int ypos, int _width, int _height) {
-		float scale = st.floats[1]._float;
+		float scale = st.floats[1].getvalue();
 		if (mouseX >= xpos*scale && mouseX <= (xpos+_width)*scale && 
 		    mouseY >= ypos*scale && mouseY <= (ypos+_height)*scale) {
 		  	return true;
@@ -389,13 +424,17 @@ abstract class ListItem {
 		  	return false;
 		}
 	}
-	void keyPressed() {
+	boolean keyPressed() {
+		boolean hit = false;
 		if(editmode) {
-			bv.keyPressed();
+			if(bv.keyPressed()) {
+				hit = true;
+			}
 			if(keyCode == ENTER) {
 				editmode = false;
 			}
 		}
+		return hit;
 	}
 }
 
@@ -437,25 +476,25 @@ class ButtonValue{
 						color c = rm.roomgrid.roomgroups[abs(index)-1];
 						value = int(red(c)) + " " + int(green(c)) + " " + int(blue(c));
 					} else {
-						color c = st.colors[index]._color;
+						color c = st.colors[index].getvalue();
 						value = int(red(c)) + " " + int(green(c)) + " " + int(blue(c));
 					}
 				break;
 				case 1:
 				// 1 = float
-					value = str(st.floats[index]._float);
+					value = str(st.floats[index].getvalue());
 				break;
 				case 2:
 				// 2 = int
-					value = str(st.ints[index]._int);
+					value = str(st.ints[index].getvalue());
 				break;
 				case 3:
 				// 3 = string
-					value = st.strings[index]._string;
+					value = st.strings[index].getvalue();
 				break;
 				case 4:
 				// 4 = boolean
-					value = st.booleans[index]._boolean == true ? "true" : "false";
+					value = st.booleans[index].getvalue() == true ? "true" : "false";
 				break;	
 			}
 		} else {
@@ -478,27 +517,30 @@ class ButtonValue{
 						if(index < 0) {
 							rm.roomgrid.roomgroups[abs(index)-1] = c;
 						} else {
-							st.colors[index]._color = c;
+							st.colors[index].setvalue(c);
 						}
 					break;
 					case 1:
 					// 1 = float
-						st.floats[index]._float = float(value);
+						st.floats[index].setvalue(float(value));
+						if(index == 1) {
+	  						ov.refresh();
+						}
 					break;
 					case 2:
 					// 2 = int
-						st.ints[index]._int = int(value);
+						st.ints[index].setvalue(int(value));
 
 						if(index == 0 || index == 1) {
-							int sw = st.ints[0]._int;
-							int sh = st.ints[1]._int;
+							int sw = st.ints[0].getvalue();
+							int sh = st.ints[1].getvalue();
 							surface.setSize(sw,sh);
 	  						ov.refresh();
 						}
 					break;
 					case 3:
 					// 3 = string
-						st.strings[index]._string = value;
+						st.strings[index].setvalue(value);
 					break;
 					case 4:
 					// 4 = boolean
@@ -506,7 +548,7 @@ class ButtonValue{
 							newvalue = value.equals("0") ? "false" : "true";
 							value = value.equals("0") ? "false" : "true";
 						}
-						st.booleans[index]._boolean = boolean(value);
+						st.booleans[index].setvalue(boolean(value));
 						if(index == 3) {
 							ov.popup = new Popup(250,150) {
 								@ Override public void ontrue() {}
@@ -518,7 +560,6 @@ class ButtonValue{
 						}
 					break;
 				}
-				print("aaa");
 				st.save();
 			} else {
 				rm.name = value;
@@ -528,7 +569,7 @@ class ButtonValue{
 
 
 
-	void keyPressed() {
+	boolean keyPressed() {
 		if (keyCode == BACKSPACE) {
 			if (newvalue.length() > 0) {
 				newvalue = newvalue.substring(0, newvalue.length()-1);
@@ -576,6 +617,7 @@ class ButtonValue{
 				}
 			break;
 		}
+		return true;
 	}
 	boolean check() {
 		if(newvalue.length() < 1) {
@@ -745,9 +787,13 @@ abstract class Popup extends PWH {
 		}
 		return false;
 	}
-	void keyPressed() {
+	boolean keyPressed() {
+		boolean hit = false;
 		for (int i=0;i<values.length;i++) {
-			values[i].keyPressed();
+			if(values[i].keyPressed()) {
+				hit = true;
+			}
 		}
+		return hit;
 	}
 }

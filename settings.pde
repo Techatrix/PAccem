@@ -19,7 +19,7 @@ class Settings {
 		colors[4] = new SettingColorValue("gridtilecolor", color(120, 120, 120));
 
 		floats[0] = new SettingFloatValue("gridlineweight", 1);
-		floats[1] = new SettingFloatValue("overlayscale", 1);
+		floats[1] = new SettingFloatValue("overlayscale", 1, 0.5, 2);
 
 		ints[0] = new SettingIntValue("width", 1200);
 		ints[1] = new SettingIntValue("height", 800);
@@ -48,27 +48,27 @@ class Settings {
   			JSONObject j = loadJSONObject("data/settings.json");
   			for (int i=0;i<colors.length;i++) {
   				SettingColorValue c = colors[i];
-  				c._color = color(j.getFloat(c.name + "red"), j.getFloat(c.name + "green"), j.getFloat(c.name + "blue"));
+  				c.setvalue(color(j.getFloat(c.name + "red"), j.getFloat(c.name + "green"), j.getFloat(c.name + "blue")));
   				colors[i] = c;
   			}
   			for (int i=0;i<floats.length;i++) {
   				SettingFloatValue f = floats[i];
-  				f._float = j.getFloat(f.name);
+  				f.setvalue(j.getFloat(f.name));
   				floats[i] = f;
   			}
   			for (int k=0;k<ints.length;k++) {
   				SettingIntValue i = ints[k];
-  				i._int = j.getInt(i.name);
+  				i.setvalue(j.getInt(i.name));
   				ints[k] = i;
   			}
   			for (int i=0;i<strings.length;i++) {
   				SettingStringValue s = strings[i];
-  				s._string = j.getString(s.name);
+  				s.setvalue(j.getString(s.name));
   				strings[i] = s;
   			}
   			for (int i=0;i<booleans.length;i++) {
   				SettingBooleanValue b = booleans[i];
-  				b._boolean = j.getBoolean(b.name);
+  				b.setvalue(j.getBoolean(b.name));
   				booleans[i] = b;
   			}
 		}
@@ -88,113 +88,159 @@ class Settings {
 		}
   		for (int i=0;i<colors.length;i++) {
   			SettingColorValue c = colors[i];
-	  		j.setFloat(c.name + "red", red(c._color));
-	  		j.setFloat(c.name + "green", green(c._color));
-	  		j.setFloat(c.name + "blue", blue(c._color));
+	  		j.setFloat(c.name + "red", red(c.getvalue()));
+	  		j.setFloat(c.name + "green", green(c.getvalue()));
+	  		j.setFloat(c.name + "blue", blue(c.getvalue()));
   		}
   		for (int i=0;i<floats.length;i++) {
   			SettingFloatValue f = floats[i];
-	  		j.setFloat(f.name, f._float);
+	  		j.setFloat(f.name, f.getvalue());
   		}
   		for (int k=0;k<ints.length;k++) {
   			SettingIntValue i = ints[k];
-	  		j.setInt(i.name, i._int);
+	  		j.setInt(i.name, i.getvalue());
   		}
   		for (int i=0;i<strings.length;i++) {
   			SettingStringValue s = strings[i];
-	  		j.setString(s.name, s._string);
+	  		j.setString(s.name, s.getvalue());
   		}
   		for (int i=0;i<booleans.length;i++) {
   			SettingBooleanValue b = booleans[i];
-	  		j.setBoolean(b.name, b._boolean);
+	  		j.setBoolean(b.name, b.getvalue());
   		}
 		saveJSONObject(j, "data/settings.json");
 	}
 }
 
 class SettingColorValue {
-	String name;
-	color _color;
-	color _colordefault;
+	private String name;
+	private color _value;
+	private color _valuedefault;
 	SettingColorValue(String newname) {
 		name = newname;
 	}
-	SettingColorValue(String newname, color newdefaultcolor) {
+	SettingColorValue(String newname, color newdefaultvalue) {
 		name = newname;
-		_color = newdefaultcolor;
-		_colordefault = newdefaultcolor;
+		_value = newdefaultvalue;
+		_valuedefault = newdefaultvalue;
+	}
+	void setvalue(color newvalue) {
+		_value = newvalue;
+	}
+	color getvalue() {
+		return _value;
 	}
 	String gettext() {
 		String text = name + ": ";
-		text += str(floor(red(_color))) +" ";
-		text += str(floor(green(_color))) +" ";
-		text += str(floor(blue(_color))) +" ";
+		text += str(floor(red(_value))) +" ";
+		text += str(floor(green(_value))) +" ";
+		text += str(floor(blue(_value))) +" ";
 		return text;
 	}
 }
 class SettingFloatValue {
-	String name;
-	float _float;
-	float _floatdefault;
-	float min;
-	float max;
+	private String name;
+	private float _value;
+	private float _valuedefault;
+	private float min = Float.MIN_VALUE;
+	private float max = Float.MAX_VALUE;
 	SettingFloatValue(String newname) {
 		name = newname;
 	}
-	SettingFloatValue(String newname, float newdefaultfloat) {
+	SettingFloatValue(String newname, float newdefaultvalue) {
 		name = newname;
-		_float = newdefaultfloat;
-		_floatdefault = newdefaultfloat;
+		_value = newdefaultvalue;
+		_valuedefault = newdefaultvalue;
+	}
+	SettingFloatValue(String newname, float newdefaultvalue, float minvalue, float maxvalue) {
+		name = newname;
+		_value = newdefaultvalue;
+		_valuedefault = newdefaultvalue;
+		min = minvalue;
+		max = maxvalue;
+	}
+	void setvalue(float newvalue) {
+		_value = constrain(newvalue, min, max);
+	}
+	float getvalue() {
+		return _value;
 	}
 	String gettext() {
-		return name + ": " + _float;
+		return name + ": " + _value;
 	}
 }
 class SettingIntValue {
-	String name;
-	int _int;
-	int _intdefault;
+	private String name;
+	private int _value;
+	private int _valuedefault;
+	private int min = Integer.MIN_VALUE;
+	private int max = Integer.MAX_VALUE;
 	SettingIntValue(String newname) {
 		name = newname;
 	}
-	SettingIntValue(String newname, int newdefaultint) {
+	SettingIntValue(String newname, int newdefaultvalue) {
 		name = newname;
-		_int = newdefaultint;
-		_intdefault = newdefaultint;
+		_value = newdefaultvalue;
+		_valuedefault = newdefaultvalue;
+	}
+	SettingIntValue(String newname, int newdefaultvalue, int minvalue, int maxvalue) {
+		name = newname;
+		_value = newdefaultvalue;
+		_valuedefault = newdefaultvalue;
+		min = minvalue;
+		max = maxvalue;
+	}
+	void setvalue(int newvalue) {
+		_value = constrain(newvalue, min, max);
+	}
+	int getvalue() {
+		return _value;
 	}
 	String gettext() {
-		return name + ": " + _int;
+		return name + ": " + _value;
 	}
 }
 class SettingStringValue {
-	String name;
-	String _string;
-	String _stringdefault;
+	private String name;
+	private String _value;
+	private String _valuedefault;
 	SettingStringValue(String newname) {
 		name = newname;
 	}
-	SettingStringValue(String newname, String newdefaultstring) {
+	SettingStringValue(String newname, String newdefaultvalue) {
 		name = newname;
-		_string = newdefaultstring;
-		_stringdefault = newdefaultstring;
+		_value = newdefaultvalue;
+		_valuedefault = newdefaultvalue;
+	}
+	void setvalue(String newvalue) {
+		_value = newvalue;
+	}
+	String getvalue() {
+		return _value;
 	}
 	String gettext() {
-		return name + ": " + _string;
+		return name + ": " + _value;
 	}
 }
 class SettingBooleanValue {
-	String name;
-	boolean _boolean;
-	boolean _booleandefault;
+	private String name;
+	private boolean _value;
+	private boolean _valuedefault;
 	SettingBooleanValue(String newname) {
 		name = newname;
 	}
-	SettingBooleanValue(String newname, boolean newdefaultboolean) {
+	SettingBooleanValue(String newname, boolean newdefaultvalue) {
 		name = newname;
-		_boolean = newdefaultboolean;
-		_booleandefault = newdefaultboolean;
+		_value = newdefaultvalue;
+		_valuedefault = newdefaultvalue;
+	}
+	void setvalue(boolean newvalue) {
+		_value = newvalue;
+	}
+	boolean getvalue() {
+		return _value;
 	}
 	String gettext() {
-		return name + ": " + _boolean;
+		return name + ": " + _value;
 	}
 }
