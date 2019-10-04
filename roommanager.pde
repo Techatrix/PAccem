@@ -23,11 +23,12 @@ class Roommanager {
 	int newfurnitureheight = 1;
 
 	Roommanager() {
-		load("");
-		name = st.strings[0]._string;
+		name = st.strings[0].getvalue();
+		load(name);
+		settitle(name);
 	}
-	Roommanager(String name) {
-		this.name = name;
+	Roommanager(String loadname) {
+		name = loadname;
 		load(name);
 	}
 
@@ -370,7 +371,7 @@ class Roommanager {
 		tool = 0;
 		roomgrid = new Grid(xgridsize, ygridsize);
 		furnitures = new ArrayList<Furniture>();
-		name = st.strings[0]._string;
+		name = st.strings[0].getvalue();
   		surface.setTitle(appname + ": " + name);
 	}
 
@@ -383,19 +384,19 @@ class Roommanager {
 	}
 
 	void draw() {
-		background(st.colors[0]._color);
+		background(st.colors[0].getvalue());
 		push();
 		if(!viewmode) {
 			xoff = constrain(xoff, Integer.MIN_VALUE, 0);
 			yoff = constrain(yoff, Integer.MIN_VALUE, 0);
 			// 2D View
-			float ovscale = st.booleans[2]._boolean ? 0 : st.floats[1]._float;
+			float ovscale = st.booleans[2].getvalue() ? 0 : st.floats[1].getvalue();
 
 			translate(xoff+ov._width*ovscale, yoff+ov._height*ovscale);
 			scale(scale);
 			push();
-			stroke(st.colors[3]._color);
-			strokeWeight(st.floats[0]._float);
+			stroke(st.colors[3].getvalue());
+			strokeWeight(st.floats[0].getvalue());
 			for (int x=gridtilesize; x<=getxplanesize(); x+=gridtilesize) {
 				line(x,0,x,getyplanesize());
 			}
@@ -411,7 +412,7 @@ class Roommanager {
 		} else {
 			// 3D View
 		  	pg.beginDraw();
-		  	pg.background(st.colors[0]._color);
+		  	pg.background(st.colors[0].getvalue());
 		  	PVector lightdir = new PVector(0.3,1,0.3);
 			pg.directionalLight(200, 200, 200, lightdir.x, lightdir.y, lightdir.z);
 			pg.ambientLight(140,140,140);
