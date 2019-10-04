@@ -1,5 +1,5 @@
 class ImageManager {
-	PImage[] images;
+	final PImage[] images;
 
 	ImageManager() {
 		images = new PImage[6];

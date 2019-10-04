@@ -10,11 +10,11 @@ void settings() {
 	im = new ImageManager();
 	st = new Settings();
 
-	int sw = st.ints[0]._int;
-	int sh = st.ints[1]._int;
-	if(st.booleans[3]._boolean) {
+	if(st.booleans[3].getvalue()) {
 		fullScreen(P2D);
 	} else {
+		int sw = st.ints[0].getvalue();
+		int sh = st.ints[1].getvalue();
 		size((sw < 600 ? 600 : sw),(sh < 600 ? 600 : sh), P2D); // MIN: 500x500
 	}
 	smooth(4);
@@ -22,7 +22,6 @@ void settings() {
 void setup() {
 	rm = new Roommanager();
 	ov = new Overlay();
-	//settitle(st.strings[0]._string);
 
 	font = createFont("assets/font/Roboto-Regular.ttf", 16);
 	textFont(font);
@@ -31,7 +30,6 @@ void setup() {
 	pg = createGraphics(width,height, P3D);
 	pg.smooth(4);
 	pg.textFont(font);
-
 
 	//noLoop();
 	//redraw();
@@ -71,24 +69,11 @@ void mousePressed() {
 	}
 }
 void keyPressed() {
-	if(key == 'h') {
-		st.booleans[2]._boolean = !st.booleans[2]._boolean;
-		if(!st.booleans[2]._boolean) {
-			ov.refresh();
-			st.save();
-		}
-	}
 	ov.keyPressed();
 	rm.keyPressed();
 }
 
 void draw() {
 	rm.draw();
-	if(!st.booleans[2]._boolean) {
-		ov.draw();
-	}
-	String date = str(day())+"."+str(month())+"."+str(year());
-	fill(0);
-	textAlign(RIGHT, CENTER);
-	text(date, width-12.5, 12.5);
+	ov.draw();
 }
