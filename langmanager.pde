@@ -1,21 +1,20 @@
-class LanguageManager {
-	int langid;
-	String[] values;
+static class LG {
+	private int langid = 0;
+	//String[] values;
 
-	LanguageManager() {
-		setlang(0);
+	static {
+		println("Static executed");	
 	}
 
 	void setlang(int newid) {
 		langid = newid;
-
 	}
 	int getlang() {
 		return langid;
 	}
 
-	String get(int id) {
-		return "";
+	static String get(int id) {
+		return "Text";
 	}
 
 }

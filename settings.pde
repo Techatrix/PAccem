@@ -6,31 +6,31 @@ class Settings {
 	SettingBooleanValue[] booleans;
 
 	Settings() {
-		colors = new SettingColorValue[5];
+		colors = new SettingColorValue[4];
 		floats = new SettingFloatValue[2];
 		ints = new SettingIntValue[2];
-		strings = new SettingStringValue[2];
-		booleans = new SettingBooleanValue[4];
+		strings = new SettingStringValue[3];
+		booleans = new SettingBooleanValue[3];
 
 		colors[0] = new SettingColorValue("backgroundcolor", color(0, 0, 0));
-		colors[1] = new SettingColorValue("tabbarcolor", color(200, 200, 200));
-		colors[2] = new SettingColorValue("tabcolor", color(100, 100, 100));
+		colors[1] = new SettingColorValue("overlaybackgroundcolor", color(200, 200, 200));
+		colors[2] = new SettingColorValue("overlaycolor", color(100, 100, 100));
 		colors[3] = new SettingColorValue("gridlinecolor", color(255, 255, 255));
-		colors[4] = new SettingColorValue("gridtilecolor", color(120, 120, 120));
 
 		floats[0] = new SettingFloatValue("gridlineweight", 1);
-		floats[1] = new SettingFloatValue("overlayscale", 1, 0.5, 2);
+		floats[1] = new SettingFloatValue("overlayscale", 1, 0.7, 1.5);
 
-		ints[0] = new SettingIntValue("width", 1200);
-		ints[1] = new SettingIntValue("height", 800);
+		ints[0] = new SettingIntValue("width", 1200, 600, displayWidth);
+		ints[1] = new SettingIntValue("height", 800, 600, displayHeight);
 
 		strings[0] = new SettingStringValue("defaultroomname", "new Room");
 		strings[1] = new SettingStringValue("language", "english");
+		strings[2] = new SettingStringValue("font", "Roboto");
 
 		booleans[0] = new SettingBooleanValue("darkmode", false);
-		booleans[1] = new SettingBooleanValue("no blur", false);
-		booleans[2] = new SettingBooleanValue("hide overlay", false);
-		booleans[3] = new SettingBooleanValue("fullscreen", false);
+		//booleans[1] = new SettingBooleanValue("no blur", false);
+		booleans[1] = new SettingBooleanValue("hide overlay", false);
+		booleans[2] = new SettingBooleanValue("fullscreen", false);
 
 		load();
 	}
