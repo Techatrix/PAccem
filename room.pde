@@ -2,7 +2,6 @@ class Grid {
 	GridTile[][] tiles;
 	color[] roomgroups = new color[5];
 
-
 	Grid(int xsize, int ysize) {
 		color c = color(50,50,50);
 		roomgroups[0] = c;
@@ -24,8 +23,6 @@ class Grid {
 		for (int x=0; x<tiles.length; x++) {
 			for (int y=0; y<tiles[0].length; y++) {
 				if(gettilestate(x,y)) {
-					//stroke(st.colors[4]._color);
-					//fill(st.colors[4]._color);
 					stroke(roomgroups[gettile(x,y).roomgroup]);
 					fill(roomgroups[gettile(x,y).roomgroup]);
 					rect(x*rm.gridtilesize,y*rm.gridtilesize,rm.gridtilesize,rm.gridtilesize);
@@ -40,7 +37,6 @@ class Grid {
 					// Right
 					if(!gettilestate(x+1,y)) {
 						if(t.window[0]) {
-							println("draw Right");
 							stroke(0,0,255);
 						}
 						line((x+1)*rm.gridtilesize,y*rm.gridtilesize,(x+1)*rm.gridtilesize,(y+1)*rm.gridtilesize);
@@ -49,7 +45,6 @@ class Grid {
 					// Left
 					if(!gettilestate(x-1,y)) {
 						if(t.window[1]) {
-							println("draw Left");
 							stroke(0,0,255);
 						}
 						line(x*rm.gridtilesize,y*rm.gridtilesize,x*rm.gridtilesize,(y+1)*rm.gridtilesize);
@@ -58,7 +53,6 @@ class Grid {
 					// Bottom
 					if(!gettilestate(x,y+1)) {
 						if(t.window[2]) {
-							println("draw Bottom");
 							stroke(0,0,255);
 						}
 						line(x*rm.gridtilesize,(y+1)*rm.gridtilesize,(x+1)*rm.gridtilesize,(y+1)*rm.gridtilesize);
@@ -67,7 +61,6 @@ class Grid {
 					// Top
 					if(!gettilestate(x,y-1)) {
 						if(t.window[3]) {
-							println("draw Top");
 							stroke(0,0,255);
 						}
 						line(x*rm.gridtilesize,y*rm.gridtilesize,(x+1)*rm.gridtilesize,y*rm.gridtilesize);
@@ -121,7 +114,7 @@ class Grid {
 		if(isingrid(x,y)) {
 			return tiles[x][y];
 		}
-		return null;
+		return new GridTile();
 	}
 
 	boolean isingrid(int x, int y) {

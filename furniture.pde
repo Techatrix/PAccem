@@ -28,8 +28,8 @@ class Furniture extends RPoint{
 		} else {
 			stroke(_color);
 			fill(_color);
-			rot = 0;
 		}
+		/*
 		if(rot != 0) {
 			pushMatrix();
 				translate((xpos+_width/2)*rm.gridtilesize, (ypos+_height/2)*rm.gridtilesize);
@@ -39,12 +39,15 @@ class Furniture extends RPoint{
 		} else {
 			rect(xpos*rm.gridtilesize,ypos*rm.gridtilesize,_width*rm.gridtilesize,_height*rm.gridtilesize);
 		}
+		*/
+		rect(xpos*rm.gridtilesize,ypos*rm.gridtilesize,_width*rm.gridtilesize,_height*rm.gridtilesize);
 	}
 	boolean checkover() {
-		float x1=xpos*rm.gridtilesize*rm.scale+rm.xoff+ov._width;
-		float y1=ypos*rm.gridtilesize*rm.scale+rm.yoff+ov._height;
-		if (mouseX >= x1 && mouseX <= x1+_width*rm.scale*rm.gridtilesize &&
-			mouseY >= y1 && mouseY <= y1+_height*rm.scale*rm.gridtilesize) {
+		float a = rm.gridtilesize*rm.scale;
+		float x1=xpos*a+rm.xoff+ov._width;
+		float y1=ypos*a+rm.yoff+ov._height;
+		if (mouseX >= x1 && mouseX <= x1+_width*a &&
+			mouseY >= y1 && mouseY <= y1+_height*a) {
 			return true;
 		} else {
 			return false;
