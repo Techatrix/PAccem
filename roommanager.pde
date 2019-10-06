@@ -22,6 +22,8 @@ class Roommanager {
 	int newfurniturewidth = 1;
 	int newfurnitureheight = 1;
 
+	int newroomtilegroup = 0;
+
 	Roommanager() {
 		name = st.strings[0].getvalue();
 		load(name);
@@ -44,24 +46,30 @@ class Roommanager {
 			yoff = (yoff-mouseY) * delta + mouseY;
 		}
 		scale *= delta;
-		scale = constrain(scale, 0,5);
+		scale = constrain(scale, 0.25,5);
 	}
 	void mouseDragged() {
 		if(!viewmode) {
-			if(mouseButton == CENTER || tool == 0) {
-				xoff += mouseX - pmouseX;
-				yoff += mouseY - pmouseY;
-			}
-			if(mouseButton == LEFT && tool == 1) {
-				int x = floor(getxpos(mouseX));
-				int y = floor(getypos(mouseY));
-				if(dragtiles.size() == 0) {
-					dragstate = roomgrid.gettilestate(x,y);
+			// Only dont drag if the mouseclick was a hit
+			if(!ov.ishit()) {
+				if(mouseButton == CENTER || tool == 0) {
+					xoff += mouseX - pmouseX;
+					yoff += mouseY - pmouseY;
 				}
-				int[] newgridtile = {x,y};
-				if(!dragtiles.contains(newgridtile)) {
-					dragtiles.add(newgridtile);
-					roomgrid.settilestate(dragstate, x,y);
+				if(mouseButton == LEFT && tool == 1) {
+					int x = floor(getxpos());
+					int y = floor(getypos());
+					if(!isfurniture(x,y)){
+						if(dragtiles.size() == 0) {
+							dragstate = roomgrid.gettilestate(x,y);
+						}
+						int[] newgridtile = {x,y};
+						if(!dragtiles.contains(newgridtile)) {
+							dragtiles.add(newgridtile);
+							roomgrid.settilestate(dragstate, x,y);
+							roomgrid.gettile(x,y).roomgroup = newroomtilegroup;
+						}
+					}
 				}
 			}
 		} else {
@@ -80,18 +88,21 @@ class Roommanager {
 		if(mouseButton == LEFT && !viewmode) {
 			selectionid = -1;
 			if(tool == 1) {
-				int x = floor(getxpos(mouseX));
-				int y = floor(getypos(mouseY));
-				roomgrid.settilestate(!roomgrid.gettilestate(x,y), x,y);
+				int x = floor(getxpos());
+				int y = floor(getypos());
+				if(!isfurniture(x,y)){
+					roomgrid.settilestate(!roomgrid.gettilestate(x,y), x,y);
+					roomgrid.gettile(x,y).roomgroup = newroomtilegroup;
+				}
 			}
 			if(tool == 2) {
-				int xpos = floor(getxpos(mouseX));
-				int ypos = floor(getypos(mouseY));
+				int xpos = floor(getxpos());
+				int ypos = floor(getypos());
 
 				boolean hit = false;
 				for (int x=0;x<newfurniturewidth;x++) {
 					for (int y=0;y<newfurnitureheight;y++) {
-						if(isfurniture(xpos+x,ypos+y)) {
+						if(!roomgrid.gettilestate(xpos+x,ypos+y) || isfurniture(xpos+x,ypos+y) || !roomgrid.isingrid(xpos+x,ypos+y)) {
 							hit = true;
 							break;
 						}
@@ -113,84 +124,90 @@ class Roommanager {
 				}
 			}
 			if(tool == 4) {
-				int x = floor(getxpos(mouseX));
-				int y = floor(getypos(mouseY));
+				int x = floor(getxpos());
+				int y = floor(getypos());
 				roomgrid.filltool(!roomgrid.gettilestate(x,y), x,y);
 			}
-			/*
 			if(tool == 5) {
-				int x = floor(getxpos(mouseX));
-				int y = floor(getypos(mouseY));
-				GridTile t = roomgrid.gettile(x,y);
+				float fx = getxpos();
+				float fy = getypos();
+				int ix = floor(fx);
+				int iy = floor(fy);
+				if(roomgrid.gettilestate(ix,iy)) {
+					stroke(0, 200, 255);
+					fill(0, 200, 255, 150);
+					GridTile gt = roomgrid.gettile(ix,iy);
+					// Right
+					if(fx % 1 > 0.8 && !roomgrid.gettilestate(ix+1,iy)) {
+						gt.window[0] = !gt.window[0];
+					}
+					// Left
+					if(fx % 1 < 0.2 && !roomgrid.gettilestate(ix-1,iy)) {
+						gt.window[1] = !gt.window[1];
+					}
+					// Bottom
+					if(fy % 1 > 0.8 && !roomgrid.gettilestate(ix,iy+1)) {
+						gt.window[2] = !gt.window[2];
+					}
+					// Top
+					if(fy % 1 < 0.2 && !roomgrid.gettilestate(ix,iy-1)) {
+						gt.window[3] = !gt.window[3];
+					}
+				}
 			}
-			*/
 		}
 	}
 	void keyPressed() {
-		if(key == 127) {
-			for (int i=0; i<furnitures.size(); i++) {
-				if(selectionid == i) {
-					furnitures.remove(i);
-					selectionid = -1;
-				}
-			}
-		}
-		if(tool == 5 && (key == '1' || key == '2'|| key == '3'|| key == '4')) {
-			int x = floor(getxpos(mouseX));
-			int y = floor(getypos(mouseY));
-			GridTile t = roomgrid.gettile(x,y);
-
-			if(key == '1') {
-				t.window[0] = !t.window[0];
-			}
-			if(key == '2') {
-				t.window[1] = !t.window[1];
-			}
-			if(key == '3') {
-				t.window[2] = !t.window[2];
-			}
-			if(key == '4') {
-				t.window[3] = !t.window[3];
-			}
-			//println(t.window);
-			roomgrid.settile(t, x, y);
-		}
-		if((keyCode == UP || keyCode == DOWN || keyCode == LEFT || keyCode == RIGHT) && !viewmode) {
-			Furniture f = new Furniture(0,0);
-			for (int i=0; i<furnitures.size(); i++) {
-				if(selectionid == i) {
-					f = furnitures.get(i);
-				}
-			}
-			int dx = 0;
-			int dy = 0;
-			switch(keyCode) {
-				case UP:
-					dy = -1;
-				break;
-				case DOWN:
-					dy = 1;
-				break;
-				case LEFT:
-					dx = -1;
-				break;
-				case RIGHT:
-					dx = 1;
-				break;
-			}
-			if(dx != 0 || dy != 0) {
-				boolean m = true;
-				for (int x=dx;x<f._width+dx;x++) {
-					for (int y=dy;y<f._height+dy;y++) {
-						if(!roomgrid.gettilestate(f.xpos+x,f.ypos+y)) {
-							m = false;
-							break;
-						}
+		if(!viewmode) {
+			if(key == 127) {
+				for (int i=0; i<furnitures.size(); i++) {
+					if(selectionid == i) {
+						furnitures.remove(i);
+						selectionid = -1;
 					}
 				}
-				if(m) {
-					f.move(dx,dy);
-					f.rot  = PI;
+			}
+			if(keyCode < 54 && keyCode > 48) {
+				newroomtilegroup = keyCode - 49;
+				//println("a: " + keyCode);
+				//println("b: " + newroomtilegroup);
+			}
+			if(keyCode == UP || keyCode == DOWN || keyCode == LEFT || keyCode == RIGHT) {
+				Furniture f = new Furniture(0,0);
+				for (int i=0; i<furnitures.size(); i++) {
+					if(selectionid == i) {
+						f = furnitures.get(i);
+					}
+				}
+				int dx = 0;
+				int dy = 0;
+				switch(keyCode) {
+					case UP:
+						dy = -1;
+					break;
+					case DOWN:
+						dy = 1;
+					break;
+					case LEFT:
+						dx = -1;
+					break;
+					case RIGHT:
+						dx = 1;
+					break;
+				}
+				if(dx != 0 || dy != 0) {
+					boolean m = true;
+					for (int x=dx;x<f._width+dx;x++) {
+						for (int y=dy;y<f._height+dy;y++) {
+							if(!roomgrid.gettilestate(f.xpos+x,f.ypos+y) || isfurniture(f.xpos+x,f.ypos+y) || !roomgrid.isingrid(f.xpos+x,f.ypos+y)) {
+								m = false;
+								break;
+							}
+						}
+					}
+					if(m) {
+						f.move(dx,dy);
+					}
 				}
 			}
 		}
@@ -202,11 +219,11 @@ class Roommanager {
 		return ygridsize * gridtilesize;
 	}
 
-	float getxpos(int mousex) {
-		return (mousex-xoff-ov._width)/gridtilesize/scale;
+	float getxpos() {
+		return (mouseX-xoff-ov._width)/gridtilesize/scale;
 	}
-	float getypos(int mousey) {
-		return (mousey-yoff-ov._height)/gridtilesize/scale;
+	float getypos() {
+		return (mouseY-yoff-ov._height)/gridtilesize/scale;
 	}
 	boolean isfurniture(int xpos, int ypos) {
 		for (int i=0; i<furnitures.size(); i++) {
@@ -222,9 +239,6 @@ class Roommanager {
 		return false;
 	}
 
-
-
-
 	String[] loadrooms() {
 		File f1 = new File(sketchPath("data/rooms.json"));
 
@@ -239,7 +253,6 @@ class Roommanager {
 		}
 		return rooms;
 	}
-
 	void save(String name) {
 		println("Save: " + name);
 		JSONObject json = new JSONObject();
@@ -285,6 +298,15 @@ class Roommanager {
 				JSONObject tile = new JSONObject();
 				tile.setBoolean("g", roomgrid.tiles[x][y].state);
 				tile.setInt("r", roomgrid.tiles[x][y].roomgroup);
+
+				JSONArray windows = new JSONArray();
+				windows.setBoolean(0, roomgrid.tiles[x][y].window[0]);
+				windows.setBoolean(1, roomgrid.tiles[x][y].window[1]);
+				windows.setBoolean(2, roomgrid.tiles[x][y].window[2]);
+				windows.setBoolean(3, roomgrid.tiles[x][y].window[3]);
+
+  				tile.setJSONArray("w", windows);
+
 				row.setJSONObject(y, tile);
 			}
 			roomarray.setJSONArray(x, row);
@@ -351,6 +373,12 @@ class Roommanager {
 					JSONObject tile = row.getJSONObject(y);
 					roomgrid.tiles[x][y].state = tile.getBoolean("g");
 					roomgrid.tiles[x][y].roomgroup = tile.getInt("r");
+
+					JSONArray window = tile.getJSONArray("w");
+					roomgrid.tiles[x][y].window[0] = window.getBoolean(0);
+					roomgrid.tiles[x][y].window[1] = window.getBoolean(1);
+					roomgrid.tiles[x][y].window[2] = window.getBoolean(2);
+					roomgrid.tiles[x][y].window[3] = window.getBoolean(3);
 				}
 			}
 		}
@@ -372,6 +400,7 @@ class Roommanager {
 		roomgrid = new Grid(xgridsize, ygridsize);
 		furnitures = new ArrayList<Furniture>();
 		name = st.strings[0].getvalue();
+		st.load();
   		surface.setTitle(appname + ": " + name);
 	}
 
@@ -390,7 +419,7 @@ class Roommanager {
 			xoff = constrain(xoff, Integer.MIN_VALUE, 0);
 			yoff = constrain(yoff, Integer.MIN_VALUE, 0);
 			// 2D View
-			float ovscale = st.booleans[2].getvalue() ? 0 : st.floats[1].getvalue();
+			float ovscale = st.booleans[1].getvalue() ? 0 : st.floats[1].getvalue();
 
 			translate(xoff+ov._width*ovscale, yoff+ov._height*ovscale);
 			scale(scale);
@@ -408,6 +437,46 @@ class Roommanager {
 			for (int i=0; i<furnitures.size(); i++) {
 				Furniture f = furnitures.get(i);
 				f.draw(selectionid == i);
+			}
+			if(!ov.ishit()) {
+				if(tool == 1 || tool == 2) {
+					int x = floor(getxpos());
+					int y = floor(getypos());
+					if(roomgrid.isingrid(x,y)) {
+						noStroke();
+						fill(255, 255, 255, 50);
+						rect(x*gridtilesize,y*gridtilesize,gridtilesize,gridtilesize);
+					}
+				}
+				if(tool == 2) {
+
+				}
+				if(tool == 5) {
+					float fx = getxpos();
+					float fy = getypos();
+					int ix = floor(fx);
+					int iy = floor(fy);
+					if(roomgrid.gettilestate(ix,iy)) {
+						stroke(0, 200, 255);
+						fill(0, 200, 255, 150);
+						// Right
+						if(fx % 1 > 0.8 && !roomgrid.gettilestate(ix+1,iy)) {
+							line((ix+1)*rm.gridtilesize,iy*rm.gridtilesize,(ix+1)*rm.gridtilesize,(iy+1)*rm.gridtilesize);
+						}
+						// Left
+						if(fx % 1 < 0.2 && !roomgrid.gettilestate(ix-1,iy)) {
+							line(ix*rm.gridtilesize,iy*rm.gridtilesize,ix*rm.gridtilesize,(iy+1)*rm.gridtilesize);
+						}
+						// Bottom
+						if(fy % 1 > 0.8 && !roomgrid.gettilestate(ix,iy+1)) {
+							line(ix*rm.gridtilesize,(iy+1)*rm.gridtilesize,(ix+1)*rm.gridtilesize,(iy+1)*rm.gridtilesize);
+						}
+						// Top
+						if(fy % 1 < 0.2 && !roomgrid.gettilestate(ix,iy-1)) {
+							line(ix*rm.gridtilesize,iy*rm.gridtilesize,(ix+1)*rm.gridtilesize,iy*rm.gridtilesize);
+						}
+					}
+				}
 			}
 		} else {
 			// 3D View
