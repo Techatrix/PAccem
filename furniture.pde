@@ -1,14 +1,15 @@
 class Furniture extends RPoint{
-	int _width;
-	int _height;
-	color _color;
+	private int _width;
+	private int _height;
+	private color _color;
+	private int skin;
 
 	Furniture(int _width, int _height) {
 		this(_width, _height, 0,0);
 	}
 
 	Furniture(int _width, int _height, int xpos, int ypos) {
-		this(_width, _height, xpos, ypos, color(255, 150));
+		this(_width, _height, xpos, ypos, color(150));
 	}
 	Furniture(int _width, int _height, int xpos, int ypos, color _color) {
 		this(_width, _height, xpos, ypos, _color, 0);
@@ -20,16 +21,38 @@ class Furniture extends RPoint{
 		this.ypos = ypos;
 		this._color = _color;
 		this.rot = rot;
+		this.skin = 0;
 	}
 	void draw(boolean selected) {
-		if (selected == true) {
-			stroke(color(255,0,0, 150));
-			fill(color(255,0,0, 150));
+		noStroke();
+		fill(_color);
+		int a = xpos*rm.gridtilesize;
+		int b = ypos*rm.gridtilesize;
+		int c = _width*rm.gridtilesize;
+		int d = _height*rm.gridtilesize;
+
+		JSONObject data = dt.getindexdata(_width, _height, skin);
+		int index = data.getInt("id", -1);
+		if(0 <= index && index < dt.furnitures.length) {
+			if(data.getBoolean("rotate", false)) {
+				push();
+				imageMode(CENTER);
+  				translate(a+c/2, b+d/2);
+				rotate(PI/2);
+				image(dt.furnitures[index], 0,0,d,c);
+				pop();
+			} else {
+				image(dt.furnitures[index], a,b,c,d);
+			}
 		} else {
-			stroke(_color);
-			fill(_color);
+			rect(xpos*rm.gridtilesize,ypos*rm.gridtilesize,_width*rm.gridtilesize,_height*rm.gridtilesize);
 		}
-		/*
+
+		if (selected == true) {
+			fill(color(255,0,0,100));
+			rect(xpos*rm.gridtilesize,ypos*rm.gridtilesize,_width*rm.gridtilesize,_height*rm.gridtilesize);
+		}
+		/* Including Rotation
 		if(rot != 0) {
 			pushMatrix();
 				translate((xpos+_width/2)*rm.gridtilesize, (ypos+_height/2)*rm.gridtilesize);
@@ -40,18 +63,18 @@ class Furniture extends RPoint{
 			rect(xpos*rm.gridtilesize,ypos*rm.gridtilesize,_width*rm.gridtilesize,_height*rm.gridtilesize);
 		}
 		*/
-		rect(xpos*rm.gridtilesize,ypos*rm.gridtilesize,_width*rm.gridtilesize,_height*rm.gridtilesize);
 	}
 	boolean checkover() {
+		float ovscale = st.booleans[1].getvalue() ? 0 : st.floats[1].getvalue();
 		float a = rm.gridtilesize*rm.scale;
-		float x1=xpos*a+rm.xoff+ov._width;
-		float y1=ypos*a+rm.yoff+ov._height;
-		if (mouseX >= x1 && mouseX <= x1+_width*a &&
-			mouseY >= y1 && mouseY <= y1+_height*a) {
+
+		float x = xpos*a+ov._width*ovscale+rm.xoff;
+		float y = ypos*a+ov._height*ovscale+rm.yoff;
+		if (mouseX >= x && mouseX < x+_width*a &&
+			mouseY >= y && mouseY < y+_height*a) {
 			return true;
-		} else {
-			return false;
 		}
+		return false;
 	}
 	boolean setxpos(int value) {
 		if(value > -1 && value <= rm.xgridsize-_width) {

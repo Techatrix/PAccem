@@ -14,7 +14,7 @@ class Roommanager {
 
 	int tool = 0;
 
-	boolean viewmode; // true = 3D , false = 2D
+	boolean viewmode = false; // true = 3D , false = 2D
 
 	ArrayList<int[]> dragtiles = new ArrayList<int[]>();
 	boolean dragstate;
@@ -164,19 +164,19 @@ class Roommanager {
 					if(selectionid == i) {
 						furnitures.remove(i);
 						selectionid = -1;
+						break;
 					}
 				}
 			}
 			if(keyCode < 54 && keyCode > 48) {
 				newroomtilegroup = keyCode - 49;
-				//println("a: " + keyCode);
-				//println("b: " + newroomtilegroup);
 			}
 			if(keyCode == UP || keyCode == DOWN || keyCode == LEFT || keyCode == RIGHT) {
 				Furniture f = new Furniture(0,0);
 				for (int i=0; i<furnitures.size(); i++) {
 					if(selectionid == i) {
 						f = furnitures.get(i);
+						break;
 					}
 				}
 				int dx = 0;
@@ -196,16 +196,26 @@ class Roommanager {
 					break;
 				}
 				if(dx != 0 || dy != 0) {
-					boolean m = true;
-					for (int x=dx;x<f._width+dx;x++) {
-						for (int y=dy;y<f._height+dy;y++) {
-							if(!roomgrid.gettilestate(f.xpos+x,f.ypos+y) || isfurniture(f.xpos+x,f.ypos+y) || !roomgrid.isingrid(f.xpos+x,f.ypos+y)) {
-								m = false;
-								break;
-							}
+					boolean a = true;
+
+					int b = (dx != 0) ? f._height : f._width;
+					for (int v=0;v<b;v++ ) {
+						int x = f.xpos;
+						int y = f.ypos;
+
+						if(dx != 0) {
+							y += v;
+							x += dx > 0 ? f._width : dx;
+						} else {
+							x += v;
+							y += dy > 0 ? f._height : dy;
+						}
+						if(!roomgrid.gettilestate(x,y) || isfurniture(x,y) || !roomgrid.isingrid(x,y)) {
+							a = false;
+							break;
 						}
 					}
-					if(m) {
+					if(a) {
 						f.move(dx,dy);
 					}
 				}
@@ -341,7 +351,6 @@ class Roommanager {
   			xgridsize = 24;
   			ygridsize = 12;
   			gridtilesize = 50;
-  			viewmode = false;
 			roomgrid = new Grid(xgridsize, ygridsize);
 		}
 		//-------------------------------------------------------------------------------
@@ -414,25 +423,15 @@ class Roommanager {
 
 	void draw() {
 		background(st.colors[0].getvalue());
-		push();
 		if(!viewmode) {
+			// 2D View
+			pushMatrix();
 			xoff = constrain(xoff, Integer.MIN_VALUE, 0);
 			yoff = constrain(yoff, Integer.MIN_VALUE, 0);
-			// 2D View
 			float ovscale = st.booleans[1].getvalue() ? 0 : st.floats[1].getvalue();
 
 			translate(xoff+ov._width*ovscale, yoff+ov._height*ovscale);
 			scale(scale);
-			push();
-			stroke(st.colors[3].getvalue());
-			strokeWeight(st.floats[0].getvalue());
-			for (int x=gridtilesize; x<=getxplanesize(); x+=gridtilesize) {
-				line(x,0,x,getyplanesize());
-			}
-			for (int y=gridtilesize; y<=getyplanesize(); y+=gridtilesize) {
-				line(0,y,getxplanesize(),y);
-			}
-			pop();
 			roomgrid.draw();
 			for (int i=0; i<furnitures.size(); i++) {
 				Furniture f = furnitures.get(i);
@@ -448,8 +447,18 @@ class Roommanager {
 						rect(x*gridtilesize,y*gridtilesize,gridtilesize,gridtilesize);
 					}
 				}
-				if(tool == 2) {
+				if(tool == 3) {
+					int x = floor(getxpos());
+					int y = floor(getypos());
 
+					boolean hit = false;
+					for (Furniture f: furnitures) {
+						if(f.checkover()) {
+							noStroke();
+							fill(255, 255, 255, 100);
+							rect(f.xpos*gridtilesize,f.ypos*gridtilesize,gridtilesize*f._width,gridtilesize*f._height);
+						}
+					}
 				}
 				if(tool == 5) {
 					float fx = getxpos();
@@ -478,12 +487,14 @@ class Roommanager {
 					}
 				}
 			}
+			popMatrix();
 		} else {
 			// 3D View
 		  	pg.beginDraw();
 		  	pg.background(st.colors[0].getvalue());
 		  	PVector lightdir = new PVector(0.3,1,0.3);
 			pg.directionalLight(200, 200, 200, lightdir.x, lightdir.y, lightdir.z);
+			//directionalLight(0, 255, 0, 0, -1, 0);
 			pg.ambientLight(140,140,140);
 
 			//pg.camera(width/2.0, height/2.0, (height/2.0) / tan(PI*30.0 / 180.0), width/2.0, height/2.0, 0, 0, 1, 0);
@@ -521,10 +532,22 @@ class Roommanager {
 						pg.vertex(x*gridtilesize, 0, (y+1)*gridtilesize);
 
 						pg.fill(200);
+
+						GridTile t = roomgrid.gettile(x,y);
+						if(t == null) {
+							break;
+						}
+
 						// Right
 						if(!roomgrid.gettilestate(x+1,y)) {
 							pg.vertex((x+1)*gridtilesize, 0, y*gridtilesize);
 							pg.vertex((x+1)*gridtilesize, 0, (y+1)*gridtilesize);
+							if(t.window[0]) {
+								pg.vertex((x+1)*gridtilesize, hh/3, (y+1)*gridtilesize);
+								pg.vertex((x+1)*gridtilesize, hh/3, y*gridtilesize);
+								pg.vertex((x+1)*gridtilesize, hh/3*2, y*gridtilesize);
+								pg.vertex((x+1)*gridtilesize, hh/3*2, (y+1)*gridtilesize);
+							}
 							pg.vertex((x+1)*gridtilesize, hh, (y+1)*gridtilesize);
 							pg.vertex((x+1)*gridtilesize, hh, y*gridtilesize);
 						}
@@ -532,6 +555,12 @@ class Roommanager {
 						if(!roomgrid.gettilestate(x-1,y)) {
 							pg.vertex(x*gridtilesize, 0, y*gridtilesize);
 							pg.vertex(x*gridtilesize, 0, (y+1)*gridtilesize);
+							if(t.window[1]) {
+								pg.vertex(x*gridtilesize, hh/3, (y+1)*gridtilesize);
+								pg.vertex(x*gridtilesize, hh/3, y*gridtilesize);
+								pg.vertex(x*gridtilesize, hh/3*2, y*gridtilesize);
+								pg.vertex(x*gridtilesize, hh/3*2, (y+1)*gridtilesize);
+							}
 							pg.vertex(x*gridtilesize, hh, (y+1)*gridtilesize);
 							pg.vertex(x*gridtilesize, hh, y*gridtilesize);
 						}
@@ -539,6 +568,12 @@ class Roommanager {
 						if(!roomgrid.gettilestate(x,y+1)) {
 							pg.vertex(x*gridtilesize, 0, (y+1)*gridtilesize);
 							pg.vertex((x+1)*gridtilesize, 0, (y+1)*gridtilesize);
+							if(t.window[2]) {
+								pg.vertex((x+1)*gridtilesize, hh/3, (y+1)*gridtilesize);
+								pg.vertex(x*gridtilesize, hh/3, (y+1)*gridtilesize);
+								pg.vertex(x*gridtilesize, hh/3*2, (y+1)*gridtilesize);
+								pg.vertex((x+1)*gridtilesize, hh/3*2, (y+1)*gridtilesize);
+							}
 							pg.vertex((x+1)*gridtilesize, hh, (y+1)*gridtilesize);
 							pg.vertex(x*gridtilesize, hh, (y+1)*gridtilesize);
 						}
@@ -546,6 +581,12 @@ class Roommanager {
 						if(!roomgrid.gettilestate(x,y-1)) {
 							pg.vertex(x*gridtilesize, 0, y*gridtilesize);
 							pg.vertex((x+1)*gridtilesize, 0, y*gridtilesize);
+							if(t.window[3]) {
+								pg.vertex((x+1)*gridtilesize, hh/3, y*gridtilesize);
+								pg.vertex(x*gridtilesize, hh/3, y*gridtilesize);
+								pg.vertex(x*gridtilesize, hh/3*2, y*gridtilesize);
+								pg.vertex((x+1)*gridtilesize, hh/3*2, y*gridtilesize);
+							}
 							pg.vertex((x+1)*gridtilesize, hh, y*gridtilesize);
 							pg.vertex(x*gridtilesize, hh, y*gridtilesize);
 						}
@@ -553,20 +594,44 @@ class Roommanager {
 					}
 				}
 			}
-			pg.pushStyle();
-			// Axis
-			pg.strokeWeight(5);
-			pg.stroke(150,0,0);
-			pg.line(0,0,0,1000,0,0);
-			pg.stroke(0,150,0);
-			pg.line(0,0,0,0,0,1000);
-			pg.stroke(0,0,150);
-			pg.line(0,0,0,0,1000,0);
-			pg.popStyle();
 
+			// Furnitures
+			for (int i=0; i<furnitures.size(); i++) {
+				Furniture f = furnitures.get(i);
+				int xpos = f.xpos;
+				int ypos = f.ypos;
+				pg.push();
+				pg.translate(xpos*gridtilesize, 0, ypos*gridtilesize);
+
+
+				JSONObject data = dt.getindexdata(f._width, f._height, f.skin);
+				int index = data.getInt("id", -1);
+				if(0 <= index && index < dt.furnitures.length) {
+					if(data.getBoolean("rotate", false)) {
+						pg.rotateY(PI/2);
+						pg.translate(gridtilesize*-f._height, 0, 0);
+						//pg.rotateY(-PI/2);
+						//pg.translate(0, 0, gridtilesize*-f._width);
+					}
+					pg.shape(dt.models[index]);
+				}
+  				pg.pop();
+			}
+
+			if(ov.sidebarid == 3) {
+				pg.pushStyle();
+				// Axis
+				pg.strokeWeight(5);
+				pg.stroke(150,0,0);
+				pg.line(0,0,0,1000,0,0); // X
+				pg.stroke(0,150,0);
+				pg.line(0,0,0,0,0,1000); // Z
+				pg.stroke(0,0,150);
+				pg.line(0,0,0,0,1000,0); // Y
+				pg.popStyle();
+			}
 		  	pg.endDraw();
 			image(pg,0,0);
 		}
-		pop();
 	}
 }
