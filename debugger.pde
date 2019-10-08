@@ -1,5 +1,5 @@
 class Debugger {
-	DebuggerItem[] items;
+	private final DebuggerItem[] items;
 
 	Debugger() {
 		items = new DebuggerItem[13];
@@ -17,8 +17,6 @@ class Debugger {
 		items[11] = new DebuggerItem("Newfurnitureheight") {@ Override public String getvalue() {return str(rm.newfurnitureheight);}};
 		items[12] = new DebuggerItem("Newroomtilegroup") {@ Override public String getvalue() {return str(rm.newroomtilegroup);}};
 	}
-
-
 }
 abstract class DebuggerItem{
 	String name;

@@ -1,20 +1,43 @@
-static class LG {
+class LanguageManager {
 	private int langid = 0;
-	//String[] values;
+	private JSONObject data;
 
-	static {
-		println("Static executed");	
+	LanguageManager(String newlang) {
+		setlang(newlang);
 	}
 
-	void setlang(int newid) {
-		langid = newid;
+	void setlang(int newlangid) {
+		langid = newlangid;
+		String name;
+		if(langid == 1) {
+			name = "german";
+		} else  {
+			name = "english";
+		}
+		File f = new File(sketchPath("assets/lang/" + name + ".json"));
+		if (f.exists()) {
+			data = loadJSONObject("assets/lang/" + name + ".json");
+		}
+	}
+	boolean setlang(String newlang) {
+		switch(newlang.toLowerCase()) {
+			case "english":
+			setlang(0);
+			return true;
+			case "german":
+			setlang(1);
+			return true;
+			default:
+			setlang(0);
+			return false;
+		}
 	}
 	int getlang() {
 		return langid;
 	}
 
-	static String get(int id) {
-		return "Text";
+	String get(String key) {
+		return data.getString(key, "Not Found");
 	}
 
 }
