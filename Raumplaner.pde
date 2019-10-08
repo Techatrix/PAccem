@@ -1,46 +1,45 @@
 Settings st;
 Roommanager rm;
 Overlay ov;
-ImageManager im;
+DataManager dt;
+LanguageManager lg;
 Debugger db;
 
 PGraphics pg;
 PFont font;
 
-
 void settings() {
-	im = new ImageManager();
 	st = new Settings();
 
 	if(st.booleans[2].getvalue()) {
-		fullScreen(P2D);
+		fullScreen(highbit ? P2D : JAVA2D);
 	} else {
 		int sw = st.ints[0].getvalue();
 		int sh = st.ints[1].getvalue();
-		size((sw < 600 ? 600 : sw),(sh < 600 ? 600 : sh), P2D); // MIN: 500 x 500
+		size(max(sw, 600),max(sh,600), highbit ? P2D : JAVA2D); // MIN: 500 x 500
+	}
+	if(highbit) {
+		PJOGL.setIcon("assets/icon/0.png");
 	}
 	smooth(4);
 }
 void setup() {
+	lg = new LanguageManager(st.strings[1].getvalue());
 	rm = new Roommanager();
 	db = new Debugger();
 	ov = new Overlay();
 
-    // 3D Plane
-	pg = createGraphics(width,height, P3D);
-	pg.smooth(4);
-	/*
-	for (String newfont : robotofontnames) {
-		println("SetFont: " + newfont);
-		setfont(newfont);
+	if(highbit) {
+		pg = createGraphics(width,height, P3D);
+		pg.smooth(4);
+		dt = new DataManager();
+	} else {
+  		surface.setIcon(dt.icons[0]);
 	}
-	*/
+
 	setfont(st.strings[2].getvalue());
+	textSize(16/((st.floats[1].getvalue()+1)/2));
 
-
-
-	//noLoop();
-	//redraw();
   	//surface.setResizable(true);
   	//surface.setLocation(100, 100);
   	//link("https://www.google.com/");
@@ -78,7 +77,6 @@ void keyPressed() {
 }
 
 void draw() {
-	background(0);
 	int sw = st.ints[0].getvalue();
 	int sh = st.ints[1].getvalue();
 	if(width != sw || height != sh) {
