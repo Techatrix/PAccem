@@ -48,13 +48,13 @@ class Overlay {
 		float scale = st.floats[1].getvalue();
 		// Tool-bar
 		ListItem[] toolbarbuttons = new ListItem[6];
-		toolbarbuttons[0] = new ListItem("0", true) {@ Override public void action() {rm.tool = 0;}};
-		toolbarbuttons[1] = new ListItem("1", true) {@ Override public void action() {rm.tool = 1;}};
-		toolbarbuttons[2] = new ListItem("2", true) {@ Override public void action() {
+		toolbarbuttons[0] = new ListItem("1", true) {@ Override public void action() {rm.tool = 0;}};
+		toolbarbuttons[1] = new ListItem("2", true) {@ Override public void action() {rm.tool = 1;}};
+		toolbarbuttons[2] = new ListItem("3", true) {@ Override public void action() {
 			rm.tool = 2;
 				ListItem[] listitems = new ListItem[2];
-				listitems[0] = new ListItem("New Width", true, 2, true) {@ Override public void action() {}};
-				listitems[1] = new ListItem("New height",true, 2, true) {@ Override public void action() {}};
+				listitems[0] = new ListItem(lg.get("newwidth"), true, 2, true) {@ Override public void action() {}};
+				listitems[1] = new ListItem(lg.get("newheight"),true, 2, true) {@ Override public void action() {}};
 
 				popup = new Popup(250,150, listitems) {
 					@ Override public void ontrue() {
@@ -63,27 +63,27 @@ class Overlay {
 					}
 					@ Override public void onfalse() {}
 				};
-				popup.values[0].bv.value = "1";
-				popup.values[0].bv.newvalue = "1";
-				popup.values[1].bv.value = "1";
-				popup.values[1].bv.newvalue = "1";
-				popup.text = "Select Size";
-				popup.truetext = "Confirm";
-				popup.falsetext = "Cancel";
+				popup.values[0].bv.value = str(rm.newfurniturewidth);
+				popup.values[0].bv.newvalue = str(rm.newfurniturewidth);
+				popup.values[1].bv.value = str(rm.newfurnitureheight);
+				popup.values[1].bv.newvalue = str(rm.newfurnitureheight);
+				popup.text = lg.get("selectsize");
+				popup.truetext = lg.get("confirm");
+				popup.falsetext = lg.get("cancel");
 		}};
-		toolbarbuttons[3] = new ListItem("3", true) {@ Override public void action() {rm.tool = 3;}};
-		toolbarbuttons[4] = new ListItem("4", true) {@ Override public void action() {rm.tool = 4;}};
-		toolbarbuttons[5] = new ListItem("5", true) {@ Override public void action() {rm.tool = 5;}};
+		toolbarbuttons[3] = new ListItem("4", true) {@ Override public void action() {rm.tool = 3;}};
+		toolbarbuttons[4] = new ListItem("5", true) {@ Override public void action() {rm.tool = 4;}};
+		toolbarbuttons[5] = new ListItem("6", true) {@ Override public void action() {rm.tool = 5;}};
 		toolbar = new ButtonList(0, _height, 50, ceil(height/scale)-_height, false, 50, 0, toolbarbuttons);
 
 		// Tab-bar
 		ListItem[] tabbarbuttons = new ListItem[9];
 
-		tabbarbuttons[0] = new ListItem("New Room") {
+		tabbarbuttons[0] = new ListItem(lg.get("newroom")) {
 			@ Override public void action() {
 				ListItem[] listitems = new ListItem[2];
-				listitems[0] = new ListItem("New Width", true, 2, true) {@ Override public void action() {}};
-				listitems[1] = new ListItem("New height",true, 2, true) {@ Override public void action() {}};
+				listitems[0] = new ListItem(lg.get("newwidth"), true, 2, true) {@ Override public void action() {}};
+				listitems[1] = new ListItem(lg.get("newheight"),true, 2, true) {@ Override public void action() {}};
 				popup = new Popup(250,150, listitems) {
 					@ Override public void ontrue() {
 						int newxgridsize = int(values[0].bv.value);
@@ -97,30 +97,33 @@ class Overlay {
 					}
 					@ Override public void onfalse() {}
 				};
-				popup.text = "Create New Room";
-				popup.truetext = "Confirm";
-				popup.falsetext = "Cancel";
+				popup.text = lg.get("createnewroom");
+				popup.truetext = lg.get("confirm");
+				popup.falsetext = lg.get("cancel");
 			}
 		};
-		tabbarbuttons[1] = new ListItem("ViewMode 2D") {@ Override public void action() {
-			rm.switchviewmode(); name = rm.viewmode ? "ViewMode 3D" : "ViewMode 2D";
+		tabbarbuttons[1] = new ListItem(lg.get("viewmode") + " 2D") {@ Override public void action() {
+			if(highbit) {
+				rm.switchviewmode();
+				name = rm.viewmode ? (lg.get("viewmode") + " 3D") : (lg.get("viewmode") + " 2D");
+			}
 		}};
-		tabbarbuttons[2] = new ListItem("Load File") {@ Override public void action() {ov.sidebarid = ov.sidebarid == 0 ? -1 : 0;}};
-		tabbarbuttons[3] = new ListItem("Save File") {@ Override public void action() {ov.sidebarid = ov.sidebarid == 1 ? -1 : 1;}};
-		tabbarbuttons[4] = new ListItem("Settings") {@ Override public void action() {ov.sidebarid = ov.sidebarid == 2 ? -1 : 2;}};
-		tabbarbuttons[5] = new ListItem("Debug") {@ Override public void action() {ov.sidebarid = ov.sidebarid == 3 ? -1 : 3;}};
-		tabbarbuttons[6] = new ListItem("Room Groups") {@ Override public void action() {ov.sidebarid = ov.sidebarid == 4 ? -1 : 4;}};
-		tabbarbuttons[7] = new ListItem("About") {@ Override public void action() {
-			popup = new Popup(width/6,height/3) {
+		tabbarbuttons[2] = new ListItem(lg.get("loadroom")) {@ Override public void action() {ov.sidebarid = ov.sidebarid == 0 ? -1 : 0;}};
+		tabbarbuttons[3] = new ListItem(lg.get("saveroom")) {@ Override public void action() {ov.sidebarid = ov.sidebarid == 1 ? -1 : 1;}};
+		tabbarbuttons[4] = new ListItem(lg.get("settings")) {@ Override public void action() {ov.sidebarid = ov.sidebarid == 2 ? -1 : 2;}};
+		tabbarbuttons[5] = new ListItem(lg.get("debug")) {@ Override public void action() {ov.sidebarid = ov.sidebarid == 3 ? -1 : 3;}};
+		tabbarbuttons[6] = new ListItem(lg.get("roomgroups")) {@ Override public void action() {ov.sidebarid = ov.sidebarid == 4 ? -1 : 4;}};
+		tabbarbuttons[7] = new ListItem(lg.get("about")) {@ Override public void action() {
+			popup = new Popup(width/4,height/3) {
 				@ Override public void ontrue() {}
 				@ Override public void onfalse() {}
 			};
-			popup.text = getabout();
+			popup.text = getabout();	
 			popup.single = true;
-			popup.truetext = "ok";
+			popup.truetext = lg.get("ok");
 
 		}};
-		tabbarbuttons[8] = new ListItem("Reset") {
+		tabbarbuttons[8] = new ListItem(lg.get("reset")) {
 			@ Override public void action() {
 				popup = new Popup(250,150) {
 					@ Override public void ontrue() {rm.reset();ov.refresh();}
@@ -154,8 +157,8 @@ class Overlay {
 
 		// Save-buttons
 		ListItem[] savebuttons = new ListItem[2];
-		savebuttons[0] = new ListItem("Name", true, 3, -99) {@ Override public void action() {}};
-		savebuttons[1] = new ListItem("Save") {@ Override public void action() {
+		savebuttons[0] = new ListItem(lg.get("name"), true, 3, -99) {@ Override public void action() {}};
+		savebuttons[1] = new ListItem(lg.get("save")) {@ Override public void action() {
 
 			if(rm.name == st.strings[0].getvalue()) {
 				popup = new Popup(250, 150) {
@@ -164,7 +167,7 @@ class Overlay {
 					}
 					@ Override public void onfalse() {}
 				};
-				popup.text = "Overwrite default Room?";
+				popup.text = lg.get("overwritedefaultroom");
 			} else {
 				save();
 			}
@@ -172,11 +175,11 @@ class Overlay {
 
 		// Room-Groups
 		ListItem[] roomgroupsbuttons = new ListItem[5];
-		roomgroupsbuttons[0] = new ListItem("Group 1", true, 0, -1) {@ Override public void action() {}};
-		roomgroupsbuttons[1] = new ListItem("Group 2", true, 0, -2) {@ Override public void action() {}};
-		roomgroupsbuttons[2] = new ListItem("Group 3", true, 0, -3) {@ Override public void action() {}};
-		roomgroupsbuttons[3] = new ListItem("Group 4", true, 0, -4) {@ Override public void action() {}};
-		roomgroupsbuttons[4] = new ListItem("Group 5", true, 0, -5) {@ Override public void action() {}};
+		roomgroupsbuttons[0] = new ListItem(lg.get("group") + " 1", true, 0, -1) {@ Override public void action() {}};
+		roomgroupsbuttons[1] = new ListItem(lg.get("group") + " 2", true, 0, -2) {@ Override public void action() {}};
+		roomgroupsbuttons[2] = new ListItem(lg.get("group") + " 3", true, 0, -3) {@ Override public void action() {}};
+		roomgroupsbuttons[3] = new ListItem(lg.get("group") + " 4", true, 0, -4) {@ Override public void action() {}};
+		roomgroupsbuttons[4] = new ListItem(lg.get("group") + " 5", true, 0, -5) {@ Override public void action() {}};
 		float scale = st.floats[1].getvalue();
 
 		// Side-Bars
@@ -339,7 +342,7 @@ class ButtonList extends PWH{
 			x++;
 		}
 		lastlistitems = new ListItem[1];
-		lastlistitems[0] = new ListItem("Save") {@ Override public void action() {st.save();println("Step 1");}};
+		lastlistitems[0] = new ListItem(lg.get("save")) {@ Override public void action() {st.save();}};
 	}
 	void newdebugger(Debugger debugger) {
 		listitems = new ListItem[debugger.items.length];
@@ -475,7 +478,7 @@ abstract class ListItem {
 				fill(0, 50);
 				rect(xpos,ypos,_width, _height);
 			}
-			image(im.images[int(name)], xpos, ypos, _width, _height);
+			image(dt.icons[int(name)], xpos, ypos, _width, _height);
 		}
 	}
 	abstract void action();
@@ -615,6 +618,10 @@ class ButtonValue{
 						if(index == 2) {
 							setfont(st.strings[2].getvalue());
 						}
+						if(index == 1) {
+							lg.setlang(st.strings[1].getvalue());
+							ov.refresh();
+						}
 					break;
 					case 4:
 					// 4 = boolean
@@ -628,8 +635,8 @@ class ButtonValue{
 								@ Override public void ontrue() {}
 								@ Override public void onfalse() {}
 							};
-							ov.popup.text = "Restart Application to see the Effect";
-							ov.popup.truetext = "ok";
+							ov.popup.text = lg.get("ratste");
+							ov.popup.truetext = lg.get("ok");
 							ov.popup.single = true;
 						}
 					break;
@@ -725,11 +732,6 @@ class ButtonValue{
 			break;
 			case 2:
 			// 2 = int
-				if(index == 0 || index == 1) {
-					if(int(newvalue) < 600) {
-						return false;
-					}
-				}
 				return true;
 			case 3:
 			// 3 = string
@@ -747,9 +749,9 @@ class ButtonValue{
 
 abstract class Popup extends PWH {
 	boolean visible;
-	String text = "Are you Sure?";
-	String truetext = "Yes";
-	String falsetext = "No";
+	String text = lg.get("areyousure");
+	String truetext = lg.get("yes");
+	String falsetext = lg.get("no");
 	ListItem[] values = new ListItem[0];
 	boolean single = false;
 

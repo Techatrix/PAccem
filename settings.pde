@@ -20,7 +20,7 @@ class Settings {
 		floats[0] = new SettingFloatValue("gridlineweight", 1);
 		floats[1] = new SettingFloatValue("overlayscale", 1, 0.7, 1.5);
 
-		ints[0] = new SettingIntValue("width", 1200, 600, displayWidth);
+		ints[0] = new SettingIntValue("width", 1200, 800, displayWidth);
 		ints[1] = new SettingIntValue("height", 800, 600, displayHeight);
 
 		strings[0] = new SettingStringValue("defaultroomname", "new Room");
@@ -28,13 +28,12 @@ class Settings {
 		strings[2] = new SettingStringValue("font", "Roboto");
 
 		booleans[0] = new SettingBooleanValue("darkmode", false);
-		//booleans[1] = new SettingBooleanValue("no blur", false);
 		booleans[1] = new SettingBooleanValue("hide overlay", false);
 		booleans[2] = new SettingBooleanValue("fullscreen", false);
 
 		load();
 	}
-
+	
 	int getsize() {
 		return colors.length + floats.length + ints.length + strings.length + booleans.length;
 	}
@@ -153,9 +152,7 @@ class SettingFloatValue {
 		_valuedefault = newdefaultvalue;
 	}
 	SettingFloatValue(String newname, float newdefaultvalue, float minvalue, float maxvalue) {
-		name = newname;
-		_value = newdefaultvalue;
-		_valuedefault = newdefaultvalue;
+		this(newname, newdefaultvalue);
 		min = minvalue;
 		max = maxvalue;
 	}
@@ -184,9 +181,7 @@ class SettingIntValue {
 		_valuedefault = newdefaultvalue;
 	}
 	SettingIntValue(String newname, int newdefaultvalue, int minvalue, int maxvalue) {
-		name = newname;
-		_value = newdefaultvalue;
-		_valuedefault = newdefaultvalue;
+		this(newname, newdefaultvalue);
 		min = minvalue;
 		max = maxvalue;
 	}

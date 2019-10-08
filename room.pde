@@ -1,5 +1,5 @@
 class Grid {
-	GridTile[][] tiles;
+	private GridTile[][] tiles;
 	color[] roomgroups = new color[5];
 
 	Grid(int xsize, int ysize) {
@@ -19,6 +19,14 @@ class Grid {
 	}
 	
 	void draw() {
+		stroke(st.colors[3].getvalue());
+		strokeWeight(st.floats[0].getvalue());
+		for (int x=rm.gridtilesize; x<=rm.getxplanesize(); x+=rm.gridtilesize) {
+			line(x,0,x,rm.getyplanesize());
+		}
+		for (int y=rm.gridtilesize; y<=rm.getyplanesize(); y+=rm.gridtilesize) {
+			line(0,y,rm.getxplanesize(),y);
+		}
 		strokeCap(PROJECT);
 		for (int x=0; x<tiles.length; x++) {
 			for (int y=0; y<tiles[0].length; y++) {
@@ -98,11 +106,15 @@ class Grid {
 		return false;
 	}
 	boolean gettilestate(int x, int y) {
+		/*
 		if(isingrid(x,y)) {
 			return tiles[x][y].state;
 		}
 		return false;
+		*/
+		return gettile(x,y).state;
 	}
+
 	boolean settile(GridTile value, int x, int y) {
 		if(isingrid(x,y)) {
 			tiles[x][y] = value;

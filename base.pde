@@ -1,8 +1,3 @@
-final String appname = "PAccem"; // Raumplaner 2020, Roccem, PAccem
-final String appversion = "0.5.3";
-final String appmaker = "Techatrix";
-final boolean lowbit = false; // true if 32bit
-
 void setfont(String newfontname) {
 	newfontname = newfontname.toLowerCase();
 	boolean isroboto = false;
@@ -48,9 +43,11 @@ void setfont(String newfontname) {
 			newfont += "-Regular";
 		}
 		newfont += ".ttf";
-		font = createFont(newfont, 16/((st.floats[1].getvalue()+1)/2));
+		font = createFont(newfont, 16/((st.floats[1].getvalue()+1)/2), true);
 		textFont(font);
-		pg.textFont(font);
+		if(highbit) {
+			pg.textFont(font);
+		}
 	} else {
 		setfontrawinput = newfontname;
 		thread("setfontraw");
@@ -68,38 +65,22 @@ void setfontraw() {
 		}
 	}
 	if(hit) {
-		font = createFont(setfontrawinput, 16/((st.floats[1].getvalue()+1)/2));
+		font = createFont(setfontrawinput, 16/((st.floats[1].getvalue()+1)/2), true);
 	} else {
-		font = createFont("assets/font/Roboto-Regular.ttf", 16/((st.floats[1].getvalue()+1)/2));
+		font = createFont("assets/font/Roboto-Regular.ttf", 16/((st.floats[1].getvalue()+1)/2), true);
 	}
 	textFont(font);
-	pg.textFont(font);
+	if(highbit) {
+		pg.textFont(font);
+	}
 }
 
 String getabout() {
 	String text = appname + "\n";
-	text += "Version: " + appversion + "\n";
-	text += "Made with: " + "Processing" + "\n";
-	text += "Made by: " + appmaker + "\n";
-	//text += "\n";
-	//text += "Help";
+	text += lg.get("version") + ": " + appversion + "\n";
+	text += lg.get("programmedwith") + ": " + "Processing" + "\n";
+	text += lg.get("madeby") + ": " + appmaker + "\n";
 	return text;
-}
-
-// Point => Xposition and Yposition
-class Point {
-	int xpos=0;
-	int ypos=0;
-}
-// Point and Rotation
-class RPoint extends Point {
-	float rot=0;
-}
-
-// Point Width and Height
-class PWH extends Point {
-	int _width=0;
-	int _height=0;
 }
 
 void settitle(String name) {
@@ -110,7 +91,6 @@ boolean checkraw(int xpos, int ypos, int _width, int _height) {
 	if (mouseX >= xpos*scale && mouseX <= (xpos+_width)*scale && 
 	    mouseY >= ypos*scale && mouseY <= (ypos+_height)*scale) {
 	  	return true;
-	} else {
-	  	return false;
 	}
+	return false;
 }
