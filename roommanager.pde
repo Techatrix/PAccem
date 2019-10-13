@@ -4,17 +4,14 @@ class Roommanager {
 	int selectionid;
 	String name;
 
-	float xoff = 0;
-	float yoff = 0;
-	float scale = 1;
+	float xoff, yoff, scale, angle1, angle2;
 
-	int xgridsize;
-	int ygridsize;
-	int gridtilesize;
+	int xgridsize, ygridsize, gridtilesize;
 
 	int tool = 0;
 
 	boolean viewmode = false; // true = 3D , false = 2D
+	boolean setup = false;
 
 	ArrayList<int[]> dragtiles = new ArrayList<int[]>();
 	boolean dragstate;
@@ -25,13 +22,10 @@ class Roommanager {
 	int newroomtilegroup = 0;
 
 	Roommanager() {
-		name = st.strings[0].getvalue();
-		load(name);
-		settitle(name);
+		load(st.strings[0].getvalue());
 	}
 	Roommanager(String loadname) {
-		name = loadname;
-		load(name);
+		load(loadname);
 	}
 
 	void mouseWheel(MouseEvent e) {
@@ -44,9 +38,12 @@ class Roommanager {
 			}
 			xoff = (xoff-mouseX) * delta + mouseX;
 			yoff = (yoff-mouseY) * delta + mouseY;
+			scale *= delta;
+			scale = constrain(scale, 0.25,5);
+		} else {
+			scale += (delta-1)/2;
+			scale = constrain(scale, 0.01,2.5);
 		}
-		scale *= delta;
-		scale = constrain(scale, 0.25,5);
 	}
 	void mouseDragged() {
 		if(!viewmode) {
@@ -73,9 +70,9 @@ class Roommanager {
 				}
 			}
 		} else {
-			if(mouseButton == CENTER) {
-				xoff -= mouseX - pmouseX;
-				xoff = xoff % width;
+			if(mouseButton == CENTER || mouseButton == RIGHT) {
+				angle2 -= map(mouseY - pmouseY, 0, height, 0, PI);
+				angle1 += map(mouseX - pmouseX, 0, width, 0, TWO_PI);
 			}
 		}
 	}
@@ -115,7 +112,7 @@ class Roommanager {
 			if(tool == 3) {
 				boolean found = false;
 				for (int i=0; i<furnitures.size(); i++) {
-					if(found == false) {
+					if(!found) {
 						if(furnitures.get(i).checkover()) {
 							selectionid = i;
 							found = true;
@@ -155,9 +152,17 @@ class Roommanager {
 					}
 				}
 			}
+			if(tool == 6) {
+				for (int i=0; i<furnitures.size(); i++) {
+					if(furnitures.get(i).checkover()) {
+						furnitures.get(i).rot += PI/2;
+					}
+				}
+			}
 		}
 	}
 	void keyPressed() {
+	  setKey(keyCode, true);
 		if(!viewmode) {
 			if(key == 127) {
 				for (int i=0; i<furnitures.size(); i++) {
@@ -222,6 +227,12 @@ class Roommanager {
 			}
 		}
 	}
+	 
+	void keyReleased() {
+	  setKey(keyCode, false);
+	}
+
+
 	int getxplanesize() {
 		return xgridsize * gridtilesize;
 	}
@@ -273,7 +284,6 @@ class Roommanager {
   		json.setInt("xgridsize", xgridsize);
   		json.setInt("ygridsize", ygridsize);
   		json.setInt("gridtilesize", gridtilesize);
-  		json.setBoolean("viewmode", viewmode);
   		for (int i=0;i<5;i++ ) {
   			color c = roomgrid.roomgroups[i];
 	  		json.setFloat("roomgroupcolor" + str(i) + "red", red(c));
@@ -341,7 +351,6 @@ class Roommanager {
   			xgridsize = json.getInt("xgridsize");
   			ygridsize = json.getInt("ygridsize");
   			gridtilesize = json.getInt("gridtilesize");
-  			viewmode = json.getBoolean("viewmode");
 
 			roomgrid = new Grid(xgridsize, ygridsize);
   			for (int i=0;i<5;i++ ) {
@@ -402,6 +411,8 @@ class Roommanager {
 	}
 
 	void reset() {
+		reset3dcam();
+		viewmode = false;
 		xoff = 0;
 		yoff = 0;
 		scale = 1;
@@ -412,38 +423,44 @@ class Roommanager {
 		st.load();
   		surface.setTitle(appname + ": " + name);
 	}
-
 	void switchviewmode() {
 		xoff = 0;
 		yoff = 0;
 		scale = 1;
 		tool = 0;
 		viewmode = !viewmode;
+		if(viewmode && !setup) {
+			reset3dcam();
+			setup = true;
+		}
+	}
+	void reset3dcam() {
+		scale = 0.4;
+		angle1 = PI*5/4;
+		angle2 = -2;
+		xoff = 0;
+		yoff = 0;
 	}
 
+
 	void draw() {
-		background(st.colors[0].getvalue());
+		background(c[8]);
+		push();
 		if(!viewmode) {
-			// 2D View
-			pushMatrix();
 			xoff = constrain(xoff, Integer.MIN_VALUE, 0);
 			yoff = constrain(yoff, Integer.MIN_VALUE, 0);
+			// 2D View
 			float ovscale = st.booleans[1].getvalue() ? 0 : st.floats[1].getvalue();
 
 			translate(xoff+ov._width*ovscale, yoff+ov._height*ovscale);
 			scale(scale);
-			roomgrid.draw();
-			for (int i=0; i<furnitures.size(); i++) {
-				Furniture f = furnitures.get(i);
-				f.draw(selectionid == i);
-			}
 			if(!ov.ishit()) {
 				if(tool == 1 || tool == 2) {
 					int x = floor(getxpos());
 					int y = floor(getypos());
 					if(roomgrid.isingrid(x,y)) {
 						noStroke();
-						fill(255, 255, 255, 50);
+						fill(c[0], 50);
 						rect(x*gridtilesize,y*gridtilesize,gridtilesize,gridtilesize);
 					}
 				}
@@ -455,7 +472,7 @@ class Roommanager {
 					for (Furniture f: furnitures) {
 						if(f.checkover()) {
 							noStroke();
-							fill(255, 255, 255, 100);
+							fill(c[8], 100);
 							rect(f.xpos*gridtilesize,f.ypos*gridtilesize,gridtilesize*f._width,gridtilesize*f._height);
 						}
 					}
@@ -467,7 +484,6 @@ class Roommanager {
 					int iy = floor(fy);
 					if(roomgrid.gettilestate(ix,iy)) {
 						stroke(0, 200, 255);
-						fill(0, 200, 255, 150);
 						// Right
 						if(fx % 1 > 0.8 && !roomgrid.gettilestate(ix+1,iy)) {
 							line((ix+1)*rm.gridtilesize,iy*rm.gridtilesize,(ix+1)*rm.gridtilesize,(iy+1)*rm.gridtilesize);
@@ -487,137 +503,43 @@ class Roommanager {
 					}
 				}
 			}
-			popMatrix();
 		} else {
+			if(isKeyUp) {
+				xoff -= sin(-angle1+PI/2)*4;
+				yoff -= cos(-angle1+PI/2)*4;
+			}
+			if(isKeyDown) {
+				xoff += sin(-angle1+PI/2)*4;
+				yoff += cos(-angle1+PI/2)*4;
+			}
+			if(isKeyLeft) {
+				xoff += sin(-angle1)*4;
+				yoff += cos(-angle1)*4;
+			}
+			if(isKeyRight) {
+				xoff -= sin(-angle1)*4;
+				yoff -= cos(-angle1)*4;
+			}
 			// 3D View
+			xoff = constrain(xoff, 0, Integer.MAX_VALUE);
+			yoff = constrain(yoff, 0, Integer.MAX_VALUE);
+			angle2 = constrain(angle2, -PI+0.1, 0);
 		  	pg.beginDraw();
-		  	pg.background(st.colors[0].getvalue());
-		  	PVector lightdir = new PVector(0.3,1,0.3);
-			pg.directionalLight(200, 200, 200, lightdir.x, lightdir.y, lightdir.z);
-			//directionalLight(0, 255, 0, 0, -1, 0);
+			pg.background(st.booleans[0].getvalue() ? 0 : 240);
+			pg.directionalLight(200, 200, 200, 0.3, 1, 0.3);
 			pg.ambientLight(140,140,140);
 
-			//pg.camera(width/2.0, height/2.0, (height/2.0) / tan(PI*30.0 / 180.0), width/2.0, height/2.0, 0, 0, 1, 0);
-			
-			float a = map(xoff, 0, width, 0, TWO_PI);
-			float centerx = roomgrid.tiles.length*gridtilesize/2;
-			float centerz = roomgrid.tiles[0].length*gridtilesize/2;
-			float r = max(centerx, centerz)*2;
+			pg.perspective(60*PI/180, width/height, 1, 10000);
+
+			// Camera
+			float centerx = sin(angle2) * cos(angle1);
+			float centery = cos(angle2);
+			float centerz = sin(angle2) * sin(angle1);
+
+			pg.camera(xoff,-height/2*scale,yoff, xoff+centerx,-height/2*scale-centery,yoff+centerz, 0, 1, 0);
 
 
-			float xx = sin(a)*r+centerx;
-			float zz = cos(a)*r+centerz;
-			float hh = -gridtilesize;
-
-
-			pg.camera(xx, height/2-map(scale, 0, 5, 0, height/2), zz, centerx, height/2, centerz, 0, 1, 0);
-			pg.translate(0, height/2, 0);
-			//pg.scale(scale);
-			stroke(100);
-			strokeWeight(1);
-			//pg.line(0,0,0, lightdir.x*100, lightdir.y*100, lightdir.z*100);
-			//pg.noStroke();
-
-			for (int x=0; x<roomgrid.tiles.length; x++) {
-				for (int y=0; y<roomgrid.tiles.length; y++) {
-					if(roomgrid.gettilestate(x,y)) {
-						pg.fill(255);
-						stroke(100);
-						strokeWeight(1);
-
-						pg.beginShape(QUADS);
-						pg.vertex(x*gridtilesize, 0, y*gridtilesize);
-						pg.vertex((x+1)*gridtilesize, 0, y*gridtilesize);
-						pg.vertex((x+1)*gridtilesize, 0, (y+1)*gridtilesize);
-						pg.vertex(x*gridtilesize, 0, (y+1)*gridtilesize);
-
-						pg.fill(200);
-
-						GridTile t = roomgrid.gettile(x,y);
-						if(t == null) {
-							break;
-						}
-
-						// Right
-						if(!roomgrid.gettilestate(x+1,y)) {
-							pg.vertex((x+1)*gridtilesize, 0, y*gridtilesize);
-							pg.vertex((x+1)*gridtilesize, 0, (y+1)*gridtilesize);
-							if(t.window[0]) {
-								pg.vertex((x+1)*gridtilesize, hh/3, (y+1)*gridtilesize);
-								pg.vertex((x+1)*gridtilesize, hh/3, y*gridtilesize);
-								pg.vertex((x+1)*gridtilesize, hh/3*2, y*gridtilesize);
-								pg.vertex((x+1)*gridtilesize, hh/3*2, (y+1)*gridtilesize);
-							}
-							pg.vertex((x+1)*gridtilesize, hh, (y+1)*gridtilesize);
-							pg.vertex((x+1)*gridtilesize, hh, y*gridtilesize);
-						}
-						// Left
-						if(!roomgrid.gettilestate(x-1,y)) {
-							pg.vertex(x*gridtilesize, 0, y*gridtilesize);
-							pg.vertex(x*gridtilesize, 0, (y+1)*gridtilesize);
-							if(t.window[1]) {
-								pg.vertex(x*gridtilesize, hh/3, (y+1)*gridtilesize);
-								pg.vertex(x*gridtilesize, hh/3, y*gridtilesize);
-								pg.vertex(x*gridtilesize, hh/3*2, y*gridtilesize);
-								pg.vertex(x*gridtilesize, hh/3*2, (y+1)*gridtilesize);
-							}
-							pg.vertex(x*gridtilesize, hh, (y+1)*gridtilesize);
-							pg.vertex(x*gridtilesize, hh, y*gridtilesize);
-						}
-						// Bottom
-						if(!roomgrid.gettilestate(x,y+1)) {
-							pg.vertex(x*gridtilesize, 0, (y+1)*gridtilesize);
-							pg.vertex((x+1)*gridtilesize, 0, (y+1)*gridtilesize);
-							if(t.window[2]) {
-								pg.vertex((x+1)*gridtilesize, hh/3, (y+1)*gridtilesize);
-								pg.vertex(x*gridtilesize, hh/3, (y+1)*gridtilesize);
-								pg.vertex(x*gridtilesize, hh/3*2, (y+1)*gridtilesize);
-								pg.vertex((x+1)*gridtilesize, hh/3*2, (y+1)*gridtilesize);
-							}
-							pg.vertex((x+1)*gridtilesize, hh, (y+1)*gridtilesize);
-							pg.vertex(x*gridtilesize, hh, (y+1)*gridtilesize);
-						}
-						// Top
-						if(!roomgrid.gettilestate(x,y-1)) {
-							pg.vertex(x*gridtilesize, 0, y*gridtilesize);
-							pg.vertex((x+1)*gridtilesize, 0, y*gridtilesize);
-							if(t.window[3]) {
-								pg.vertex((x+1)*gridtilesize, hh/3, y*gridtilesize);
-								pg.vertex(x*gridtilesize, hh/3, y*gridtilesize);
-								pg.vertex(x*gridtilesize, hh/3*2, y*gridtilesize);
-								pg.vertex((x+1)*gridtilesize, hh/3*2, y*gridtilesize);
-							}
-							pg.vertex((x+1)*gridtilesize, hh, y*gridtilesize);
-							pg.vertex(x*gridtilesize, hh, y*gridtilesize);
-						}
-						pg.endShape();
-					}
-				}
-			}
-
-			// Furnitures
-			for (int i=0; i<furnitures.size(); i++) {
-				Furniture f = furnitures.get(i);
-				int xpos = f.xpos;
-				int ypos = f.ypos;
-				pg.push();
-				pg.translate(xpos*gridtilesize, 0, ypos*gridtilesize);
-
-
-				JSONObject data = dt.getindexdata(f._width, f._height, f.skin);
-				int index = data.getInt("id", -1);
-				if(0 <= index && index < dt.furnitures.length) {
-					if(data.getBoolean("rotate", false)) {
-						pg.rotateY(PI/2);
-						pg.translate(gridtilesize*-f._height, 0, 0);
-						//pg.rotateY(-PI/2);
-						//pg.translate(0, 0, gridtilesize*-f._width);
-					}
-					pg.shape(dt.models[index]);
-				}
-  				pg.pop();
-			}
-
+			// Debug
 			if(ov.sidebarid == 3) {
 				pg.pushStyle();
 				// Axis
@@ -630,8 +552,20 @@ class Roommanager {
 				pg.line(0,0,0,0,1000,0); // Y
 				pg.popStyle();
 			}
-		  	pg.endDraw();
+		}
+		// Roomgrid
+		roomgrid.draw(viewmode);
+
+		// Furnitures
+		for (int i=0; i<furnitures.size(); i++) {
+			Furniture f = furnitures.get(i);
+			f.draw(viewmode, selectionid == i);
+		}
+		// Draw 3D Graphics
+		if(viewmode) {
+			pg.endDraw();
 			image(pg,0,0);
 		}
+		pop();
 	}
 }
