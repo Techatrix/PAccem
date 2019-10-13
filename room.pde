@@ -18,61 +18,130 @@ class Grid {
 		}
 	}
 	
-	void draw() {
-		stroke(st.colors[3].getvalue());
-		strokeWeight(st.floats[0].getvalue());
-		for (int x=rm.gridtilesize; x<=rm.getxplanesize(); x+=rm.gridtilesize) {
-			line(x,0,x,rm.getyplanesize());
-		}
-		for (int y=rm.gridtilesize; y<=rm.getyplanesize(); y+=rm.gridtilesize) {
-			line(0,y,rm.getxplanesize(),y);
+	void draw(boolean viewmode) {
+		int gts = rm.gridtilesize;
+		if(!viewmode) {
+			stroke(c[1]);
+			strokeWeight(st.floats[0].getvalue());
+			for (int x=gts; x<=rm.getxplanesize(); x+=gts) {
+				line(x,0,x,rm.getyplanesize());
+			}
+			for (int y=gts; y<=rm.getyplanesize(); y+=gts) {
+				line(0,y,rm.getxplanesize(),y);
+			}
 		}
 		strokeCap(PROJECT);
 		for (int x=0; x<tiles.length; x++) {
 			for (int y=0; y<tiles[0].length; y++) {
 				if(gettilestate(x,y)) {
-					stroke(roomgroups[gettile(x,y).roomgroup]);
-					fill(roomgroups[gettile(x,y).roomgroup]);
-					rect(x*rm.gridtilesize,y*rm.gridtilesize,rm.gridtilesize,rm.gridtilesize);
+					if(!viewmode) {
+						// 2D
+						noStroke();
+						fill(roomgroups[gettile(x,y).roomgroup]);
+						rect(x*gts,y*gts,gts,gts);
 
-					stroke(255);
-					strokeWeight(2);
+						stroke(c[0]);
+						strokeWeight(2*st.floats[0].getvalue());
 
-					GridTile t = gettile(x,y);
-					if(t == null) {
-						break;
-					}
-					// Right
-					if(!gettilestate(x+1,y)) {
-						if(t.window[0]) {
-							stroke(0,0,255);
+						GridTile t = gettile(x,y);
+						if(t == null)
+							break;
+						if(!gettilestate(x+1,y)) { // Right
+							if(t.window[0])
+								stroke(0,0,255);
+							line((x+1)*gts,y*gts,(x+1)*gts,(y+1)*gts);
+							stroke(c[0]);
 						}
-						line((x+1)*rm.gridtilesize,y*rm.gridtilesize,(x+1)*rm.gridtilesize,(y+1)*rm.gridtilesize);
-						stroke(255);
-					}
-					// Left
-					if(!gettilestate(x-1,y)) {
-						if(t.window[1]) {
-							stroke(0,0,255);
+						if(!gettilestate(x-1,y)) { // Left
+							if(t.window[1])
+								stroke(0,0,255);
+							line(x*gts,y*gts,x*gts,(y+1)*gts);
+							stroke(c[0]);
 						}
-						line(x*rm.gridtilesize,y*rm.gridtilesize,x*rm.gridtilesize,(y+1)*rm.gridtilesize);
-						stroke(255);
-					}
-					// Bottom
-					if(!gettilestate(x,y+1)) {
-						if(t.window[2]) {
-							stroke(0,0,255);
+						if(!gettilestate(x,y+1)) { // Bottom
+							if(t.window[2])
+								stroke(0,0,255);
+							line(x*gts,(y+1)*gts,(x+1)*gts,(y+1)*gts);
+							stroke(c[0]);
 						}
-						line(x*rm.gridtilesize,(y+1)*rm.gridtilesize,(x+1)*rm.gridtilesize,(y+1)*rm.gridtilesize);
-						stroke(255);
-					}
-					// Top
-					if(!gettilestate(x,y-1)) {
-						if(t.window[3]) {
-							stroke(0,0,255);
+						if(!gettilestate(x,y-1)) { // Top
+							if(t.window[3])
+								stroke(0,0,255);
+							line(x*gts,y*gts,(x+1)*gts,y*gts);
+							stroke(c[0]);
 						}
-						line(x*rm.gridtilesize,y*rm.gridtilesize,(x+1)*rm.gridtilesize,y*rm.gridtilesize);
-						stroke(255);
+					} else {
+						// 3D
+						pg.noStroke();
+						pg.fill(roomgroups[gettile(x,y).roomgroup]);
+
+						pg.beginShape(QUADS);
+						pg.vertex(x*gts, 0, y*gts);
+						pg.vertex((x+1)*gts, 0, y*gts);
+						pg.vertex((x+1)*gts, 0, (y+1)*gts);
+						pg.vertex(x*gts, 0, (y+1)*gts);
+
+						pg.stroke(200);
+						pg.fill(200);
+
+						GridTile t = gettile(x,y);
+						if(t == null) {
+							break;
+						}
+
+						// Right
+						if(!gettilestate(x+1,y)) {
+							pg.vertex((x+1)*gts, 0, y*gts);
+							pg.vertex((x+1)*gts, 0, (y+1)*gts);
+							if(t.window[0]) {
+								pg.vertex((x+1)*gts, -gts/3, (y+1)*gts);
+								pg.vertex((x+1)*gts, -gts/3, y*gts);
+								pg.vertex((x+1)*gts, -gts/3*2, y*gts);
+								pg.vertex((x+1)*gts, -gts/3*2, (y+1)*gts);
+							}
+							pg.vertex((x+1)*gts, -gts, (y+1)*gts);
+							pg.vertex((x+1)*gts, -gts, y*gts);
+						}
+						// Left
+						if(!gettilestate(x-1,y)) {
+							pg.vertex(x*gts, 0, y*gts);
+							pg.vertex(x*gts, 0, (y+1)*gts);
+							if(t.window[1]) {
+								pg.vertex(x*gts, -gts/3, (y+1)*gts);
+								pg.vertex(x*gts, -gts/3, y*gts);
+								pg.vertex(x*gts, -gts/3*2, y*gts);
+								pg.vertex(x*gts, -gts/3*2, (y+1)*gts);
+							}
+							pg.vertex(x*gts, -gts, (y+1)*gts);
+							pg.vertex(x*gts, -gts, y*gts);
+						}
+						// Bottom
+						if(!gettilestate(x,y+1)) {
+							pg.vertex(x*gts, 0, (y+1)*gts);
+							pg.vertex((x+1)*gts, 0, (y+1)*gts);
+							if(t.window[2]) {
+								pg.vertex((x+1)*gts, -gts/3, (y+1)*gts);
+								pg.vertex(x*gts, -gts/3, (y+1)*gts);
+								pg.vertex(x*gts, -gts/3*2, (y+1)*gts);
+								pg.vertex((x+1)*gts, -gts/3*2, (y+1)*gts);
+							}
+							pg.vertex((x+1)*gts, -gts, (y+1)*gts);
+							pg.vertex(x*gts, -gts, (y+1)*gts);
+						}
+						// Top
+						if(!gettilestate(x,y-1)) {
+							pg.vertex(x*gts, 0, y*gts);
+							pg.vertex((x+1)*gts, 0, y*gts);
+							if(t.window[3]) {
+								pg.vertex((x+1)*gts, -gts/3, y*gts);
+								pg.vertex(x*gts, -gts/3, y*gts);
+								pg.vertex(x*gts, -gts/3*2, y*gts);
+								pg.vertex((x+1)*gts, -gts/3*2, y*gts);
+							}
+							pg.vertex((x+1)*gts, -gts, y*gts);
+							pg.vertex(x*gts, -gts, y*gts);
+						}
+						pg.endShape();
 					}
 				}
 			}
@@ -82,7 +151,9 @@ class Grid {
 
 	void filltool(boolean value, int x, int y) {
 		if(gettilestate(x,y) != value) {
-			settilestate(value, x,y);
+			if(!rm.isfurniture(x,y) || value) {
+				settilestate(value, x,y);
+			}
 			if(isingrid(x+1, y)) {
 				filltool(value, x+1,y);
 			}

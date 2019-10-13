@@ -32,10 +32,12 @@ void setup() {
 	if(highbit) {
 		pg = createGraphics(width,height, P3D);
 		pg.smooth(4);
-		dt = new DataManager();
-	} else {
+	}
+	dt = new DataManager();
+	if(!highbit) {
   		surface.setIcon(dt.icons[0]);
 	}
+	recalculatecolor();
 
 	setfont(st.strings[2].getvalue());
 	textSize(16/((st.floats[1].getvalue()+1)/2));
@@ -75,6 +77,9 @@ void keyPressed() {
 	ov.keyPressed();
 	rm.keyPressed();
 }
+void keyReleased() {
+	rm.keyReleased();
+}
 
 void draw() {
 	int sw = st.ints[0].getvalue();
@@ -83,6 +88,9 @@ void draw() {
 		st.ints[0].setvalue(width);
 		st.ints[1].setvalue(height);
 		ov.refresh();
+		if(highbit) {
+			pg.setSize(width,height);
+		}
 	}
 	rm.draw();
 	ov.draw();

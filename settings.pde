@@ -6,17 +6,17 @@ class Settings {
 	SettingBooleanValue[] booleans;
 
 	Settings() {
-		colors = new SettingColorValue[4];
+		colors = new SettingColorValue[0];
 		floats = new SettingFloatValue[2];
 		ints = new SettingIntValue[2];
 		strings = new SettingStringValue[3];
 		booleans = new SettingBooleanValue[3];
-
+		/*
 		colors[0] = new SettingColorValue("backgroundcolor", color(0, 0, 0));
 		colors[1] = new SettingColorValue("overlaybackgroundcolor", color(200, 200, 200));
 		colors[2] = new SettingColorValue("overlaycolor", color(100, 100, 100));
 		colors[3] = new SettingColorValue("gridlinecolor", color(255, 255, 255));
-
+		*/
 		floats[0] = new SettingFloatValue("gridlineweight", 1);
 		floats[1] = new SettingFloatValue("overlayscale", 1, 0.7, 1.5);
 
