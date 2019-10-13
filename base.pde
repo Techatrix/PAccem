@@ -86,6 +86,25 @@ String getabout() {
 void settitle(String name) {
   	surface.setTitle(appname + " - "+ appversion + ": " + name);
 }
+boolean isKeyUp, isKeyRight, isKeyLeft, isKeyDown;
+void setKey(int k, boolean bool) {
+  if      (k == UP    | k == 'W')   isKeyUp    = bool;
+  else if (k == DOWN  | k == 'S')   isKeyDown  = bool;
+  else if (k == LEFT  | k == 'A')   isKeyLeft  = bool;
+  else if (k == RIGHT | k == 'D')   isKeyRight = bool;
+}
+
+
+int[] c = new int[9];
+void recalculatecolor() {
+	boolean isdm = st.booleans[0].getvalue();
+
+	for (int i=0;i<c.length;i++) {
+		c[i] = isdm ? 255-32*i : 32*i;
+		c[i] = constrain(c[i], 0, 255);
+	}
+}
+
 boolean checkraw(int xpos, int ypos, int _width, int _height) {
 	float scale = st.floats[1].getvalue();
 	if (mouseX >= xpos*scale && mouseX <= (xpos+_width)*scale && 

@@ -47,7 +47,7 @@ class Overlay {
 	void refresh() {
 		float scale = st.floats[1].getvalue();
 		// Tool-bar
-		ListItem[] toolbarbuttons = new ListItem[6];
+		ListItem[] toolbarbuttons = new ListItem[7];
 		toolbarbuttons[0] = new ListItem("1", true) {@ Override public void action() {rm.tool = 0;}};
 		toolbarbuttons[1] = new ListItem("2", true) {@ Override public void action() {rm.tool = 1;}};
 		toolbarbuttons[2] = new ListItem("3", true) {@ Override public void action() {
@@ -74,6 +74,7 @@ class Overlay {
 		toolbarbuttons[3] = new ListItem("4", true) {@ Override public void action() {rm.tool = 3;}};
 		toolbarbuttons[4] = new ListItem("5", true) {@ Override public void action() {rm.tool = 4;}};
 		toolbarbuttons[5] = new ListItem("6", true) {@ Override public void action() {rm.tool = 5;}};
+		toolbarbuttons[6] = new ListItem("7", true) {@ Override public void action() {rm.tool = 6;}};
 		toolbar = new ButtonList(0, _height, 50, ceil(height/scale)-_height, false, 50, 0, toolbarbuttons);
 
 		// Tab-bar
@@ -203,12 +204,14 @@ class Overlay {
 			if(sidebarid != -1) {
 				sidebars[sidebarid].draw();
 			}
-			toolbar.draw();
+			if(!rm.viewmode) {
+				toolbar.draw();
+			}
 			tabbar.draw();
 			popup.draw();
 
 			String date = str(day())+"."+str(month())+"."+str(year());
-			fill(0);
+			fill(c[0]);
 			textAlign(RIGHT, CENTER);
 			text(date, ceil(width/st.floats[1].getvalue())-12.5, 12.5);
 
@@ -353,7 +356,7 @@ class ButtonList extends PWH{
 	}
 	void draw() {
 		noStroke();
-		fill(st.colors[1].getvalue());
+		fill(c[6]);
 		if(direction) {
 			rect(xpos+off, ypos, _width, _height);
 		} else {
@@ -464,13 +467,13 @@ abstract class ListItem {
 			textSize(16);
 			textAlign(CENTER, CENTER);
 			noStroke();
-			fill(st.colors[2].getvalue());
+			fill(c[5]);
 			rect(xpos,ypos,_width, _height);
 			if(checkraw(xpos, ypos, _width, _height) && !ov.popup.visible) {
 				fill(0, 50);
 				rect(xpos,ypos,_width, _height);
 			}
-			fill(editmode ? color(255,0,0) : 255);
+			fill(editmode ? color(255,0,0) : c[0]);
 			text(name + (editable ? ": " + (editmode ? bv.newvalue : bv.value) : ""), xpos, ypos, _width, _height);
 
 		} else {
@@ -588,7 +591,7 @@ class ButtonValue{
 							ints[i] = int(strings[i]);
 						}
 						color c  = color(ints[0], ints[1], ints[2]);
-						if(index < 0) {
+						if(index < 0) { // Roomgroup
 							rm.roomgrid.roomgroups[abs(index)-1] = c;
 						} else {
 							st.colors[index].setvalue(c);
@@ -597,7 +600,7 @@ class ButtonValue{
 					case 1:
 					// 1 = float
 						st.floats[index].setvalue(float(value));
-						if(index == 1) {
+						if(index == 1) { // Overlayscale
 							ov.refresh();
 						}
 					break;
@@ -605,22 +608,25 @@ class ButtonValue{
 					// 2 = int
 						st.ints[index].setvalue(int(value));
 
-						if(index == 0 || index == 1) {
+						if(index == 0 || index == 1) { // Width, Height
 							int sw = st.ints[0].getvalue();
 							int sh = st.ints[1].getvalue();
 							surface.setSize(sw,sh);
 							ov.refresh();
+							if(highbit) {
+								pg.setSize(width,height);
+							}
 						}
 					break;
 					case 3:
 					// 3 = string
 						st.strings[index].setvalue(value);
-						if(index == 2) {
-							setfont(st.strings[2].getvalue());
-						}
-						if(index == 1) {
+						if(index == 1) { // Language
 							lg.setlang(st.strings[1].getvalue());
 							ov.refresh();
+						}
+						if(index == 2) { // Font
+							setfont(st.strings[2].getvalue());
 						}
 					break;
 					case 4:
@@ -630,7 +636,10 @@ class ButtonValue{
 							value = value.equals("0") ? "false" : "true";
 						}
 						st.booleans[index].setvalue(boolean(value));
-						if(index == 2) {
+						if(index == 0) { // Darkmode
+							recalculatecolor();
+						}
+						if(index == 2) { // Fullscreen
 							ov.popup = new Popup(250,150) {
 								@ Override public void ontrue() {}
 								@ Override public void onfalse() {}
@@ -787,10 +796,10 @@ abstract class Popup extends PWH {
 			float scale = st.floats[1].getvalue();
 			// Background
 			noStroke();
-			fill(0, 170);
+			fill(0, 200);
 			rect(0,0,width/scale,height/scale);
 			// Popup Frame
-			fill(255);
+			fill(c[5]);
 			rect(xpos,ypos, _width, _height);
 			// Inputs
 			for (int i=0;i<values.length;i++) {
@@ -803,7 +812,7 @@ abstract class Popup extends PWH {
 			}
 
 			// True & False Button
-			fill(150);
+			fill(c[3]);
 			if(single) {
 				rect(xpos,ypos+_height-30, _width, 30);
 			} else {
@@ -812,7 +821,7 @@ abstract class Popup extends PWH {
 			}
 
 			// Main Text
-			fill(0);
+			fill(c[0]);
 			textAlign(CENTER, CENTER);
 			push();
 			textSize(16/((st.floats[1].getvalue()+1)/2)*1.125);
