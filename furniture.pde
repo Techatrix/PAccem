@@ -1,68 +1,74 @@
-class Furniture extends RPoint{
-	private int _width;
-	private int _height;
-	private color _color;
-	private int skin;
+class Furniture extends RPWH {
+	int skin;
 
 	Furniture(int _width, int _height) {
 		this(_width, _height, 0,0);
 	}
 
 	Furniture(int _width, int _height, int xpos, int ypos) {
-		this(_width, _height, xpos, ypos, color(150));
+		this(_width, _height, xpos, ypos, 0);
 	}
-	Furniture(int _width, int _height, int xpos, int ypos, color _color) {
-		this(_width, _height, xpos, ypos, _color, 0);
-	}
-	Furniture(int _width, int _height, int xpos, int ypos, color _color, float rot) {
+	Furniture(int _width, int _height, int xpos, int ypos, float rot) {
 		this._width = _width;
 		this._height = _height;
 		this.xpos = xpos;
 		this.ypos = ypos;
-		this._color = _color;
-		this.rot = rot;
+		this.rot = 0;
 		this.skin = 0;
 	}
-	void draw(boolean selected) {
-		noStroke();
-		fill(_color);
-		int a = xpos*rm.gridtilesize;
-		int b = ypos*rm.gridtilesize;
-		int c = _width*rm.gridtilesize;
-		int d = _height*rm.gridtilesize;
+	void draw(boolean viewmode, boolean selected) {
+		int gts = rm.gridtilesize;
+		if(!viewmode) {
+			// 2D
+			noStroke();
+			int a = xpos*gts;
+			int b = ypos*gts;
+			int c = _width*gts;
+			int d = _height*gts;
 
-		JSONObject data = dt.getindexdata(_width, _height, skin);
-		int index = data.getInt("id", -1);
-		if(0 <= index && index < dt.furnitures.length) {
-			if(data.getBoolean("rotate", false)) {
-				push();
-				imageMode(CENTER);
-  				translate(a+c/2, b+d/2);
-				rotate(PI/2);
-				image(dt.furnitures[index], 0,0,d,c);
-				pop();
-			} else {
-				image(dt.furnitures[index], a,b,c,d);
-			}
-		} else {
-			rect(xpos*rm.gridtilesize,ypos*rm.gridtilesize,_width*rm.gridtilesize,_height*rm.gridtilesize);
-		}
-
-		if (selected == true) {
-			fill(color(255,0,0,100));
-			rect(xpos*rm.gridtilesize,ypos*rm.gridtilesize,_width*rm.gridtilesize,_height*rm.gridtilesize);
-		}
-		/* Including Rotation
-		if(rot != 0) {
 			pushMatrix();
-				translate((xpos+_width/2)*rm.gridtilesize, (ypos+_height/2)*rm.gridtilesize);
-				rotate(map(mouseX, 0, width, 0, TWO_PI));
-				rect(-_width/2*rm.gridtilesize,-_height/2*rm.gridtilesize,_width*rm.gridtilesize,_height*rm.gridtilesize);
+			JSONObject data = dt.getindexdata(_width, _height, skin);
+			int index = data.getInt("id", -1);
+
+			if(0 <= index && index < dt.furnitures.length) {
+				if(data.getBoolean("rotate", false)) {
+					push();
+					imageMode(CENTER);
+  					translate(a+c/2, b+d/2);
+					rotate(PI/2);
+					image(dt.furnitures[index], 0,0,d,c);
+					pop();
+				} else {
+					image(dt.furnitures[index], a,b,c,d);
+				}
+			} else {
+				fill(150);
+				rect(a,b,c,d);
+			}
+
+			if (selected == true) {
+				fill(color(255,0,0,100));
+				rect(a,b,c,d);
+			}	
 			popMatrix();
 		} else {
-			rect(xpos*rm.gridtilesize,ypos*rm.gridtilesize,_width*rm.gridtilesize,_height*rm.gridtilesize);
+			// 3D
+			pg.push();
+			pg.translate(xpos*gts, 0, ypos*gts);
+
+			skin = 2;
+			
+			JSONObject data = dt.getindexdata(_width, _height, skin);
+			int index = data.getInt("id", -1);
+			if(0 <= index && index < dt.furnitures.length) {
+				if(data.getBoolean("rotate", false)) {
+					pg.rotateY(PI/2);
+					pg.translate(gts*-_height, 0, 0);
+				}
+				pg.shape(dt.models[index]);
+			}
+  			pg.pop();
 		}
-		*/
 	}
 	boolean checkover() {
 		float ovscale = st.booleans[1].getvalue() ? 0 : st.floats[1].getvalue();
