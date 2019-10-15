@@ -3,6 +3,7 @@ class LanguageManager {
 	private JSONObject data;
 
 	LanguageManager(String newlang) {
+		println("Load LanguageManager");
 		setlang(newlang);
 	}
 

@@ -1,134 +1,72 @@
 [
-  [
-    [
       {
-        "rotate": false,
-        "id": 0
+        "id": 0,
+        "width": 1,
+        "height": 1,
+        "name": "Table 1x1",
+        "src": "table11",
       },
       {
-        "rotate": false,
-        "id": 0
+        "id": 1,
+        "width": 2,
+        "height": 1,
+        "name": "Table 2x1",
+        "src": "table21",
       },
       {
-        "rotate": false,
-        "id": 0
-      },
-    ],
-    [
-      {
-        "rotate": true,
-        "id": 1
+        "id": 2,
+        "width": 3,
+        "height": 1,
+        "name": "Table 3x1",
+        "src": "table31",
       },
       {
-        "rotate": false,
-        "id": 0
+        "id": 3,
+        "width": 2,
+        "height": 2,
+        "name": "Table 2x2",
+        "src": "table22",
       },
       {
-        "rotate": false,
-        "id": 0
-      },
-    ],
-    [
-      {
-        "rotate": true,
-        "id": 2
+        "id": 4,
+        "width": 3,
+        "height": 2,
+        "name": "Table 3x2",
+        "src": "table32",
       },
       {
-        "rotate": false,
-        "id": 0
+        "id": 5,
+        "width": 3,
+        "height": 3,
+        "name": "Table 3x3",
+        "src": "table33",
       },
       {
-        "rotate": false,
-        "id": 0
-      },
-    ]
-  ],
-  [
-    [
-      {
-        "rotate": false,
-        "id": 1
+        "id": 6,
+        "width": 1,
+        "height": 1,
+        "name": "Chair 1x1",
+        "src": "chair11",
       },
       {
-        "rotate": false,
-        "id": 0
+        "id": 7,
+        "width": 1,
+        "height": 1,
+        "name": "Couch 1x1",
+        "src": "couch11",
       },
       {
-        "rotate": false,
-        "id": 0
-      },
-    ],
-    [
-      {
-        "rotate": false,
-        "id": 3
+        "id": 8,
+        "width": 2,
+        "height": 1,
+        "name": "Couch 2x1",
+        "src": "couch21",
       },
       {
-        "rotate": false,
-        "id": 0
+        "id": 9,
+        "width": 3,
+        "height": 1,
+        "name": "Couch 3x1",
+        "src": "couch31",
       },
-      {
-        "rotate": false,
-        "id": 0
-      },
-    ],
-    [
-      {
-        "rotate": true,
-        "id": 4
-      },
-      {
-        "rotate": false,
-        "id": 0
-      },
-      {
-        "rotate": false,
-        "id": 0
-      },
-    ]
-  ],
-  [
-    [
-      {
-        "rotate": false,
-        "id": 2
-      },
-      {
-        "rotate": false,
-        "id": 0
-      },
-      {
-        "rotate": false,
-        "id": 0
-      },
-    ],
-    [
-      {
-        "rotate": false,
-        "id": 4
-      },
-      {
-        "rotate": false,
-        "id": 0
-      },
-      {
-        "rotate": false,
-        "id": 0
-      },
-    ],
-    [
-      {
-        "rotate": false,
-        "id": 5
-      },
-      {
-        "rotate": false,
-        "id": 0
-      },
-      {
-        "rotate": false,
-        "id": 0
-      },
-    ]
-  ]
 ]

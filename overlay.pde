@@ -10,7 +10,8 @@ class Overlay {
 	Popup popup;
 
 	Overlay() {
-		sidebars = new ButtonList[5];
+		println("Load Overlay");
+		sidebars = new ButtonList[6];
 		_height = 25;
 		_width = 50;
 		sidebarwidth = 300;
@@ -48,33 +49,16 @@ class Overlay {
 		float scale = st.floats[1].getvalue();
 		// Tool-bar
 		ListItem[] toolbarbuttons = new ListItem[7];
-		toolbarbuttons[0] = new ListItem("1", true) {@ Override public void action() {rm.tool = 0;}};
-		toolbarbuttons[1] = new ListItem("2", true) {@ Override public void action() {rm.tool = 1;}};
-		toolbarbuttons[2] = new ListItem("3", true) {@ Override public void action() {
+		toolbarbuttons[0] = new ListItem(dm.icons[1]) {@ Override public void action() {rm.tool = 0;}};
+		toolbarbuttons[1] = new ListItem(dm.icons[2]) {@ Override public void action() {rm.tool = 1;}};
+		toolbarbuttons[2] = new ListItem(dm.icons[3]) {@ Override public void action() {
 			rm.tool = 2;
-				ListItem[] listitems = new ListItem[2];
-				listitems[0] = new ListItem(lg.get("newwidth"), true, 2, true) {@ Override public void action() {}};
-				listitems[1] = new ListItem(lg.get("newheight"),true, 2, true) {@ Override public void action() {}};
-
-				popup = new Popup(250,150, listitems) {
-					@ Override public void ontrue() {
-						rm.newfurniturewidth = int(values[0].bv.value);
-						rm.newfurnitureheight = int(values[1].bv.value);
-					}
-					@ Override public void onfalse() {}
-				};
-				popup.values[0].bv.value = str(rm.newfurniturewidth);
-				popup.values[0].bv.newvalue = str(rm.newfurniturewidth);
-				popup.values[1].bv.value = str(rm.newfurnitureheight);
-				popup.values[1].bv.newvalue = str(rm.newfurnitureheight);
-				popup.text = lg.get("selectsize");
-				popup.truetext = lg.get("confirm");
-				popup.falsetext = lg.get("cancel");
+			ov.sidebarid = ov.sidebarid == 5 ? -1 : 5;
 		}};
-		toolbarbuttons[3] = new ListItem("4", true) {@ Override public void action() {rm.tool = 3;}};
-		toolbarbuttons[4] = new ListItem("5", true) {@ Override public void action() {rm.tool = 4;}};
-		toolbarbuttons[5] = new ListItem("6", true) {@ Override public void action() {rm.tool = 5;}};
-		toolbarbuttons[6] = new ListItem("7", true) {@ Override public void action() {rm.tool = 6;}};
+		toolbarbuttons[3] = new ListItem(dm.icons[4]) {@ Override public void action() {rm.tool = 3;}};
+		toolbarbuttons[4] = new ListItem(dm.icons[5]) {@ Override public void action() {rm.tool = 4;}};
+		toolbarbuttons[5] = new ListItem(dm.icons[6]) {@ Override public void action() {rm.tool = 5;}};
+		toolbarbuttons[6] = new ListItem(dm.icons[7]) {@ Override public void action() {rm.tool = 6;}};
 		toolbar = new ButtonList(0, _height, 50, ceil(height/scale)-_height, false, 50, 0, toolbarbuttons);
 
 		// Tab-bar
@@ -194,6 +178,7 @@ class Overlay {
 		sidebars[2] = new ButtonList(sxpos,sypos,swidth,sheight, false, _height, 2, 0); // Settings
 		sidebars[3] = new ButtonList(sxpos,sypos,swidth,sheight, false, _height, 2, 1);// Debugger
 		sidebars[4] = new ButtonList(sxpos,sypos,swidth,sheight, false, _height, 10, roomgroupsbuttons);
+		sidebars[5] = new ButtonList(sxpos,sypos,swidth,sheight, false, swidth/2, 10, 2);
 		sidebars[3].live = true;
 	}
 
@@ -218,20 +203,19 @@ class Overlay {
 			pop();
 		}
 	}
-	void mousePressed() {
+	boolean mousePressed() {
+		boolean hit = ishit();
 		if(popup.mousePressed()) {
-			return;
+			return true;
 		}
 		toolbar.mousePressed();
 		tabbar.mousePressed();
 		if(sidebarid != -1) {
 			sidebars[sidebarid].mousePressed();
 		}
+		return hit;
 	}
 	void mouseDragged() {
-		if(true) {
-			return;
-		}
 		if(popup.visible) {
 			return;
 		}
@@ -245,6 +229,9 @@ class Overlay {
 		boolean hit = false;
 		if(popup.keyPressed()) {
 			hit = true;
+		}
+		if(popup.visible) {
+			return true;
 		}
 		if(sidebarid != -1) {
 			ButtonList sb = sidebars[sidebarid];
@@ -296,6 +283,7 @@ class ButtonList extends PWH{
 	int buttonsize = 50;
 	int buttonmargin = 10;
 	boolean live = false;
+	int rowlength = 1;
 
 
 	ButtonList(int newxpos, int newypos, int newwidth, int newheight, boolean newdirection, int newbuttonsize, int newbuttonmargin) {
@@ -315,10 +303,11 @@ class ButtonList extends PWH{
 		this(newxpos, newypos, newwidth, newheight, newdirection, newbuttonsize, newbuttonmargin);
 		if(type == 0) {
 			newsettings(st);
-		} else {
+		} else if(type == 1){
 			newdebugger(db);
+		} else if(type == 2) {
+			newfurnituremanager(dm);
 		}
-
 	}
 
 	void newsettings(Settings settings) {
@@ -351,25 +340,42 @@ class ButtonList extends PWH{
 		listitems = new ListItem[debugger.items.length];
 		for (int i=0;i<debugger.items.length;i++ ) {
 			DebuggerItem item = debugger.items[i];
-			listitems[i] = new ListItem(item.name + ": " + item.getvalue(), false) {@ Override public void action() {}};
+			listitems[i] = new ListItem(item.name + ": " + item.getvalue()) {@ Override public void action() {}};
 		}
 	}
+
+	void newfurnituremanager(DataManager dm) {
+		listitems = new ListItem[dm.furnitures.length];
+		for (int i=0;i<dm.furnitures.length;i++ ) {
+			final Temp temp = new Temp(i);
+			listitems[i] = new ListItem(dm.furnitures[i].name, dm.furnitures[i].image) {@ Override public void action() {rm.newfurnitureid = temp.i;rm.tool = 2;}};
+		}
+		rowlength = 3;
+	}
+
 	void draw() {
 		noStroke();
 		fill(c[6]);
 		if(direction) {
-			rect(xpos+off, ypos, _width, _height);
+			rect(xpos+off, ypos, max(getlistheight(), _width), _height);
 		} else {
-			rect(xpos, ypos+off, _width, _height);
+			rect(xpos, ypos+off, _width, max(getlistheight(), _height));
 		}
 		if(live) {
 			newdebugger(db);
 		}
+		int rowi = 0;
+		int a = 0;
 		for (int i=0;i<listitems.length;i++) {
 			if(direction) {
-				listitems[i].draw(xpos+(buttonsize+buttonmargin)*i+off, ypos, buttonsize, _height);
+				listitems[i].draw(xpos+(buttonsize+buttonmargin)*a+off, ypos, buttonsize, _height);
 			} else {
-				listitems[i].draw(xpos, ypos+(buttonsize+buttonmargin)*i+off, _width, buttonsize);
+				listitems[i].draw(xpos+_width/rowlength*rowi, ypos+(buttonsize+buttonmargin)*a+off, _width/rowlength, buttonsize);
+			}
+			rowi++;
+			if(rowi == rowlength) {
+				rowi = 0;
+				a++;
 			}
 		}
 		if(lastlistitems != null) {
@@ -384,17 +390,24 @@ class ButtonList extends PWH{
 	}
 
 	int getlistheight() {
-		return (listitems.length+listitems.length) * (buttonsize+buttonmargin);
+		return ceil(listitems.length/rowlength) * (buttonsize+buttonmargin);
 	}
 
 	void mousePressed() {
 		if(mouseButton == LEFT) {
+			int rowi = 0;
+			int a = 0;
 			for (int i=0;i<listitems.length;i++) {
 				ListItem l = listitems[i];
 				if(direction) {
-					l.check(xpos+(buttonsize+buttonmargin)*i+off, ypos, buttonsize, _height);
+					l.check(xpos+(buttonsize+buttonmargin)*a+off, ypos, buttonsize, _height);
 				} else {
-					l.check(xpos, ypos+(buttonsize+buttonmargin)*i+off, _width, buttonsize);
+					l.check(xpos+_width/rowlength*rowi, ypos+(buttonsize+buttonmargin)*a+off, _width/rowlength, buttonsize);
+				}
+				rowi++;
+				if(rowi == rowlength) {
+					rowi = 0;
+					a++;
 				}
 			}
 			for (int i=0;i<lastlistitems.length;i++) {
@@ -411,13 +424,17 @@ class ButtonList extends PWH{
 		if(checkraw(xpos, ypos, _width, _height)) {
 			if(mouseButton == LEFT) {
 				if(direction) {
-					off += mouseX - pmouseX;
-					int listheight = getlistheight() < _width ? _width : getlistheight();
-					off = constrain(off, _width-listheight, 0);
+					if(getlistheight() > _width) {
+						off += mouseX - pmouseX;
+						int listheight = getlistheight() < _width ? _width : getlistheight();
+						off = constrain(off, _width-listheight, 0);
+					}
 				} else {
-					off += mouseY - pmouseY;
-					int listheight = getlistheight() < _height ? _height : getlistheight();
-					off = constrain(off, _height-listheight, 0);
+					if(getlistheight() > _height) {
+						off += mouseY - pmouseY;
+						int listheight = getlistheight() < _height ? _height : getlistheight();
+						off = constrain(off, _height-listheight, 0);
+					}
 				}
 			}
 		}
@@ -439,7 +456,7 @@ class ButtonList extends PWH{
 
 abstract class ListItem {
 	String name;
-	boolean isimage;
+	PImage image;
 	boolean editable = false;
 	boolean editmode= false;
 	ButtonValue bv;
@@ -447,9 +464,13 @@ abstract class ListItem {
 	ListItem(String newname) {
 		name = newname;
 	}
-	ListItem(String newname, boolean newisimage) {
+	ListItem(PImage newimage) {
+		name = "";
+		image = newimage;
+	}
+	ListItem(String newname, PImage newimage) {
 		name = newname;
-		isimage = newisimage;
+		image = newimage;
 	}
 	ListItem(String newname, boolean neweditable, int type, int newindex) {
 		name = newname;
@@ -463,7 +484,7 @@ abstract class ListItem {
 	}
 	
 	void draw(int xpos, int ypos, int _width, int _height) {
-		if(!isimage) {
+		if(image == null) {
 			textSize(16);
 			textAlign(CENTER, CENTER);
 			noStroke();
@@ -477,11 +498,31 @@ abstract class ListItem {
 			text(name + (editable ? ": " + (editmode ? bv.newvalue : bv.value) : ""), xpos, ypos, _width, _height);
 
 		} else {
+			push();
+			imageMode(CENTER);
+			int margin = name.length() > 0 ? 25 : 0;
+
+			float w = image.width;
+			float h = image.height;
+			if(w > _width) {
+				float ratio = _width/w;
+				w *= ratio;
+				h *= ratio;
+			}
+			if(h > _height - margin) {
+				float ratio = (_height - margin)/h;
+				w *= ratio;
+				h *= ratio;
+			}
+			image(image, xpos+_width/2, ypos+_height/2, w, h);
+			fill(c[0]);
+			textAlign(CENTER, CENTER);
+			text(name,xpos,ypos+_height-20, _width, 20);
 			if(checkraw(xpos, ypos, _width, _height) && !ov.popup.visible) {
 				fill(0, 50);
 				rect(xpos,ypos,_width, _height);
 			}
-			image(dt.icons[int(name)], xpos, ypos, _width, _height);
+			pop();
 		}
 	}
 	abstract void action();

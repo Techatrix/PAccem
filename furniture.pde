@@ -1,72 +1,48 @@
 class Furniture extends RPWH {
-	int skin;
-
-	Furniture(int _width, int _height) {
-		this(_width, _height, 0,0);
+	int id;
+	Furniture() {}
+	Furniture(int id) {
+		this(dm.getfurnituredata(id));
 	}
-
-	Furniture(int _width, int _height, int xpos, int ypos) {
-		this(_width, _height, xpos, ypos, 0);
-	}
-	Furniture(int _width, int _height, int xpos, int ypos, float rot) {
-		this._width = _width;
-		this._height = _height;
+	Furniture(int id, int xpos, int ypos) {
+		this(id);
 		this.xpos = xpos;
 		this.ypos = ypos;
-		this.rot = 0;
-		this.skin = 0;
 	}
+	Furniture(FurnitureData fdata) {
+		this.id = fdata.id;
+		this._width = fdata._width;
+		this._height = fdata._height;
+	}
+	Furniture(FurnitureData fdata, int xpos, int ypos) {
+		this(fdata);
+		this.xpos = xpos;
+		this.ypos = ypos;
+	}
+
 	void draw(boolean viewmode, boolean selected) {
-		int gts = rm.gridtilesize;
 		if(!viewmode) {
 			// 2D
-			noStroke();
-			int a = xpos*gts;
-			int b = ypos*gts;
-			int c = _width*gts;
-			int d = _height*gts;
+			push();
+			scale(rm.gridtilesize);
 
-			pushMatrix();
-			JSONObject data = dt.getindexdata(_width, _height, skin);
-			int index = data.getInt("id", -1);
-
-			if(0 <= index && index < dt.furnitures.length) {
-				if(data.getBoolean("rotate", false)) {
-					push();
-					imageMode(CENTER);
-  					translate(a+c/2, b+d/2);
-					rotate(PI/2);
-					image(dt.furnitures[index], 0,0,d,c);
-					pop();
-				} else {
-					image(dt.furnitures[index], a,b,c,d);
-				}
-			} else {
-				fill(150);
-				rect(a,b,c,d);
-			}
+			image(dm.furnitures[id].image, xpos, ypos, _width, _height);
 
 			if (selected == true) {
+				noStroke();
 				fill(color(255,0,0,100));
-				rect(a,b,c,d);
+				rect(xpos, ypos, _width, _height);
 			}	
-			popMatrix();
+  			pop();
 		} else {
 			// 3D
+			// Scale down Shapes
 			pg.push();
-			pg.translate(xpos*gts, 0, ypos*gts);
-
-			skin = 2;
+			pg.scale(rm.gridtilesize);
+			pg.translate(xpos, 0, ypos);
 			
-			JSONObject data = dt.getindexdata(_width, _height, skin);
-			int index = data.getInt("id", -1);
-			if(0 <= index && index < dt.furnitures.length) {
-				if(data.getBoolean("rotate", false)) {
-					pg.rotateY(PI/2);
-					pg.translate(gts*-_height, 0, 0);
-				}
-				pg.shape(dt.models[index]);
-			}
+			pg.shape(dm.furnitures[id].shape);
+
   			pg.pop();
 		}
 	}
