@@ -15,9 +15,9 @@ class LanguageManager {
 		} else  {
 			name = "english";
 		}
-		File f = new File(sketchPath("assets/lang/" + name + ".json"));
+		File f = new File(sketchPath("data/assets/lang/" + name + ".json"));
 		if (f.exists()) {
-			data = loadJSONObject("assets/lang/" + name + ".json");
+			data = loadJSONObject("data/assets/lang/" + name + ".json");
 		}
 	}
 	boolean setlang(String newlang) {
