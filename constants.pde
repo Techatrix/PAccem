@@ -1,4 +1,5 @@
 final String appname = "PAccem"; // Raumplaner 2020, Roccem, PAccem
-final String appversion = "0.7.0";
+final String appversion = "0.7.1";
 final String appmaker = "Techatrix";
-final boolean highbit = true; // false if 32bit
+final String githublink = "https://github.com/Techatrix/PAccem";
+final String githubtutoriallink = "https://github.com/Techatrix/PAccem";

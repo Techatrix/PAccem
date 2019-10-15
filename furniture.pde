@@ -23,9 +23,6 @@ class Furniture extends RPWH {
 	void draw(boolean viewmode, boolean selected) {
 		if(!viewmode) {
 			// 2D
-			push();
-			scale(rm.gridtilesize);
-
 			image(dm.furnitures[id].image, xpos, ypos, _width, _height);
 
 			if (selected == true) {
@@ -33,17 +30,11 @@ class Furniture extends RPWH {
 				fill(color(255,0,0,100));
 				rect(xpos, ypos, _width, _height);
 			}	
-  			pop();
 		} else {
 			// 3D
-			// Scale down Shapes
-			pg.push();
-			pg.scale(rm.gridtilesize);
 			pg.translate(xpos, 0, ypos);
-			
 			pg.shape(dm.furnitures[id].shape);
-
-  			pg.pop();
+			pg.translate(-xpos, 0, -ypos);
 		}
 	}
 	boolean checkover() {

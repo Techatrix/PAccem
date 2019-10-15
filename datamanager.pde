@@ -5,20 +5,19 @@ class DataManager {
 
 	DataManager() {
 		println("Load DataManager");
-		icons = new PImage[8];
+		icons = new PImage[7];
 
-		icons[0] = loadImage("assets/icon/0.png");
-		icons[1] = loadImage("assets/icon/1.png");
-		icons[2] = loadImage("assets/icon/2.png");
-		icons[3] = loadImage("assets/icon/3.png");
-		icons[4] = loadImage("assets/icon/4.png");
-		icons[5] = loadImage("assets/icon/5.png");
-		icons[6] = loadImage("assets/icon/6.png");
-		icons[7] = loadImage("assets/icon/0.png");
+		icons[0] = loadImage("data/assets/icon/0.png");
+		icons[1] = loadImage("data/assets/icon/1.png");
+		icons[2] = loadImage("data/assets/icon/2.png");
+		icons[3] = loadImage("data/assets/icon/3.png");
+		icons[4] = loadImage("data/assets/icon/4.png");
+		icons[5] = loadImage("data/assets/icon/5.png");
+		icons[6] = loadImage("data/assets/icon/6.png");
 
-		File f = new File(sketchPath("assets/furn/data.json"));
+		File f = new File(sketchPath("data/assets/furn/data.json"));
 		if (f.exists()) {
-			furnituredata = loadJSONArray("assets/furn/data.json");
+			furnituredata = loadJSONArray("data/assets/furn/data.json");
 		} else {
 			furnituredata = new JSONArray();
 		}
@@ -30,10 +29,10 @@ class DataManager {
 			int _width = furn.getInt("width", 1);
 			int _height = furn.getInt("height", 1);
 			String src = furn.getString("src");
-			PImage image = loadImage("assets/furn/img/" + src +".png");
+			PImage image = loadImage("data/assets/furn/img/" + src +".png");
 			PShape shape = null;
-			if(highbit) {
-				shape = pg.loadShape("assets/furn/mdl/" + src +".obj");
+			if(st.booleans[3].getvalue()) {
+				shape = pg.loadShape("data/assets/furn/mdl/" + src +".obj");
 			}
 			String name = furn.getString("name", "Name not Found");
 			furnitures[i] = new FurnitureData(i, _width, _height, image, shape, name);

@@ -6,11 +6,12 @@ class Settings {
 	SettingBooleanValue[] booleans;
 
 	Settings() {
+		println("Load Settings");
 		colors = new SettingColorValue[0];
 		floats = new SettingFloatValue[2];
-		ints = new SettingIntValue[2];
+		ints = new SettingIntValue[3];
 		strings = new SettingStringValue[3];
-		booleans = new SettingBooleanValue[3];
+		booleans = new SettingBooleanValue[4];
 		/*
 		colors[0] = new SettingColorValue("backgroundcolor", color(0, 0, 0));
 		colors[1] = new SettingColorValue("overlaybackgroundcolor", color(200, 200, 200));
@@ -22,6 +23,7 @@ class Settings {
 
 		ints[0] = new SettingIntValue("width", 1200, 800, displayWidth);
 		ints[1] = new SettingIntValue("height", 800, 600, displayHeight);
+		ints[2] = new SettingIntValue("Anti-aliasing", 2, 0, 8);
 
 		strings[0] = new SettingStringValue("defaultroomname", "new Room");
 		strings[1] = new SettingStringValue("language", "english");
@@ -30,6 +32,7 @@ class Settings {
 		booleans[0] = new SettingBooleanValue("darkmode", false);
 		booleans[1] = new SettingBooleanValue("hide overlay", false);
 		booleans[2] = new SettingBooleanValue("fullscreen", false);
+		booleans[3] = new SettingBooleanValue("Use OpenGl Renderer", false);
 
 		load();
 	}
@@ -39,7 +42,7 @@ class Settings {
 	}
 
 	void load() {
-		println("Load Settings");
+		println("Loaded Settings");
 		File f1 = new File(sketchPath("data/settings.json"));
 
 		if (f1.exists())
@@ -77,7 +80,7 @@ class Settings {
 	}
 
 	void save() {
-		println("Save Settings");
+		println("Saved Settings");
 
 		File f1 = new File(sketchPath("data/settings.json"));
 		JSONObject j = new JSONObject();

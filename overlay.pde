@@ -8,6 +8,8 @@ class Overlay {
 	int sidebarid;
 	ButtonList toolbar;
 	Popup popup;
+	String message = "";
+	float messagetimer = 5;
 
 	Overlay() {
 		println("Load Overlay");
@@ -17,6 +19,12 @@ class Overlay {
 		sidebarwidth = 300;
 		sidebarid = -1;
 		refresh();
+		showmessage("Welcome to " + appname);
+	}
+
+	void showmessage(String message) {
+		this.message = message;
+		messagetimer = 5;
 	}
 
 	void save() {
@@ -42,13 +50,12 @@ class Overlay {
 		}
 		saveJSONArray(json, "data/rooms.json");
 		ov.sidebarrefresh();
-		//ov.refresh();
 	}
 
 	void refresh() {
 		float scale = st.floats[1].getvalue();
 		// Tool-bar
-		ListItem[] toolbarbuttons = new ListItem[7];
+		ListItem[] toolbarbuttons = new ListItem[6];
 		toolbarbuttons[0] = new ListItem(dm.icons[1]) {@ Override public void action() {rm.tool = 0;}};
 		toolbarbuttons[1] = new ListItem(dm.icons[2]) {@ Override public void action() {rm.tool = 1;}};
 		toolbarbuttons[2] = new ListItem(dm.icons[3]) {@ Override public void action() {
@@ -58,7 +65,6 @@ class Overlay {
 		toolbarbuttons[3] = new ListItem(dm.icons[4]) {@ Override public void action() {rm.tool = 3;}};
 		toolbarbuttons[4] = new ListItem(dm.icons[5]) {@ Override public void action() {rm.tool = 4;}};
 		toolbarbuttons[5] = new ListItem(dm.icons[6]) {@ Override public void action() {rm.tool = 5;}};
-		toolbarbuttons[6] = new ListItem(dm.icons[7]) {@ Override public void action() {rm.tool = 6;}};
 		toolbar = new ButtonList(0, _height, 50, ceil(height/scale)-_height, false, 50, 0, toolbarbuttons);
 
 		// Tab-bar
@@ -78,6 +84,7 @@ class Overlay {
 							rm.xgridsize = newxgridsize;
 							rm.ygridsize = newygridsize;
 							rm.reset();
+							ov.showmessage("New Room: " + newxgridsize + "x" + newygridsize);
 						}
 					}
 					@ Override public void onfalse() {}
@@ -88,7 +95,7 @@ class Overlay {
 			}
 		};
 		tabbarbuttons[1] = new ListItem(lg.get("viewmode") + " 2D") {@ Override public void action() {
-			if(highbit) {
+			if(st.booleans[3].getvalue()) {
 				rm.switchviewmode();
 				name = rm.viewmode ? (lg.get("viewmode") + " 3D") : (lg.get("viewmode") + " 2D");
 			}
@@ -99,7 +106,10 @@ class Overlay {
 		tabbarbuttons[5] = new ListItem(lg.get("debug")) {@ Override public void action() {ov.sidebarid = ov.sidebarid == 3 ? -1 : 3;}};
 		tabbarbuttons[6] = new ListItem(lg.get("roomgroups")) {@ Override public void action() {ov.sidebarid = ov.sidebarid == 4 ? -1 : 4;}};
 		tabbarbuttons[7] = new ListItem(lg.get("about")) {@ Override public void action() {
-			popup = new Popup(width/4,height/3) {
+			ListItem[] listitems = new ListItem[2];
+			listitems[0] = new ListItem("Github Repos") {@ Override public void action() {link(githublink);}};
+			listitems[1] = new ListItem(lg.get("tutorial")) {@ Override public void action() {link(githubtutoriallink);}};
+			popup = new Popup(width/4,height/3, listitems) {
 				@ Override public void ontrue() {}
 				@ Override public void onfalse() {}
 			};
@@ -185,7 +195,9 @@ class Overlay {
 	void draw() {
 		if(!st.booleans[1].getvalue()) {
 			push();
-			scale(st.floats[1].getvalue());
+			float ovscale = st.floats[1].getvalue();
+
+			scale(ovscale);
 			if(sidebarid != -1) {
 				sidebars[sidebarid].draw();
 			}
@@ -195,11 +207,18 @@ class Overlay {
 			tabbar.draw();
 			popup.draw();
 
+
+			// Date
 			String date = str(day())+"."+str(month())+"."+str(year());
 			fill(c[0]);
-			textAlign(RIGHT, CENTER);
-			text(date, ceil(width/st.floats[1].getvalue())-12.5, 12.5);
+			textAlign(RIGHT, TOP);
+			text(date, width/ovscale, 0);
 
+			// Message
+			messagetimer = max(messagetimer-1/frameRate, 0);
+			textAlign(LEFT, BOTTOM);
+			fill(c[0], min(255/1*messagetimer, 255));
+			text(message, _width/ovscale, height/ovscale);
 			pop();
 		}
 	}
@@ -334,7 +353,8 @@ class ButtonList extends PWH{
 			x++;
 		}
 		lastlistitems = new ListItem[1];
-		lastlistitems[0] = new ListItem(lg.get("save")) {@ Override public void action() {st.save();}};
+		lastlistitems[0] = new ListItem(lg.get("save")) {@ Override public void action() {st.save();ov.showmessage("Saved Settings");}};
+
 	}
 	void newdebugger(Debugger debugger) {
 		listitems = new ListItem[debugger.items.length];
@@ -654,8 +674,13 @@ class ButtonValue{
 							int sh = st.ints[1].getvalue();
 							surface.setSize(sw,sh);
 							ov.refresh();
-							if(highbit) {
+							if(st.booleans[3].getvalue()) {
 								pg.setSize(width,height);
+							}
+						} else if(index == 2) { // Anti-aliasing
+							smooth(int(value));
+							if(st.booleans[3].getvalue()) {
+								pg.smooth(int(value));
 							}
 						}
 					break;
@@ -665,9 +690,8 @@ class ButtonValue{
 						if(index == 1) { // Language
 							lg.setlang(st.strings[1].getvalue());
 							ov.refresh();
-						}
-						if(index == 2) { // Font
-							setfont(st.strings[2].getvalue());
+						} else if(index == 2) { // Font
+							am.setfont(st.strings[2].getvalue());
 						}
 					break;
 					case 4:
@@ -678,9 +702,16 @@ class ButtonValue{
 						}
 						st.booleans[index].setvalue(boolean(value));
 						if(index == 0) { // Darkmode
-							recalculatecolor();
-						}
-						if(index == 2) { // Fullscreen
+							am.recalculatecolor();
+						} else if(index == 2) { // Fullscreen
+							ov.popup = new Popup(250,150) {
+								@ Override public void ontrue() {}
+								@ Override public void onfalse() {}
+							};
+							ov.popup.text = lg.get("ratste");
+							ov.popup.truetext = lg.get("ok");
+							ov.popup.single = true;
+						} else if(index == 3) { // Use Opengl Renderer
 							ov.popup = new Popup(250,150) {
 								@ Override public void ontrue() {}
 								@ Override public void onfalse() {}

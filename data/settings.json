@@ -1,0 +1,14 @@
+{
+  "hide overlay": false,
+  "defaultroomname": "new Room",
+  "Anti-aliasing": 2,
+  "fullscreen": false,
+  "overlayscale": 1,
+  "width": 1200,
+  "darkmode": false,
+  "Use OpenGl Renderer": true,
+  "language": "english",
+  "gridlineweight": 1,
+  "height": 800,
+  "font": "Roboto"
+}
