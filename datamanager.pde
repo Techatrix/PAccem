@@ -1,19 +1,11 @@
 class DataManager {
 	final PImage[] icons;
-	final PImage[] furnitures;
-	final PShape[] models;
+	final FurnitureData[] furnitures;
 	final JSONArray furnituredata;
 
 	DataManager() {
+		println("Load DataManager");
 		icons = new PImage[8];
-		furnitures = new PImage[10];
-
-		File f = new File(sketchPath("assets/furn/data.json"));
-		if (f.exists()) {
-			furnituredata = loadJSONArray("assets/furn/data.json");
-		} else {
-			furnituredata = new JSONArray();
-		}
 
 		icons[0] = loadImage("assets/icon/0.png");
 		icons[1] = loadImage("assets/icon/1.png");
@@ -24,74 +16,54 @@ class DataManager {
 		icons[6] = loadImage("assets/icon/6.png");
 		icons[7] = loadImage("assets/icon/0.png");
 
-		furnitures[0] = loadImage("assets/furn/img/11.png");
-		furnitures[1] = loadImage("assets/furn/img/12.png");
-		furnitures[2] = loadImage("assets/furn/img/13.png");
-		furnitures[3] = loadImage("assets/furn/img/22.png");
-		furnitures[4] = loadImage("assets/furn/img/23.png");
-		furnitures[5] = loadImage("assets/furn/img/33.png");
-		furnitures[6] = loadImage("assets/furn/img/11.png");
-		furnitures[7] = loadImage("assets/furn/img/11.png");
-		furnitures[8] = loadImage("assets/furn/img/12.png");
-		furnitures[9] = loadImage("assets/furn/img/13.png");
-		if(highbit) {
-			models = new PShape[10];
-			//models[0].setFill(color(100,200,0));
-			models[0] = pg.loadShape("assets/furn/mdl/table11.obj");
-			models[1] = pg.loadShape("assets/furn/mdl/table12.obj");
-			models[2] = pg.loadShape("assets/furn/mdl/table13.obj");
-			models[3] = pg.loadShape("assets/furn/mdl/table22.obj");
-			models[4] = pg.loadShape("assets/furn/mdl/table23.obj");
-			models[5] = pg.loadShape("assets/furn/mdl/table33.obj");
-			models[6] = pg.loadShape("assets/furn/mdl/chair11.obj");
-			models[7] = pg.loadShape("assets/furn/mdl/couch11.obj");
-			models[8] = pg.loadShape("assets/furn/mdl/couch12.obj");
-			models[9] = pg.loadShape("assets/furn/mdl/couch13.obj");
+		File f = new File(sketchPath("assets/furn/data.json"));
+		if (f.exists()) {
+			furnituredata = loadJSONArray("assets/furn/data.json");
 		} else {
-			models = new PShape[0];
+			furnituredata = new JSONArray();
+		}
+
+		furnitures = new FurnitureData[furnituredata.size()];
+		for (int i=0;i<furnituredata.size();i++) {
+			JSONObject furn = furnituredata.getJSONObject(i);
+
+			int _width = furn.getInt("width", 1);
+			int _height = furn.getInt("height", 1);
+			String src = furn.getString("src");
+			PImage image = loadImage("assets/furn/img/" + src +".png");
+			PShape shape = null;
+			if(highbit) {
+				shape = pg.loadShape("assets/furn/mdl/" + src +".obj");
+			}
+			String name = furn.getString("name", "Name not Found");
+			furnitures[i] = new FurnitureData(i, _width, _height, image, shape, name);
 		}
 	}
-
-	JSONObject getindexdata(int _width, int _height, int skinid) {
-		/*  Write JSON
-		JSONArray widths = new JSONArray();
-		for(int w=0;w<3;w++) {
-			JSONArray heights = new JSONArray();
-			for(int h=0;h<3;h++) {
-				JSONArray skins = new JSONArray();
-					for(int s=0;s<3;s++) {
-						JSONObject skin = new JSONObject();
-						skin.setInt("id", floor(random(255)));
-						skins.setJSONObject(s, skin);
-					}
-				heights.setJSONArray(h,skins);
-			}
-			widths.setJSONArray(w,heights);
-		}
-	  	saveJSONArray(widths, "assets/furn/data.json");
-
-		// Read JSON
-	  	widths = loadJSONArray("assets/furn/data.json");
-		for(int w=0;w<widths.size();w++) {
-			JSONArray heights = widths.getJSONArray(w);
-			for(int h=0;h<heights.size();h++) {
-				JSONArray skins = heights.getJSONArray(h);
-				for(int s=0;s<skins.size();s++) {
-					JSONObject skin = skins.getJSONObject(s);
-					println("Width: " + (w+1) + " Height " + (h+1) + " Skin: " + s + " ID: " + skin.getInt("id"));
-				}
+	FurnitureData getfurnituredata(int id) {
+		for (FurnitureData fdata : furnitures) {
+			if(id == fdata.id) {
+				return fdata;
 			}
 		}
-		*/
+		return null;
+	}
+}
 
-		JSONObject data = new JSONObject();
-		try {
-			JSONArray heights = furnituredata.getJSONArray(_width-1);
-			JSONArray skins = heights.getJSONArray(_height-1);
-			data = skins.getJSONObject(skinid);
-		} catch (Exception e) {
-			println("getindexdata ERROR: " + e);
-		}
-		return data;
+
+class FurnitureData {
+	final int id;
+	final int _width;
+	final int _height;
+	final PImage image;
+	final PShape shape;
+	final String name;
+
+	FurnitureData(int id, int _width, int _height, PImage image, PShape shape, String name) {
+		this.id = id;
+		this._width = _width;
+		this._height = _height;
+		this.image = image;
+		this.shape = shape;
+		this.name = name;
 	}
 }

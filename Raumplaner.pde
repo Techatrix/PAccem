@@ -1,7 +1,7 @@
 Settings st;
 Roommanager rm;
 Overlay ov;
-DataManager dt;
+DataManager dm;
 LanguageManager lg;
 Debugger db;
 
@@ -24,18 +24,19 @@ void settings() {
 	smooth(4);
 }
 void setup() {
-	lg = new LanguageManager(st.strings[1].getvalue());
-	rm = new Roommanager();
-	db = new Debugger();
-	ov = new Overlay();
-
 	if(highbit) {
 		pg = createGraphics(width,height, P3D);
 		pg.smooth(4);
 	}
-	dt = new DataManager();
+	lg = new LanguageManager(st.strings[1].getvalue());
+	dm = new DataManager();
+	rm = new Roommanager();
+	db = new Debugger();
+	ov = new Overlay();
+
+
 	if(!highbit) {
-  		surface.setIcon(dt.icons[0]);
+  		surface.setIcon(dm.icons[0]);
 	}
 	recalculatecolor();
 
@@ -68,14 +69,14 @@ void mouseReleased() {
 }
 
 void mousePressed() {
-	ov.mousePressed();
-	if(!ov.ishit()) {
+	if(!ov.mousePressed()) {
 		rm.mousePressed();
 	}
 }
 void keyPressed() {
-	ov.keyPressed();
-	rm.keyPressed();
+	if(!ov.keyPressed()) {
+		rm.keyPressed();
+	}
 }
 void keyReleased() {
 	rm.keyReleased();

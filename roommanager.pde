@@ -16,9 +16,7 @@ class Roommanager {
 	ArrayList<int[]> dragtiles = new ArrayList<int[]>();
 	boolean dragstate;
 
-	int newfurniturewidth = 1;
-	int newfurnitureheight = 1;
-
+	int newfurnitureid = 0;
 	int newroomtilegroup = 0;
 
 	Roommanager() {
@@ -29,15 +27,20 @@ class Roommanager {
 	}
 
 	void mouseWheel(MouseEvent e) {
-		float delta = e.getCount() > 0 ? 0.9 : e.getCount() < 0 ? 1.1 : 1.0;
+		float delta = e.getCount() > 0 ? 1.0/1.1 : e.getCount() < 0 ? 1.1 : 1.0;
 		if(!viewmode) {
+			float ovscale = st.booleans[1].getvalue() ? 0 : st.floats[1].getvalue();
+
+			float mx = mouseX-ov._width*ovscale;
+			float my = mouseY-ov._height*ovscale;
+
 			if(scale*delta > 5) {
 				delta = 5/scale;
 			} else if(scale*delta < 0.25) {
 				delta = 0.25/scale;
 			}
-			xoff = (xoff-mouseX) * delta + mouseX;
-			yoff = (yoff-mouseY) * delta + mouseY;
+			xoff = (xoff-mx) * delta + mx;
+			yoff = (yoff-my) * delta + my;
 			scale *= delta;
 			scale = constrain(scale, 0.25,5);
 		} else {
@@ -97,8 +100,10 @@ class Roommanager {
 				int ypos = floor(getypos());
 
 				boolean hit = false;
-				for (int x=0;x<newfurniturewidth;x++) {
-					for (int y=0;y<newfurnitureheight;y++) {
+				FurnitureData fdata = dm.furnitures[newfurnitureid];
+
+				for (int x=0;x<fdata._width;x++) {
+					for (int y=0;y<fdata._height;y++) {
 						if(!roomgrid.gettilestate(xpos+x,ypos+y) || isfurniture(xpos+x,ypos+y) || !roomgrid.isingrid(xpos+x,ypos+y)) {
 							hit = true;
 							break;
@@ -106,7 +111,7 @@ class Roommanager {
 					}
 				}
 				if(!hit) {
-					furnitures.add(new Furniture(newfurniturewidth, newfurnitureheight, xpos, ypos));
+					furnitures.add(new Furniture(fdata, xpos, ypos));
 				}
 			}
 			if(tool == 3) {
@@ -162,7 +167,7 @@ class Roommanager {
 		}
 	}
 	void keyPressed() {
-	  setKey(keyCode, true);
+		setKey(keyCode, true);
 		if(!viewmode) {
 			if(key == 127) {
 				for (int i=0; i<furnitures.size(); i++) {
@@ -177,7 +182,7 @@ class Roommanager {
 				newroomtilegroup = keyCode - 49;
 			}
 			if(keyCode == UP || keyCode == DOWN || keyCode == LEFT || keyCode == RIGHT) {
-				Furniture f = new Furniture(0,0);
+				Furniture f = new Furniture();
 				for (int i=0; i<furnitures.size(); i++) {
 					if(selectionid == i) {
 						f = furnitures.get(i);
@@ -266,7 +271,7 @@ class Roommanager {
 		String[] rooms = null;
 		if (f1.exists())
 		{
-  			JSONArray json = loadJSONArray("data/rooms.json");
+			JSONArray json = loadJSONArray("data/rooms.json");
 			rooms = new String[json.size()];
 			for (int i=0;i<json.size();i++ ) {
 				rooms[i] = json.getString(i);
@@ -278,18 +283,18 @@ class Roommanager {
 		println("Save: " + name);
 		JSONObject json = new JSONObject();
 
-  		json.setFloat("xoff", xoff);
-  		json.setFloat("yoff", yoff);
-  		json.setFloat("scale", scale);
-  		json.setInt("xgridsize", xgridsize);
-  		json.setInt("ygridsize", ygridsize);
-  		json.setInt("gridtilesize", gridtilesize);
-  		for (int i=0;i<5;i++ ) {
-  			color c = roomgrid.roomgroups[i];
-	  		json.setFloat("roomgroupcolor" + str(i) + "red", red(c));
-	  		json.setFloat("roomgroupcolor" + str(i) + "green", green(c));
-	  		json.setFloat("roomgroupcolor" + str(i) + "blue", blue(c));
-  		}
+		json.setFloat("xoff", xoff);
+		json.setFloat("yoff", yoff);
+		json.setFloat("scale", scale);
+		json.setInt("xgridsize", xgridsize);
+		json.setInt("ygridsize", ygridsize);
+		json.setInt("gridtilesize", gridtilesize);
+		for (int i=0;i<5;i++ ) {
+			color c = roomgrid.roomgroups[i];
+			json.setFloat("roomgroupcolor" + str(i) + "red", red(c));
+			json.setFloat("roomgroupcolor" + str(i) + "green", green(c));
+			json.setFloat("roomgroupcolor" + str(i) + "blue", blue(c));
+		}
 
 		saveJSONObject(json, "data/" + name + "/data.json");
 		//-------------------------------------------------------------------------------
@@ -299,11 +304,9 @@ class Roommanager {
 
 		  JSONObject f = new JSONObject();
 
-		  f.setInt("id", j);
+		  f.setInt("id", furnitures.get(j).id);
 		  f.setInt("xpos", furnitures.get(j).xpos);
 		  f.setInt("ypos", furnitures.get(j).ypos);
-		  f.setInt("width", furnitures.get(j)._width);
-		  f.setInt("height", furnitures.get(j)._height);
 
 		  furnituresarray.setJSONObject(j, f);
 		}
@@ -325,41 +328,41 @@ class Roommanager {
 				windows.setBoolean(2, roomgrid.tiles[x][y].window[2]);
 				windows.setBoolean(3, roomgrid.tiles[x][y].window[3]);
 
-  				tile.setJSONArray("w", windows);
+				tile.setJSONArray("w", windows);
 
 				row.setJSONObject(y, tile);
 			}
 			roomarray.setJSONArray(x, row);
 		}
-  		surface.setTitle(appname + ": " + name);
-  		this.name = name;
+		surface.setTitle(appname + ": " + name);
+		this.name = name;
 
 		saveJSONArray(roomarray, "data/" + name + "/room.json");
 	}
 	void load(String name) {
-		println("Load: " + name);
+		println("Load Roommanager: " + name);
 		File f1 = new File(sketchPath("data/" + name + "/data.json"));
 		File f2 = new File(sketchPath("data/" + name + "/furnitures.json"));
 		File f3 = new File(sketchPath("data/" + name + "/room.json"));
 
 		if (f1.exists())
 		{
-  			JSONObject json = loadJSONObject("data/" + name + "/data.json");
-  			xoff = json.getFloat("xoff");
-  			yoff = json.getFloat("yoff");
-  			scale = json.getFloat("scale");
-  			xgridsize = json.getInt("xgridsize");
-  			ygridsize = json.getInt("ygridsize");
-  			gridtilesize = json.getInt("gridtilesize");
+			JSONObject json = loadJSONObject("data/" + name + "/data.json");
+			xoff = json.getFloat("xoff");
+			yoff = json.getFloat("yoff");
+			scale = json.getFloat("scale");
+			xgridsize = json.getInt("xgridsize");
+			ygridsize = json.getInt("ygridsize");
+			gridtilesize = json.getInt("gridtilesize");
 
 			roomgrid = new Grid(xgridsize, ygridsize);
-  			for (int i=0;i<5;i++ ) {
-  				roomgrid.roomgroups[i] = color(json.getFloat("roomgroupcolor" + str(i) + "red"), json.getFloat("roomgroupcolor" + str(i) + "green"), json.getFloat("roomgroupcolor" + str(i) + "blue"));
-  			}
+			for (int i=0;i<5;i++ ) {
+				roomgrid.roomgroups[i] = color(json.getFloat("roomgroupcolor" + str(i) + "red"), json.getFloat("roomgroupcolor" + str(i) + "green"), json.getFloat("roomgroupcolor" + str(i) + "blue"));
+			}
 		} else {
-  			xgridsize = 24;
-  			ygridsize = 12;
-  			gridtilesize = 50;
+			xgridsize = 24;
+			ygridsize = 12;
+			gridtilesize = 50;
 			roomgrid = new Grid(xgridsize, ygridsize);
 		}
 		//-------------------------------------------------------------------------------
@@ -367,23 +370,17 @@ class Roommanager {
 		furnitures = new ArrayList<Furniture>();
 		if (f2.exists() && f1.exists())
 		{
-  			JSONArray json = loadJSONArray("data/" + name + "/furnitures.json");
+			JSONArray json = loadJSONArray("data/" + name + "/furnitures.json");
 			for (int j = 0; j < json.size(); j++) {
-    			JSONObject f = json.getJSONObject(j); 
-
-    			Furniture newf = new Furniture(0,0);
-				newf.xpos = f.getInt("xpos");
-				newf.ypos = f.getInt("ypos");
-				newf._width = f.getInt("width");
-				newf._height = f.getInt("height");
-    			furnitures.add(newf);
+				JSONObject f = json.getJSONObject(j);
+				furnitures.add(new Furniture(f.getInt("id"), f.getInt("xpos"), f.getInt("ypos")));
 			}
 		}
 		//-------------------------------------------------------------------------------
 
 		if (f3.exists() && f1.exists())
 		{
-  			JSONArray json = loadJSONArray("data/" + name + "/room.json");
+			JSONArray json = loadJSONArray("data/" + name + "/room.json");
 
 			for (int x = 0; x < xgridsize; x++) {
 				JSONArray row = json.getJSONArray(x);
@@ -402,7 +399,7 @@ class Roommanager {
 		}
 		//-------------------------------------------------------------------------------
 		settitle(name);
-  		this.name = name;
+		this.name = name;
 		if(ov != null) {
 			ov.sidebars[1].listitems[0].bv.value = name;
 			ov.sidebars[1].listitems[0].bv.newvalue = name;
@@ -421,7 +418,7 @@ class Roommanager {
 		furnitures = new ArrayList<Furniture>();
 		name = st.strings[0].getvalue();
 		st.load();
-  		surface.setTitle(appname + ": " + name);
+		surface.setTitle(appname + ": " + name);
 	}
 	void switchviewmode() {
 		xoff = 0;
@@ -524,7 +521,7 @@ class Roommanager {
 			xoff = constrain(xoff, 0, Integer.MAX_VALUE);
 			yoff = constrain(yoff, 0, Integer.MAX_VALUE);
 			angle2 = constrain(angle2, -PI+0.1, 0);
-		  	pg.beginDraw();
+			pg.beginDraw();
 			pg.background(st.booleans[0].getvalue() ? 0 : 240);
 			pg.directionalLight(200, 200, 200, 0.3, 1, 0.3);
 			pg.ambientLight(140,140,140);
