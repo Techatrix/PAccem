@@ -6,7 +6,9 @@ class Settings {
 	SettingBooleanValue[] booleans;
 
 	Settings() {
-		println("Load Settings");
+		if(deb) {
+			println("Load Settings Class");
+		}
 		colors = new SettingColorValue[0];
 		floats = new SettingFloatValue[2];
 		ints = new SettingIntValue[3];
@@ -23,7 +25,7 @@ class Settings {
 
 		ints[0] = new SettingIntValue("width", 1200, 800, displayWidth);
 		ints[1] = new SettingIntValue("height", 800, 600, displayHeight);
-		ints[2] = new SettingIntValue("Anti-aliasing", 2, 0, 8);
+		ints[2] = new SettingIntValue("Anti-aliasing", 4, 0, 8);
 
 		strings[0] = new SettingStringValue("defaultroomname", "new Room");
 		strings[1] = new SettingStringValue("language", "english");
@@ -42,7 +44,9 @@ class Settings {
 	}
 
 	void load() {
-		println("Loaded Settings");
+		if(deb) {
+			println("Loaded Settings");
+		}
 		File f1 = new File(sketchPath("data/settings.json"));
 
 		if (f1.exists())
@@ -80,7 +84,9 @@ class Settings {
 	}
 
 	void save() {
-		println("Saved Settings");
+		if(deb) {
+			println("Saved Settings");
+		}
 
 		File f1 = new File(sketchPath("data/settings.json"));
 		JSONObject j = new JSONObject();
@@ -115,9 +121,9 @@ class Settings {
 }
 
 class SettingColorValue {
-	private String name;
-	private color _value;
-	private color _valuedefault;
+	String name;
+	color _value;
+	color _valuedefault;
 	SettingColorValue(String newname) {
 		name = newname;
 	}
@@ -141,11 +147,11 @@ class SettingColorValue {
 	}
 }
 class SettingFloatValue {
-	private String name;
-	private float _value;
-	private float _valuedefault;
-	private float min = Float.MIN_VALUE;
-	private float max = Float.MAX_VALUE;
+	String name;
+	float _value;
+	float _valuedefault;
+	float min = Float.MIN_VALUE;
+	float max = Float.MAX_VALUE;
 	SettingFloatValue(String newname) {
 		name = newname;
 	}
@@ -170,11 +176,11 @@ class SettingFloatValue {
 	}
 }
 class SettingIntValue {
-	private String name;
-	private int _value;
-	private int _valuedefault;
-	private int min = Integer.MIN_VALUE;
-	private int max = Integer.MAX_VALUE;
+	String name;
+	int _value;
+	int _valuedefault;
+	int min = Integer.MIN_VALUE;
+	int max = Integer.MAX_VALUE;
 	SettingIntValue(String newname) {
 		name = newname;
 	}
@@ -199,9 +205,9 @@ class SettingIntValue {
 	}
 }
 class SettingStringValue {
-	private String name;
-	private String _value;
-	private String _valuedefault;
+	String name;
+	String _value;
+	String _valuedefault;
 	SettingStringValue(String newname) {
 		name = newname;
 	}
@@ -221,9 +227,9 @@ class SettingStringValue {
 	}
 }
 class SettingBooleanValue {
-	private String name;
-	private boolean _value;
-	private boolean _valuedefault;
+	String name;
+	boolean _value;
+	boolean _valuedefault;
 	SettingBooleanValue(String newname) {
 		name = newname;
 	}

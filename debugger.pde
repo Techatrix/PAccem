@@ -1,8 +1,10 @@
 class Debugger {
-	private final DebuggerItem[] items;
+	final DebuggerItem[] items;
 
 	Debugger() {
-		println("Load Debugger");
+		if(deb) {
+			println("Load Debugger");
+		}
 		items = new DebuggerItem[15];
 		items[0] = new DebuggerItem("Name") {@ Override public String getvalue() {return rm.name;}};
 		items[1] = new DebuggerItem("X-off") {@ Override public String getvalue() {return str(rm.xoff);}};

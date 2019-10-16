@@ -1,7 +1,11 @@
 class ApplicationManager {
 	String setfontrawinput = "";
 
-	ApplicationManager() {}
+	ApplicationManager() {
+		if(deb) {
+		println("Loaded ApplicationManager");
+		}
+	}
 
 	void initsettings() {
 		st = new Settings();
@@ -15,7 +19,6 @@ class ApplicationManager {
 		}
 		smooth(st.ints[2].getvalue());
 		recalculatecolor();
-
 	}
 	void initsetup() {
 		if(st.booleans[3].getvalue()) {
@@ -23,8 +26,8 @@ class ApplicationManager {
 			pg.smooth(st.ints[2].getvalue());
 		}
 		lg = new LanguageManager(st.strings[1].getvalue());
-		rm = new Roommanager();
 		dm = new DataManager();
+		rm = new Roommanager();
 		db = new Debugger();
 		ov = new Overlay();
 
