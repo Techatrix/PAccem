@@ -9,6 +9,9 @@ Overlay ov;
 PGraphics pg;
 PFont font;
 
+int[] c = new int[9];
+boolean isKeyUp, isKeyRight, isKeyLeft, isKeyDown;
+
 void settings() {
 	am = new ApplicationManager();
 	am.initsettings();
@@ -26,13 +29,12 @@ void mouseWheel(MouseEvent e) {
 	}
 }
 void mouseDragged() {
-	if(ov.popup.visible) {
-		return;
+	if(!ov.mouseDragged()) {
+		rm.mouseDragged();
 	}
-	ov.mouseDragged();
-	rm.mouseDragged();
 }
 void mouseReleased() {
+	ov.mouseReleased();
 	rm.mouseReleased();
 }
 

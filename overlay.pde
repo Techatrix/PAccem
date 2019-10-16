@@ -12,8 +12,10 @@ class Overlay {
 	float messagetimer = 5;
 
 	Overlay() {
-		println("Load Overlay");
-		sidebars = new ButtonList[6];
+		if(deb) {
+			println("Load Overlay");
+		}
+		sidebars = new ButtonList[7];
 		_height = 25;
 		_width = 50;
 		sidebarwidth = 300;
@@ -27,28 +29,18 @@ class Overlay {
 		messagetimer = 5;
 	}
 
+	void requirerestart() {
+		popup = new Popup(250,150) {
+			@ Override public void ontrue() {}
+			@ Override public void onfalse() {}
+		};
+		popup.text = lg.get("ratste");
+		popup.truetext = lg.get("ok");
+		popup.single = true;
+	}
+
 	void save() {
 		rm.save(rm.name);
-
-		File f1 = new File(sketchPath("data/rooms.json"));
-		JSONArray json;
-		boolean exists = false;
-		if (f1.exists())
-		{
-			json = loadJSONArray("data/rooms.json");
-			for (int i=0;i<json.size() ;i++ ) {
-				if(rm.name.equals(json.getString(i))) {
-					exists = true;
-				}
-			}
-		} else {
-			json = new JSONArray();
-			exists = false;
-		}
-		if(!exists) {
-			json.append(rm.name);
-		}
-		saveJSONArray(json, "data/rooms.json");
 		ov.sidebarrefresh();
 	}
 
@@ -60,7 +52,11 @@ class Overlay {
 		toolbarbuttons[1] = new ListItem(dm.icons[2]) {@ Override public void action() {rm.tool = 1;}};
 		toolbarbuttons[2] = new ListItem(dm.icons[3]) {@ Override public void action() {
 			rm.tool = 2;
-			ov.sidebarid = ov.sidebarid == 5 ? -1 : 5;
+			if(rm.isprefab) {
+				ov.sidebarid = ov.sidebarid == 6 ? -1 : 6;
+			} else {
+				ov.sidebarid = ov.sidebarid == 5 ? -1 : 5;
+			}
 		}};
 		toolbarbuttons[3] = new ListItem(dm.icons[4]) {@ Override public void action() {rm.tool = 3;}};
 		toolbarbuttons[4] = new ListItem(dm.icons[5]) {@ Override public void action() {rm.tool = 4;}};
@@ -116,7 +112,6 @@ class Overlay {
 			popup.text = getabout();	
 			popup.single = true;
 			popup.truetext = lg.get("ok");
-
 		}};
 		tabbarbuttons[8] = new ListItem(lg.get("reset")) {
 			@ Override public void action() {
@@ -142,12 +137,9 @@ class Overlay {
 	void sidebarrefresh() {
 		// Load-buttons
 		String[] rooms = rm.loadrooms();
-		ListItem[] loadbuttons = new ListItem[0];
-		if(rooms != null) {
-			loadbuttons = new ListItem[rooms.length];
-			for (int i=0;i<rooms.length;i++ ) {
-				loadbuttons[i] = new ListItem(rooms[i]) {@ Override public void action() {rm.load(name);}};
-			}
+		ListItem[] loadbuttons = new ListItem[rooms.length];
+		for (int i=0;i<rooms.length;i++ ) {
+			loadbuttons[i] = new ListItem(rooms[i]) {@ Override public void action() {rm.load(name);}};
 		}
 
 		// Save-buttons
@@ -188,13 +180,14 @@ class Overlay {
 		sidebars[2] = new ButtonList(sxpos,sypos,swidth,sheight, false, _height, 2, 0); // Settings
 		sidebars[3] = new ButtonList(sxpos,sypos,swidth,sheight, false, _height, 2, 1);// Debugger
 		sidebars[4] = new ButtonList(sxpos,sypos,swidth,sheight, false, _height, 10, roomgroupsbuttons);
-		sidebars[5] = new ButtonList(sxpos,sypos,swidth,sheight, false, swidth/2, 10, 2);
+		sidebars[5] = new ButtonList(sxpos,sypos,swidth,sheight, false, swidth/2, 10, 2); // Furniture
+		sidebars[6] = new ButtonList(sxpos,sypos,swidth,sheight, false, swidth/2, 10, 3); // Prefab
 		sidebars[3].live = true;
 	}
 
 	void draw() {
 		if(!st.booleans[1].getvalue()) {
-			push();
+			resetMatrix();
 			float ovscale = st.floats[1].getvalue();
 
 			scale(ovscale);
@@ -219,7 +212,6 @@ class Overlay {
 			textAlign(LEFT, BOTTOM);
 			fill(c[0], min(255/1*messagetimer, 255));
 			text(message, _width/ovscale, height/ovscale);
-			pop();
 		}
 	}
 	boolean mousePressed() {
@@ -228,28 +220,32 @@ class Overlay {
 			return true;
 		}
 		toolbar.mousePressed();
-		tabbar.mousePressed();
 		if(sidebarid != -1) {
 			sidebars[sidebarid].mousePressed();
 		}
 		return hit;
 	}
-	void mouseDragged() {
+	void mouseReleased() {
 		if(popup.visible) {
 			return;
+		}
+		tabbar.mousePressed();
+	}
+	boolean mouseDragged() {
+		if(popup.visible) {
+			return true;
 		}
 		toolbar.mouseDragged();
 		tabbar.mouseDragged();
 		if(sidebarid != -1) {
 			sidebars[sidebarid].mouseDragged();
 		}
+		return false;
 	}
 	boolean keyPressed() {
 		boolean hit = false;
-		if(popup.keyPressed()) {
-			hit = true;
-		}
 		if(popup.visible) {
+			popup.keyPressed();
 			return true;
 		}
 		if(sidebarid != -1) {
@@ -299,18 +295,25 @@ class ButtonList extends PWH{
 	ListItem[] lastlistitems = new ListItem[0];
 	boolean direction;
 	int off = 0;
-	int buttonsize = 50;
+	int buttonsize = 25;
+	int lastbuttonsize = 25;
 	int buttonmargin = 10;
 	boolean live = false;
 	int rowlength = 1;
 
 
-	ButtonList(int newxpos, int newypos, int newwidth, int newheight, boolean newdirection, int newbuttonsize, int newbuttonmargin) {
+	ButtonList(int newxpos, int newypos, int newwidth, int newheight) {
 		xpos = newxpos;
 		ypos = newypos;
 		_width = newwidth;
 		_height = newheight;
+	}
+	ButtonList(int newxpos, int newypos, int newwidth, int newheight, boolean newdirection) {
+		this(newxpos, newypos, newwidth, newheight);
 		direction = newdirection;
+	}
+	ButtonList(int newxpos, int newypos, int newwidth, int newheight, boolean newdirection, int newbuttonsize, int newbuttonmargin) {
+		this(newxpos, newypos, newwidth, newheight, newdirection);
 		buttonsize = newbuttonsize;
 		buttonmargin = newbuttonmargin;
 	}
@@ -325,7 +328,9 @@ class ButtonList extends PWH{
 		} else if(type == 1){
 			newdebugger(db);
 		} else if(type == 2) {
-			newfurnituremanager(dm);
+			newfurnituremanager(dm.furnitures);
+		} else if(type == 3) {
+			newprefabmanager(dm.prefabs);
 		}
 	}
 
@@ -364,13 +369,26 @@ class ButtonList extends PWH{
 		}
 	}
 
-	void newfurnituremanager(DataManager dm) {
-		listitems = new ListItem[dm.furnitures.length];
-		for (int i=0;i<dm.furnitures.length;i++ ) {
+	void newfurnituremanager(FurnitureData[] fd) {
+		listitems = new ListItem[fd.length];
+		for (int i=0;i<fd.length;i++ ) {
 			final Temp temp = new Temp(i);
-			listitems[i] = new ListItem(dm.furnitures[i].name, dm.furnitures[i].image) {@ Override public void action() {rm.newfurnitureid = temp.i;rm.tool = 2;}};
+			listitems[i] = new ListItem(fd[i].name, fd[i].image) {@ Override public void action() {rm.newfurnitureid = temp.i;rm.tool = 2;rm.isprefab = false;}};
 		}
+		lastlistitems = new ListItem[1];
+		lastlistitems[0] = new ListItem("Prefabs") {@ Override public void action() {ov.sidebarid = 6;}};
 		rowlength = 3;
+	}
+
+	void newprefabmanager(PrefabData[] pd) {
+		listitems = new ListItem[pd.length];
+		for (int i=0;i<pd.length;i++ ) {
+			final Temp temp = new Temp(i);
+			listitems[i] = new ListItem(pd[i].name, pd[i].getimage()) {@ Override public void action() {rm.newfurnitureid = temp.i;rm.tool = 2;rm.isprefab = true;}};
+		}
+		lastlistitems = new ListItem[1];
+		lastlistitems[0] = new ListItem("Models") {@ Override public void action() {ov.sidebarid = 5;}};
+		rowlength = 2;
 	}
 
 	void draw() {
@@ -401,9 +419,9 @@ class ButtonList extends PWH{
 		if(lastlistitems != null) {
 			for(int i=lastlistitems.length-1;i>=0;i--) {
 				if(direction) {
-					lastlistitems[i].draw(xpos+_width-(buttonsize+buttonmargin)*(i+1)+buttonmargin+off, ypos, buttonsize, _height);
+					lastlistitems[i].draw(xpos+_width-(lastbuttonsize+buttonmargin)*(i+1)+buttonmargin+off, ypos, lastbuttonsize, _height);
 				} else {
-					lastlistitems[i].draw(xpos, ypos+_height-(buttonsize+buttonmargin)*(i+1)+buttonmargin+off, _width, buttonsize);
+					lastlistitems[i].draw(xpos, ypos+_height-(lastbuttonsize+buttonmargin)*(i+1)+buttonmargin+off, _width, lastbuttonsize);
 				}
 			}
 		}
@@ -433,9 +451,9 @@ class ButtonList extends PWH{
 			for (int i=0;i<lastlistitems.length;i++) {
 				ListItem l = lastlistitems[i];
 				if(direction) {
-					l.check(xpos+_width-(buttonsize+buttonmargin)*(i+1)+buttonmargin+off, ypos, buttonsize, _height);
+					l.check(xpos+_width-(lastbuttonsize+buttonmargin)*(i+1)+buttonmargin+off, ypos, lastbuttonsize, _height);
 				} else {
-					l.check(xpos, ypos+_height-(buttonsize+buttonmargin)*(i+1)+buttonmargin+off, _width, buttonsize);
+					l.check(xpos, ypos+_height-(lastbuttonsize+buttonmargin)*(i+1)+buttonmargin+off, _width, lastbuttonsize);
 				}
 			}
 		}
@@ -582,11 +600,6 @@ class ButtonValue{
 	int type;
 	int index;
 	boolean readonly;
-	// 0 = color
-	// 1 = float
-	// 2 = int
-	// 3 = string
-	// 4 = boolean
 
 	ButtonValue(int newtype, int newindex) {
 		value = "";
@@ -678,10 +691,7 @@ class ButtonValue{
 								pg.setSize(width,height);
 							}
 						} else if(index == 2) { // Anti-aliasing
-							smooth(int(value));
-							if(st.booleans[3].getvalue()) {
-								pg.smooth(int(value));
-							}
+							ov.requirerestart();
 						}
 					break;
 					case 3:
@@ -704,21 +714,9 @@ class ButtonValue{
 						if(index == 0) { // Darkmode
 							am.recalculatecolor();
 						} else if(index == 2) { // Fullscreen
-							ov.popup = new Popup(250,150) {
-								@ Override public void ontrue() {}
-								@ Override public void onfalse() {}
-							};
-							ov.popup.text = lg.get("ratste");
-							ov.popup.truetext = lg.get("ok");
-							ov.popup.single = true;
+							ov.requirerestart();
 						} else if(index == 3) { // Use Opengl Renderer
-							ov.popup = new Popup(250,150) {
-								@ Override public void ontrue() {}
-								@ Override public void onfalse() {}
-							};
-							ov.popup.text = lg.get("ratste");
-							ov.popup.truetext = lg.get("ok");
-							ov.popup.single = true;
+							ov.requirerestart();
 						}
 					break;
 				}
