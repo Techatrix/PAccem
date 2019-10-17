@@ -20,40 +20,47 @@ void setup() {
 	am.initsetup();
 }
 
+void draw() {
+	push();
+	am.draw();
+	rm.draw();
+	pop();
+	ov.draw();
+}
+
 void mouseWheel(MouseEvent e) {
-	if(ov.popup.visible) {
+	ov.mouseWheel(e);
+	if(ov.ishit()) {
 		return;
 	}
-	if(!ov.ishit()) {
-		rm.mouseWheel(e);
-	}
+	rm.mouseWheel(e);
 }
 void mouseDragged() {
-	if(!ov.mouseDragged()) {
-		rm.mouseDragged();
+	ov.mouseDragged();
+	if(ov.ishit()) {
+		return;
 	}
+	rm.mouseDragged();
 }
 void mouseReleased() {
 	ov.mouseReleased();
 	rm.mouseReleased();
 }
-
 void mousePressed() {
-	if(!ov.mousePressed()) {
-		rm.mousePressed();
+	ov.mousePressed();
+	if(ov.ishit()) {
+		return;
 	}
+	rm.mousePressed();
 }
 void keyPressed() {
-	if(!ov.keyPressed()) {
-		rm.keyPressed();
+	ov.keyPressed();
+	if(ov.ishit()) {
+		return;
 	}
+	rm.keyPressed();
 }
 void keyReleased() {
+	ov.keyReleased();
 	rm.keyReleased();
-}
-
-void draw() {
-	am.draw();
-	rm.draw();
-	ov.draw();
 }

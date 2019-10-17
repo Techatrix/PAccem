@@ -78,9 +78,6 @@ class Settings {
   				booleans[i] = b;
   			}
 		}
-		if(ov != null) {
-			ov.sidebars[2].newsettings(st);
-		}
 	}
 
 	void save() {

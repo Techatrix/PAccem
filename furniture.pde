@@ -118,8 +118,8 @@ class Furniture extends RPWH {
 		return false;
 		*/
 
-		float x = xpos*a+ov._width*ovscale+rm.xoff;
-		float y = ypos*a+ov._height*ovscale+rm.yoff;
+		float x = xpos*a+ov.xoff+rm.xoff;
+		float y = ypos*a+ov.yoff+rm.yoff;
 
 		if (mouseX >= x && mouseX < x+_width*a &&
 			mouseY >= y && mouseY < y+_height*a) {
