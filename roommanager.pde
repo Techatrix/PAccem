@@ -32,8 +32,8 @@ class Roommanager {
 		if(!viewmode) {
 			float ovscale = st.booleans[1].getvalue() ? 0 : st.floats[1].getvalue();
 
-			float mx = mouseX-ov._width*ovscale;
-			float my = mouseY-ov._height*ovscale;
+			float mx = mouseX-ov.xoff;
+			float my = mouseY-ov.yoff;
 
 			if(scale*delta > 5) {
 				delta = 5/scale;
@@ -94,8 +94,6 @@ class Roommanager {
 				if(!isfurniture(x,y)){
 					roomgrid.settilestate(!roomgrid.gettilestate(x,y), x,y);
 					roomgrid.gettile(x,y).roomgroup = newroomtilegroup;
-				} else {
-					ov.showmessage("Furniture is in the way");
 				}
 			} else if(tool == 2) { // Place Furniture
 				int xpos = floor(getxpos());
@@ -146,9 +144,6 @@ class Roommanager {
 					for (int x=0;x<fdata._width;x++) {
 						for (int y=0;y<fdata._height;y++) {
 							if(!roomgrid.gettilestate(xpos+x,ypos+y) || isfurniture(xpos+x,ypos+y) || !roomgrid.isingrid(xpos+x,ypos+y)) {
-								if(isfurniture(xpos+x,ypos+y)) {
-									ov.showmessage("Furniture is in the way");
-								}
 								block = true;
 								break;
 							}
@@ -280,10 +275,10 @@ class Roommanager {
 	}
 
 	float getxpos() {
-		return (mouseX-xoff-ov._width)/gridtilesize/scale;
+		return (mouseX-xoff-ov.xoff)/gridtilesize/scale;
 	}
 	float getypos() {
-		return (mouseY-yoff-ov._height)/gridtilesize/scale;
+		return (mouseY-yoff-ov.yoff)/gridtilesize/scale;
 	}
 	boolean isfurniture(int xpos, int ypos) {
 		for (int i=0; i<furnitures.size(); i++) {
@@ -391,7 +386,6 @@ class Roommanager {
 		//-------------------------------------------------------------------------------
 		am.settitle(name);
 		this.name = name;
-		ov.showmessage("Saved Room: " + name);
 	}
 	void load(String name) {
 		if(deb) {
@@ -460,12 +454,6 @@ class Roommanager {
 		//-------------------------------------------------------------------------------
 		am.settitle(name);
 		this.name = name;
-		if(ov != null) {
-			ov.showmessage("Loaded Room: " + name);
-			ov.sidebars[1].listitems[0].bv.value = name;
-			ov.sidebars[1].listitems[0].bv.newvalue = name;
-			ov.refresh();
-		}
 	}
 
 	void reset() {
@@ -480,9 +468,6 @@ class Roommanager {
 		name = st.strings[0].getvalue();
 		st.load();
 		am.settitle(name);
-		if(ov != null) {
-			ov.showmessage("Reset");
-		}
 	}
 	void switchviewmode() {
 		xoff = 0;
@@ -510,9 +495,8 @@ class Roommanager {
 			xoff = constrain(xoff, Integer.MIN_VALUE, 0);
 			yoff = constrain(yoff, Integer.MIN_VALUE, 0);
 			// 2D View
-			float ovscale = st.booleans[1].getvalue() ? 0 : st.floats[1].getvalue();
 
-			translate(xoff+ov._width*ovscale, yoff+ov._height*ovscale);
+			translate(xoff+ov.xoff, yoff+ov.yoff);
 			scale(scale);
 		} else {
 			if(isKeyUp) {
@@ -550,18 +534,16 @@ class Roommanager {
 			pg.camera(xoff,-height/2*scale,yoff, xoff+centerx,-height/2*scale-centery,yoff+centerz, 0, 1, 0);
 
 			// Debug
-			if(ov.sidebarid == 3) {
-				pg.pushStyle();
-				// Axis
-				pg.strokeWeight(5);
-				pg.stroke(150,0,0);
-				pg.line(0,0,0,1000,0,0); // X
-				pg.stroke(0,150,0);
-				pg.line(0,0,0,0,0,1000); // Z
-				pg.stroke(0,0,150);
-				pg.line(0,0,0,0,1000,0); // Y
-				pg.popStyle();
-			}
+			pg.pushStyle();
+			// Axis
+			pg.strokeWeight(5);
+			pg.stroke(150,0,0);
+			pg.line(0,0,0,1000,0,0); // X
+			pg.stroke(0,150,0);
+			pg.line(0,0,0,0,0,1000); // Z
+			pg.stroke(0,0,150);
+			pg.line(0,0,0,0,1000,0); // Y
+			pg.popStyle();
 		}
 		// Roomgrid
 		roomgrid.draw(viewmode, gridtilesize);

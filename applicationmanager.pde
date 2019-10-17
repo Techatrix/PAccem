@@ -34,8 +34,8 @@ class ApplicationManager {
 		if(!st.booleans[3].getvalue()) {
 	  		surface.setIcon(dm.icons[0]);
 		}
-		setfont(st.strings[2].getvalue());
-		textSize(16/((st.floats[1].getvalue()+1)/2));
+		//setfont(st.strings[2].getvalue());
+		//textSize(16/((st.floats[1].getvalue()+1)/2));
 	}
 
 	void settitle(String name) {
@@ -131,7 +131,6 @@ class ApplicationManager {
 		if(width != sw || height != sh) {
 			st.ints[0].setvalue(width);
 			st.ints[1].setvalue(height);
-			ov.refresh();
 			if(st.booleans[3].getvalue()) {
 				pg.setSize(width,height);
 			}

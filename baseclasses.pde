@@ -3,6 +3,11 @@ class Point {
 	int xpos = 0;
 	int ypos = 0;
 }
+//Width Height
+class WH {
+	int _width = 0;
+	int _height = 0;
+}
 // Point Width Height
 class PWH extends Point {
 	int _width = 0;
@@ -21,5 +26,12 @@ class Temp {
 	int i;
 	Temp(int i) {
 		this.i = i;
+	}
+}
+// holds an string (used for final variable in abstract class)
+class STemp {
+	String s;
+	STemp(String s) {
+		this.s = s;
 	}
 }
