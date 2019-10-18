@@ -13,6 +13,8 @@ class LanguageManager {
 		if (f.exists()) {
 			data = loadJSONObject("data/assets/lang/" + newlang + ".json");
 			return true;
+		} else {
+			data = loadJSONObject("data/assets/lang/english.json");
 		}
 		return false;
 	}

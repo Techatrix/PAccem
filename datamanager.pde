@@ -35,7 +35,7 @@ class DataManager {
 			String src = furn.getString("src");
 			PImage image = loadImage("data/assets/furn/img/" + src +".png");
 			PShape shape = null;
-			if(st.booleans[3].getvalue()) {
+			if(st.booleans[3].value) {
 				shape = pg.loadShape("data/assets/furn/mdl/" + src +".obj");
 			}
 			String name = furn.getString("name", "Name not Found");

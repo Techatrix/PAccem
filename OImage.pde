@@ -19,7 +19,7 @@ class Image extends PWH implements IOverlay {
 	}
 	
 	boolean ishit() {
-	  	return mouseX >= xpos && mouseX <= xpos+_width && mouseY >= ypos && mouseY <= ypos+_height;
+	  	return mouseX >= xpos && mouseX < xpos+_width && mouseY >= ypos && mouseY < ypos+_height;
 	}
 
 	void setxy(int xpos, int ypos) {

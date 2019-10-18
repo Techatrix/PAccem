@@ -7,23 +7,23 @@ class Container extends PWH implements IOverlay {
 		Box b = getboundry(item);
 		setwh(round(b.w), round(b.h));
 	}
-	boolean mousePressed() {
-		if(ishit()) {
-			mousePresseditem(item);
-			return true;
-		}
-		return false;
-	}
 
 	void mouseWheel(MouseEvent e) {
-		if(ishit()) {
-			mouseWheelitem(item, e);
-		}
+		mouseWheelitem(item, e);
 	}
+	boolean mousePressed() {
+		mousePresseditem(item);
+		return ishit();
+	}
+	void keyPressed() {
+		keyPresseditem(item);
+	}
+
 	void draw() {
 		if(style.drawbackground) {
 			fill(style.backgroundcolor);
 		}
+		noStroke();
 		rect(xpos, ypos, _width, _height);
 		drawitem(item);
 		if(style.drawhighlight) {
@@ -54,7 +54,7 @@ class Container extends PWH implements IOverlay {
 	}
 
 	boolean ishit() {
-	  	return mouseX >= xpos && mouseX <= xpos+_width && mouseY >= ypos && mouseY <= ypos+_height;
+	  	return mouseX >= xpos && mouseX < xpos+_width && mouseY >= ypos && mouseY < ypos+_height;
 	}
 }
 
