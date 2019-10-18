@@ -88,7 +88,7 @@ class Furniture extends RPWH {
 	}
 
 	boolean checkover() {
-		float ovscale = st.booleans[1].getvalue() ? 0 : st.floats[1].getvalue();
+		float ovscale = st.booleans[1].value ? 0 : st.floats[1].value;
 		float a = rm.gridtilesize*rm.scale;
 
 		/*

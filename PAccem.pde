@@ -3,7 +3,6 @@ Settings st;
 LanguageManager lg;
 Roommanager rm;
 DataManager dm;
-Debugger db;
 Overlay ov;
 
 PGraphics pg;

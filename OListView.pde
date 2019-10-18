@@ -39,14 +39,17 @@ class ListView extends PWH implements IOverlay {
 		}
 	}
 	boolean mousePressed() {
-		if(ishit()) {
-			for (Object item : items) {
-				mousePresseditem(item);
-			}
-			return true;
+		for (Object item : items) {
+			mousePresseditem(item);
 		}
-		return false;
+		return ishit();
 	}
+	void keyPressed() {
+		for (Object item : items) {
+			keyPresseditem(item);
+		}
+	}
+	
 	int getindex() {
 		for (int i=0;i<items.length;i++) {
 			Object item = items[i];
@@ -73,7 +76,7 @@ class ListView extends PWH implements IOverlay {
 	}
 	
 	boolean ishit() {
-	  	return mouseX >= xpos && mouseX <= xpos+_width && mouseY >= ypos && mouseY <= ypos+_height;
+	  	return mouseX >= xpos && mouseX < xpos+_width && mouseY >= ypos && mouseY < ypos+_height;
 	}
 	void setxy(int xpos, int ypos) {
 		this.xpos = xpos;
@@ -105,15 +108,12 @@ class ListView extends PWH implements IOverlay {
 
 
 abstract class ListViewBuilder{
-
 	ListView build(int length, int _width, int _height) {
-		return build(length, _width, _height, 50, Dir.DOWN);
+		return build(length, _width, _height, 30, Dir.DOWN);
 	}
-
 	ListView build(int length, int _width, int _height, int itemheight) {
 		return build(length, _width, _height, itemheight, Dir.DOWN);
 	}
-
 	ListView build(int length, int _width, int _height, int itemheight, Dir dir) {
 		Object[] items = new Object[length];
 		for (int i=0;i<length;i++) {

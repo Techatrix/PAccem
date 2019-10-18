@@ -21,7 +21,7 @@ class Roommanager {
 	boolean isprefab = false;
 
 	Roommanager() {
-		load(st.strings[0].getvalue());
+		load(st.strings[0].value);
 	}
 	Roommanager(String loadname) {
 		load(loadname);
@@ -30,7 +30,7 @@ class Roommanager {
 	void mouseWheel(MouseEvent e) {
 		float delta = e.getCount() > 0 ? 1.0/1.1 : e.getCount() < 0 ? 1.1 : 1.0;
 		if(!viewmode) {
-			float ovscale = st.booleans[1].getvalue() ? 0 : st.floats[1].getvalue();
+			float ovscale = st.booleans[1].value ? 0 : st.floats[1].value;
 
 			float mx = mouseX-ov.xoff;
 			float my = mouseY-ov.yoff;
@@ -465,7 +465,7 @@ class Roommanager {
 		tool = 0;
 		roomgrid = new Grid(xgridsize, ygridsize);
 		furnitures = new ArrayList<Furniture>();
-		name = st.strings[0].getvalue();
+		name = st.strings[0].value;
 		st.load();
 		am.settitle(name);
 	}
@@ -520,7 +520,7 @@ class Roommanager {
 			yoff = constrain(yoff, 0, Integer.MAX_VALUE);
 			angle2 = constrain(angle2, -PI+0.1, 0);
 			pg.beginDraw();
-			pg.background(st.booleans[0].getvalue() ? 0 : 240);
+			pg.background(st.booleans[0].value ? 0 : 240);
 			pg.directionalLight(200, 200, 200, 0.3, 1, 0.3);
 			pg.ambientLight(140,140,140);
 

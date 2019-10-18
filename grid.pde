@@ -21,10 +21,10 @@ class Grid {
 	void draw(boolean viewmode, float gts) {
 		if(!viewmode) {
 			scale(gts);
-			strokeWeight(1.5*st.floats[0].getvalue()/gts);
+			strokeWeight(1.5*st.floats[0].value/gts);
 		} else {
 			pg.scale(gts);
-			pg.strokeWeight(st.floats[0].getvalue()/gts);
+			pg.strokeWeight(st.floats[0].value/gts);
 		}
 		// Grid Lines
 		if(!viewmode) {
@@ -88,7 +88,7 @@ class Grid {
 
 						pg.stroke(200);
 						pg.fill(200);
-						pg.strokeWeight(st.floats[0].getvalue()/gts);
+						pg.strokeWeight(st.floats[0].value/gts);
 
 						GridTile t = gettile(x,y);
 						if(t == null) {
