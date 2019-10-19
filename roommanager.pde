@@ -4,14 +4,14 @@ class Roommanager {
 	int selectionid = -1;
 	String name;
 
-	float xoff, yoff, scale, angle1, angle2;
+	float xoff, yoff, scale;
+	float dxoff, dyoff, dzoff, angle1, angle2, dspeed; 
 
 	int xgridsize, ygridsize, gridtilesize;
 
 	int tool = 0;
 
 	boolean viewmode = false; // true = 3D , false = 2D
-	boolean setup = false;
 
 	ArrayList<int[]> dragtiles = new ArrayList<int[]>();
 	boolean dragstate;
@@ -21,9 +21,11 @@ class Roommanager {
 	boolean isprefab = false;
 
 	Roommanager() {
+		resetcam(true);
 		load(st.strings[0].getvalue());
 	}
 	Roommanager(String loadname) {
+		resetcam(true);
 		load(loadname);
 	}
 
@@ -45,8 +47,8 @@ class Roommanager {
 			scale *= delta;
 			scale = constrain(scale, 0.25,5);
 		} else {
-			scale += (delta-1)/2;
-			scale = constrain(scale, 0.01,2.5);
+			dzoff += (delta-1)/2;
+			dzoff = constrain(dzoff, 0.01,2.5);
 		}
 	}
 	void mouseDragged() {
@@ -469,12 +471,9 @@ class Roommanager {
 	}
 
 	void reset() {
-		reset3dcam();
+		resetcam(true);
+		resetcam(false);
 		viewmode = false;
-		xoff = 0;
-		yoff = 0;
-		scale = 1;
-		tool = 0;
 		roomgrid = new Grid(xgridsize, ygridsize);
 		furnitures = new ArrayList<Furniture>();
 		name = st.strings[0].getvalue();
@@ -485,22 +484,20 @@ class Roommanager {
 		}
 	}
 	void switchviewmode() {
-		xoff = 0;
-		yoff = 0;
-		scale = 1;
-		tool = 0;
 		viewmode = !viewmode;
-		if(viewmode && !setup) {
-			reset3dcam();
-			setup = true;
-		}
 	}
-	void reset3dcam() {
-		scale = 0.4;
-		angle1 = PI*5/4;
-		angle2 = -2;
-		xoff = 0;
-		yoff = 0;
+	void resetcam(boolean viewmode) {
+		if(viewmode) {
+			angle1 = PI*5/4;
+			angle2 = -2;
+			dxoff = 0;
+			dyoff = 0;
+			dzoff = 0.4;
+		} else {
+			xoff = 0;
+			yoff = 0;
+			scale = 1;
+		}
 	}
 
 	void draw() {
@@ -515,25 +512,33 @@ class Roommanager {
 			translate(xoff+ov._width*ovscale, yoff+ov._height*ovscale);
 			scale(scale);
 		} else {
-			if(isKeyUp) {
-				xoff -= sin(-angle1+PI/2)*4;
-				yoff -= cos(-angle1+PI/2)*4;
+			if(isKeyUp || isKeyDown || isKeyLeft || isKeyRight) {
+				dspeed += 10/frameRate;
+				dspeed = constrain(dspeed, 0, 12);
+				if(isKeyUp) {
+					dxoff -= sin(-angle1+PI/2)*dspeed;
+					dyoff -= cos(-angle1+PI/2)*dspeed;
+				}
+				if(isKeyDown) {
+					dxoff += sin(-angle1+PI/2)*dspeed;
+					dyoff += cos(-angle1+PI/2)*dspeed;
+				}
+				if(isKeyLeft) {
+					dxoff += sin(-angle1)*dspeed;
+					dyoff += cos(-angle1)*dspeed;
+				}
+				if(isKeyRight) {
+					dxoff -= sin(-angle1)*dspeed;
+					dyoff -= cos(-angle1)*dspeed;
+				}
+			} else {
+				dspeed -= 30/frameRate;
+				dspeed = constrain(dspeed, 0, 12);
 			}
-			if(isKeyDown) {
-				xoff += sin(-angle1+PI/2)*4;
-				yoff += cos(-angle1+PI/2)*4;
-			}
-			if(isKeyLeft) {
-				xoff += sin(-angle1)*4;
-				yoff += cos(-angle1)*4;
-			}
-			if(isKeyRight) {
-				xoff -= sin(-angle1)*4;
-				yoff -= cos(-angle1)*4;
-			}
+
 			// 3D View
-			xoff = constrain(xoff, 0, Integer.MAX_VALUE);
-			yoff = constrain(yoff, 0, Integer.MAX_VALUE);
+			dxoff = constrain(dxoff, 0, Integer.MAX_VALUE);
+			dyoff = constrain(dyoff, 0, Integer.MAX_VALUE);
 			angle2 = constrain(angle2, -PI+0.1, 0);
 			pg.beginDraw();
 			pg.background(st.booleans[0].getvalue() ? 0 : 240);
@@ -547,7 +552,7 @@ class Roommanager {
 			float centery = cos(angle2);
 			float centerz = sin(angle2) * sin(angle1);
 
-			pg.camera(xoff,-height/2*scale,yoff, xoff+centerx,-height/2*scale-centery,yoff+centerz, 0, 1, 0);
+			pg.camera(dxoff,-height/2*dzoff,dyoff, dxoff+centerx,-height/2*dzoff-centery,dyoff+centerz, 0, 1, 0);
 
 			// Debug
 			if(ov.sidebarid == 3) {
@@ -571,7 +576,7 @@ class Roommanager {
 			furnitures.get(i).draw(viewmode, selectionid == i);
 		}
 
-		// 2D Tool Preview
+		// 2D Tooltips
 		if(!viewmode) {
 			if(!ov.ishit()) {
 				if(tool == 1) { // Room
@@ -588,19 +593,37 @@ class Roommanager {
 
 					if(isprefab) {
 						PrefabData pdata = dm.getprefabdata(newfurnitureid);
-
+						noStroke();
+						fill(c[0], 50);
+						rect(xpos, ypos, pdata._width, pdata._height);
+						boolean block = false;
 						for (int i=0;i<pdata.furnitures.length;i++) {
 							PrefabFurnitureData pfd = pdata.furnitures[i];
 							FurnitureData fdata = dm.getfurnituredata(pfd.id);
-
+							for (int x=0;x<fdata._width;x++) {
+								for (int y=0;y<fdata._height;y++) {
+									if(!roomgrid.gettilestate(xpos+pfd.xpos+x,ypos+pfd.ypos+y) || isfurniture(xpos+pfd.xpos+x,ypos+pfd.ypos+y) || !roomgrid.isingrid(xpos+pfd.xpos+x,ypos+pfd.ypos+y)) {
+										block = true;
+										break;
+									}
+								}
+							}
+						}
+						if(block) {
+							tint(255,128);
+						}
+						for (int i=0;i<pdata.furnitures.length;i++) {
+							PrefabFurnitureData pfd = pdata.furnitures[i];
+							FurnitureData fdata = dm.getfurnituredata(pfd.id);
 							image(fdata.image, xpos+pfd.xpos, ypos+pfd.ypos, fdata._width, fdata._height);
 						}
+						noTint();
 					} else {
 						FurnitureData fdata = dm.getfurnituredata(newfurnitureid);
 						boolean block = false;
 						for (int x=0;x<fdata._width;x++) {
 							for (int y=0;y<fdata._height;y++) {
-								if(!roomgrid.isingrid(xpos+x,ypos+y)) {
+								if(!roomgrid.gettilestate(xpos+x,ypos+y) || isfurniture(xpos+x,ypos+y) || !roomgrid.isingrid(xpos+x,ypos+y)) {
 									block = true;
 									break;
 								}
