@@ -21,9 +21,6 @@ void setup() {
 }
 
 void mouseWheel(MouseEvent e) {
-	if(ov.popup.visible) {
-		return;
-	}
 	if(!ov.ishit()) {
 		rm.mouseWheel(e);
 	}
@@ -53,7 +50,7 @@ void keyReleased() {
 }
 
 void draw() {
-	am.draw();
+	am.loop();
 	rm.draw();
 	ov.draw();
 }

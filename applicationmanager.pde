@@ -125,7 +125,7 @@ class ApplicationManager {
 			c[i] = constrain(c[i], 0, 255);
 		}
 	}
-	void draw() {
+	void loop() {
 		int sw = st.ints[0].getvalue();
 		int sh = st.ints[1].getvalue();
 		if(width != sw || height != sh) {

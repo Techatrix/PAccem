@@ -19,6 +19,11 @@
 		"furnitures":
 		[
 			{
+				"id": 0,
+				"xpos": 0,
+				"ypos": 1,
+			},
+			{
 				"id": 1,
 				"xpos": 1,
 				"ypos": 0,
