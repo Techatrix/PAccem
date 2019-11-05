@@ -10,7 +10,7 @@ PGraphics pg;
 PFont font;
 
 int[] c = new int[9];
-boolean isKeyUp, isKeyRight, isKeyLeft, isKeyDown;
+boolean isKeyUp, isKeyRight, isKeyLeft, isKeyDown, isKeyT;
 
 void settings() {
 	am = new ApplicationManager();

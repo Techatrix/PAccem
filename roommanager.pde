@@ -223,6 +223,7 @@ class Roommanager {
 					}
 				}
 				*/
+				roomgrid.con();
 			} else if(keyCode < 54 && keyCode > 48) {
 				newroomtilegroup = keyCode - 49;
 			} else if(keyCode == UP || keyCode == DOWN || keyCode == LEFT || keyCode == RIGHT) {

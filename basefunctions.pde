@@ -11,6 +11,7 @@ void setKey(int k, boolean bool) {
   else if (k == DOWN  | k == 'S')   isKeyDown  = bool;
   else if (k == LEFT  | k == 'A')   isKeyLeft  = bool;
   else if (k == RIGHT | k == 'D')   isKeyRight = bool;
+  else if (             k == 'T')   isKeyT     = bool;
 }
 
 boolean checkraw(int xpos, int ypos, int _width, int _height) {
