@@ -19,22 +19,39 @@ class Grid {
 	}
 	
 	void draw(boolean viewmode, float gts) {
+		if(isKeyT) {
+			con();
+		}
 		if(!viewmode) {
 			scale(gts);
 			strokeWeight(1.5*st.floats[0].getvalue()/gts);
+
+			// Grid Lines
+			stroke(c[1]);
+			int stepsize = 1;
+			float scale = rm.scale;
+			if(scale > 0.8) {
+ 				stepsize = 1;
+			}
+ 			else if(scale > 0.4) {
+ 				stepsize = 2;
+ 				strokeWeight(1.5*st.floats[0].getvalue()/gts*2);
+ 			}
+ 			else {
+ 				stepsize = 5;
+ 				strokeWeight(1.5*st.floats[0].getvalue()/gts*4);
+ 			}
+
+			for (int x=1;x<=tiles.length;x += stepsize) {
+				line(x,0,x,tiles[0].length);
+			}
+			for (int y=1; y<=tiles[0].length;y += stepsize) {
+				line(0,y,tiles.length,y);
+			}
+
 		} else {
 			pg.scale(gts);
 			pg.strokeWeight(st.floats[0].getvalue()/gts);
-		}
-		// Grid Lines
-		if(!viewmode) {
-			stroke(c[1]);
-			for (int x=1;x<=tiles.length;x++ ) {
-				line(x,0,x,tiles[0].length);
-			}
-			for (int y=1; y<=tiles[0].length; y++) {
-				line(0,y,tiles.length,y);
-			}
 		}
 		strokeCap(PROJECT);
 		for (int x=0; x<tiles.length; x++) {
@@ -202,6 +219,41 @@ class Grid {
 
 	boolean isingrid(int x, int y) {
 		return (x > -1 && x < tiles.length && y > -1 && y < tiles[0].length);
+	}
+
+	void con() {
+		GridTile[][] newtiles = new GridTile[tiles.length][tiles[0].length];
+		for (int x=0; x<tiles.length; x++) {
+			for (int y=0; y<tiles[0].length; y++) {
+				newtiles[x][y] = new GridTile();
+
+				int activetiles = 0;
+				for (int dx=-1;dx<2;dx++) {
+					for (int dy=-1;dy<2;dy++) {
+						if(x+dx > -1 && x+dx < tiles.length && y+dy > -1 && y+dy < tiles[0].length) {
+							if(dx != 0 || dy != 0) {
+								if(tiles[x+dx][y+dy].state) {
+									activetiles++;
+								}
+							}
+						}
+					}
+				}
+				boolean alive = tiles[x][y].state;
+				if(alive) {
+					if(activetiles != 2 && activetiles != 3) {
+						alive = false;
+					}
+				} else {
+					if(activetiles == 3) {
+						alive = true;
+					}
+				}
+
+				newtiles[x][y].state = alive;
+			}
+		}
+		tiles = newtiles;
 	}
 }
 
