@@ -33,13 +33,14 @@ class DataManager {
 			int _width = furn.getInt("width", 1);
 			int _height = furn.getInt("height", 1);
 			String src = furn.getString("src");
+			int price = furn.getInt("price", 0);
 			PImage image = loadImage("data/assets/furn/img/" + src +".png");
 			PShape shape = null;
 			if(st.booleans[3].getvalue()) {
 				shape = pg.loadShape("data/assets/furn/mdl/" + src +".obj");
 			}
 			String name = furn.getString("name", "Name not Found");
-			furnitures[i] = new FurnitureData(i, _width, _height, image, shape, name);
+			furnitures[i] = new FurnitureData(i, _width, _height, image, shape, name, price);
 		}
 
 		// ---------- Load Prefab Data ----------
@@ -74,24 +75,6 @@ class DataManager {
 
 			prefabs[i] = new PrefabData(_width, _height, name, prefabfurns);
 		}
-
-		/* Print Prefabs
-		for (int i=0;i<prefabs.length;i++) {
-			PrefabData prefdata = prefabs[i];
-			println("ID:     " + prefdata.id);
-			println("Width:  " + prefdata._width);
-			println("Height: " + prefdata._height);
-			println("Name:   " + prefdata.name);
-			println();
-			for (int j=0;j<prefdata.furnitures.length;j++) {
-				PrefabFurnitureData preffurndata = prefdata.furnitures[j];
-				println("ID:   " + preffurndata.id);
-				println("xpos: " + preffurndata.xpos);
-				println("ypos: " + preffurndata.ypos);
-			}
-			println("---------------------");
-		}
-		*/
 	}
 
 	FurnitureData getfurnituredata(int id) {
@@ -115,14 +98,16 @@ class FurnitureData {
 	final PImage image;
 	final PShape shape;
 	final String name;
+	final int price;
 
-	FurnitureData(int id, int _width, int _height, PImage image, PShape shape, String name) {
+	FurnitureData(int id, int _width, int _height, PImage image, PShape shape, String name, int price) {
 		this.id = id;
 		this._width = _width;
 		this._height = _height;
 		this.image = image;
 		this.shape = shape;
 		this.name = name;
+		this.price = price;
 	}
 }
 class PrefabFurnitureData {

@@ -1,5 +1,7 @@
 class Furniture extends RPWH {
 	int id;
+	int price;
+
 	Furniture() {}
 	Furniture(int id) {
 		this(dm.getfurnituredata(id));
@@ -17,6 +19,7 @@ class Furniture extends RPWH {
 		this.id = fdata.id;
 		this._width = fdata._width;
 		this._height = fdata._height;
+		this.price = fdata.price;
 	}
 	Furniture(FurnitureData fdata, int xpos, int ypos) {
 		this(fdata);
@@ -28,30 +31,15 @@ class Furniture extends RPWH {
 		if(!viewmode) {
 			// 2D
 			translate(xpos, ypos);
-			rotate(rot);
+			//rotate(rot);
 			image(dm.furnitures[id].image, 0, 0, _width, _height);
 			if (selected == true) {
 				noStroke();
 				fill(color(255,0,0,100));
 				rect(0, 0, _width, _height);
 			}
-			rotate(-rot);
+			//rotate(-rot);
 			translate(-xpos, -ypos);
-			/*
-			push();
-			translate(xpos+(float)_width/2, ypos+(float)_height/2);
-			rotate(rot);
-			imageMode(CENTER);
-			rectMode(CENTER);
-
-			image(dm.furnitures[id].image, 0, 0, _width, _height);
-			if (selected == true) {
-				noStroke();
-				fill(color(255,0,0,100));
-				//rect(0, 0, _width, _height);
-			}
-			pop();
-			*/
 		} else {
 			// 3D
 			pg.translate(xpos, 0, ypos);
@@ -71,52 +59,11 @@ class Furniture extends RPWH {
 		rect(0,0,_width,_height);
 		rotate(-rot);
 		translate(-xpos, -ypos);
-		/*
-		push();
-		noStroke();
-		if(selected) {
-			fill(c[8], 100);
-		} else {
-			fill(255,0,0, 50);
-		}
-		translate(xpos+(float)_width/2, ypos+(float)_height/2);
-		rotate(rot);
-		rectMode(CENTER);
-		rect(0,0,_width,_height);
-		pop();
-		*/
 	}
 
 	boolean checkover() {
 		float ovscale = st.booleans[1].getvalue() ? 0 : st.floats[1].getvalue();
 		float a = rm.gridtilesize*rm.scale;
-
-		/*
-		float x1 = xpos;
-		float y1 = ypos;
-		float x2 = xpos+_width;
-		float y2 = ypos+_height;
-
-		if(degrees(rot) == 90 || degrees(rot) == 270) {
-			float t1 = x1;
-			float t2 = x2;
-
-			x1 = y1;
-			x2 = y2;
-			y1 = t1;
-			y2 = t2;
-		}
-		x1 =x1*a+ov._width*ovscale+rm.xoff;
-		y1 =y1*a+ov._height*ovscale+rm.yoff;
-		x2 =x2*a+ov._width*ovscale+rm.xoff;
-		y2 =y2*a+ov._height*ovscale+rm.yoff;
-
-		if (mouseX >= x1 && mouseX < x2 &&
-			mouseY >= y1 && mouseY < y2) {
-			return true;
-		}
-		return false;
-		*/
 
 		float x = xpos*a+ov._width*ovscale+rm.xoff;
 		float y = ypos*a+ov._height*ovscale+rm.yoff;
@@ -140,14 +87,14 @@ class Furniture extends RPWH {
 	}
 
 	boolean setxpos(int value) {
-		if(value > -1 && value <= rm.xgridsize-_width) {
+		if(value > -1 && value <= rm.roomgrid.tiles.length-_width) {
 			xpos = value;
 			return true;
 		}
 		return false;
 	}
 	boolean setypos(int value) {
-		if(value > -1 && value <= rm.ygridsize-_height) {
+		if(value > -1 && value <= rm.roomgrid.tiles[0].length-_height) {
 			ypos = value;
 			return true;
 		}
@@ -156,9 +103,5 @@ class Furniture extends RPWH {
 	void move(int dx, int dy) {
 		setxpos(xpos+dx);
 		setypos(ypos+dy);
-	}
-	void rotate90() {
-		rot += HALF_PI;
-		rot = rot % TWO_PI;
 	}
 }

@@ -77,10 +77,8 @@ class Overlay {
 						int newygridsize = int(values[1].bv.value);
 
 						if(newxgridsize > 0 && newygridsize > 0) {
-							rm.xgridsize = newxgridsize;
-							rm.ygridsize = newygridsize;
+							rm.newroom(newxgridsize, newygridsize);
 							rm.reset();
-							ov.showmessage("New Room: " + newxgridsize + "x" + newygridsize);
 						}
 					}
 					@ Override public void onfalse() {}
@@ -337,10 +335,12 @@ class ButtonList extends PWH{
 	void newsettings(Settings settings) {
 		listitems = new ListItem[settings.getsize()];
 		int x=0;
+		/*
 		for (int i=0;i<settings.colors.length;i++ ) {
 			listitems[x] = new ListItem(settings.colors[i].name, true, 0, i) {@ Override public void action() {}};
 			x++;
 		}
+		*/
 		for (int i=0;i<settings.floats.length;i++ ) {
 			listitems[x] = new ListItem(settings.floats[i].name, true, 1, i) {@ Override public void action() {}};
 			x++;
@@ -373,11 +373,11 @@ class ButtonList extends PWH{
 		listitems = new ListItem[fd.length];
 		for (int i=0;i<fd.length;i++ ) {
 			final Temp temp = new Temp(i);
-			listitems[i] = new ListItem(fd[i].name, fd[i].image) {@ Override public void action() {rm.newfurnitureid = temp.i;rm.tool = 2;rm.isprefab = false;}};
+			listitems[i] = new ListItem(fd[i].name + " : " + fd[i].price, fd[i].image) {@ Override public void action() {rm.newfurnitureid = temp.i;rm.tool = 2;rm.isprefab = false;}};
 		}
 		lastlistitems = new ListItem[1];
 		lastlistitems[0] = new ListItem("Prefabs") {@ Override public void action() {ov.sidebarid = 6;}};
-		rowlength = 3;
+		rowlength = 2;
 	}
 
 	void newprefabmanager(PrefabData[] pd) {
@@ -419,9 +419,9 @@ class ButtonList extends PWH{
 		if(lastlistitems != null) {
 			for(int i=lastlistitems.length-1;i>=0;i--) {
 				if(direction) {
-					lastlistitems[i].draw(xpos+_width-(lastbuttonsize+buttonmargin)*(i+1)+buttonmargin+off, ypos, lastbuttonsize, _height);
+					lastlistitems[i].draw(xpos+_width-(lastbuttonsize+buttonmargin)*(i+1)+buttonmargin, ypos, lastbuttonsize, _height);
 				} else {
-					lastlistitems[i].draw(xpos, ypos+_height-(lastbuttonsize+buttonmargin)*(i+1)+buttonmargin+off, _width, lastbuttonsize);
+					lastlistitems[i].draw(xpos, ypos+_height-(lastbuttonsize+buttonmargin)*(i+1)+buttonmargin, _width, lastbuttonsize);
 				}
 			}
 		}
@@ -451,9 +451,9 @@ class ButtonList extends PWH{
 			for (int i=0;i<lastlistitems.length;i++) {
 				ListItem l = lastlistitems[i];
 				if(direction) {
-					l.check(xpos+_width-(lastbuttonsize+buttonmargin)*(i+1)+buttonmargin+off, ypos, lastbuttonsize, _height);
+					l.check(xpos+_width-(lastbuttonsize+buttonmargin)*(i+1)+buttonmargin, ypos, lastbuttonsize, _height);
 				} else {
-					l.check(xpos, ypos+_height-(lastbuttonsize+buttonmargin)*(i+1)+buttonmargin+off, _width, lastbuttonsize);
+					l.check(xpos, ypos+_height-(lastbuttonsize+buttonmargin)*(i+1)+buttonmargin, _width, lastbuttonsize);
 				}
 			}
 		}
@@ -621,6 +621,7 @@ class ButtonValue{
 	void getsetting() {
 		if(index != -99) {
 			switch(type) {
+				/*
 				case 0:
 				// 0 = color
 					if(index < 0) {
@@ -631,6 +632,7 @@ class ButtonValue{
 						value = int(red(c)) + " " + int(green(c)) + " " + int(blue(c));
 					}
 				break;
+				*/
 				case 1:
 				// 1 = float
 					value = str(st.floats[index].getvalue());
@@ -657,6 +659,7 @@ class ButtonValue{
 		if(!readonly) {
 			if(index != -99) {
 				switch(type) {
+					/*
 					case 0:
 					// 0 = color
 						String[] strings = split(value, " ");
@@ -671,6 +674,7 @@ class ButtonValue{
 							st.colors[index].setvalue(c);
 						}
 					break;
+					*/
 					case 1:
 					// 1 = float
 						st.floats[index].setvalue(float(value));

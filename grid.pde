@@ -20,35 +20,41 @@ class Grid {
 	
 	void draw(boolean viewmode, float gts) {
 		if(isKeyT) {
-			con();
+			cgol();
 		}
 		if(!viewmode) {
 			scale(gts);
-			strokeWeight(1.5*st.floats[0].getvalue()/gts);
-
-			// Grid Lines
 			stroke(c[1]);
-			int stepsize = 1;
-			float scale = rm.scale;
-			if(scale > 0.8) {
- 				stepsize = 1;
+			if(rm.scale >= 1) {
+				for (int x=1;x<=tiles.length;x++) {
+					if(x % 5 == 0) {
+ 						strokeWeight(1.5*st.floats[0].getvalue()/gts*2);
+					} else {
+ 						strokeWeight(1.5*st.floats[0].getvalue()/gts);
+					}
+					line(x,0,x,tiles[0].length);
+				}
+				for (int y=1; y<=tiles[0].length;y++) {
+					if(y % 5 == 0) {
+ 						strokeWeight(1.5*st.floats[0].getvalue()/gts*2);
+					} else {
+ 						strokeWeight(1.5*st.floats[0].getvalue()/gts);
+					}
+					line(0,y,tiles.length,y);
+				}
+			} else {
+ 				strokeWeight(1.5*st.floats[0].getvalue()/gts);
+				for (int x=1;x<=tiles.length;x++) {
+					if(x % 5 == 0) { // Include Border
+						line(x,0,x,tiles[0].length);
+					}
+				}
+				for (int y=1; y<=tiles[0].length;y++) {
+					if(y % 5 == 0) {
+						line(0,y,tiles.length,y);
+					}
+				}
 			}
- 			else if(scale > 0.4) {
- 				stepsize = 2;
- 				strokeWeight(1.5*st.floats[0].getvalue()/gts*2);
- 			}
- 			else {
- 				stepsize = 5;
- 				strokeWeight(1.5*st.floats[0].getvalue()/gts*4);
- 			}
-
-			for (int x=1;x<=tiles.length;x += stepsize) {
-				line(x,0,x,tiles[0].length);
-			}
-			for (int y=1; y<=tiles[0].length;y += stepsize) {
-				line(0,y,tiles.length,y);
-			}
-
 		} else {
 			pg.scale(gts);
 			pg.strokeWeight(st.floats[0].getvalue()/gts);
@@ -221,7 +227,7 @@ class Grid {
 		return (x > -1 && x < tiles.length && y > -1 && y < tiles[0].length);
 	}
 
-	void con() {
+	void cgol() {
 		GridTile[][] newtiles = new GridTile[tiles.length][tiles[0].length];
 		for (int x=0; x<tiles.length; x++) {
 			for (int y=0; y<tiles[0].length; y++) {
@@ -255,16 +261,34 @@ class Grid {
 		}
 		tiles = newtiles;
 	}
+
+	int getprice() {
+		int price = 0;
+		for (int x=0; x<tiles.length; x++) {
+			for (int y=0; y<tiles[0].length; y++) {
+				if(tiles[x][y].state) {
+					price += 1;
+				}
+			}
+		}
+		return price;
+	}
 }
 
 class GridTile {
 	boolean state;
-	boolean[] window;
 	int roomgroup;
+	boolean[] window;
 
 	GridTile() {
-		state = false;
+		this(false);
+	}
+	GridTile(boolean state) {
+		this(state, 0);
+	}
+	GridTile(boolean state, int roomgroup) {
+		this.state = state;
+		this.roomgroup = roomgroup;
 		window = new boolean[4];
-		roomgroup = 0;
 	}
 }
