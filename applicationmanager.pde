@@ -33,8 +33,8 @@ class ApplicationManager {
 		if(!st.booleans[3].value) {
 	  		surface.setIcon(dm.icons[0]);
 		}
-		//setfont(st.strings[2].getvalue());
-		//textSize(16/((st.floats[1].getvalue()+1)/2));
+		setfont(st.strings[2].value);
+		textSize(16/((st.floats[1].value+1)/2));
 	}
 
 	void settitle(String name) {
@@ -93,7 +93,7 @@ class ApplicationManager {
 			}
 		} else {
 			setfontrawinput = newfontname;
-			thread("setfontraw");
+			thread("setfontrawthread");
 		}
 	}
 	void setfontraw() {
@@ -136,4 +136,7 @@ class ApplicationManager {
 		}
 	}
 
+}
+void setfontrawthread() {
+	am.setfontraw();
 }

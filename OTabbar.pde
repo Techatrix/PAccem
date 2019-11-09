@@ -8,10 +8,10 @@ abstract class Tabbar implements IOverlay {
 		this.tabs = tabs;
 	}
 
-	void draw() {
-		drawitem(list);
+	void draw(boolean hit) {
+		drawitem(list, hit);
 		if(isvalidtab()) {
-			drawitem(tabs[tabid]);
+			drawitem(tabs[tabid], hit);
 		}
 	}
 

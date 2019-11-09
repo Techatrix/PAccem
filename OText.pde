@@ -1,19 +1,13 @@
 class Text extends PWH implements IOverlay {
 	String text;
-	TextStyle textstyle;
 
 	Text(String text) {
-		this(text, new TextStyle());
-	}
-	Text(String text, TextStyle textstyle) {
 		this.text = text;
-		this.textstyle = textstyle;
 		setwh(-1, -1);
 	}
 
-	void draw() {
-		textSize(textstyle.fontsize);
-		fill(textstyle.textcolor); 
+	void draw(boolean hit) {
+		fill(c[0]); 
 		if(_width == -1 || _height == -1) {
 			textAlign(LEFT, TOP);
 			text(text, xpos,ypos);
@@ -24,8 +18,7 @@ class Text extends PWH implements IOverlay {
 	}
 
 	Box getbound() {
-		textSize(textstyle.fontsize);
-		return new Box(max(_width, textWidth(text)*1), max(_height, textstyle.fontsize + textDescent()));
+		return new Box(max(_width, textWidth(text)*1), max(_height, 16 + textDescent()));
 	}
 	
 	boolean ishit() {
@@ -44,28 +37,24 @@ class Text extends PWH implements IOverlay {
 
 abstract class SetValueText extends PWH implements IOverlay {
 	String text;
-	TextStyle textstyle;
 	SetValueStyle valuestyle;
 	boolean selected = false;
-	String value = "";
-	String newvalue = "";
+	String value;
+	String newvalue;
 
 	SetValueText(String text) {
-		this(text, new SetValueStyle(), new TextStyle());
+		this(text, "");
 	}
 	SetValueText(String text, String value) {
-		this(text, new SetValueStyle(), new TextStyle());
-		this.value = value;
-		this.newvalue = value;
+		this(text, value, new SetValueStyle());
+	}
+	SetValueText(String text, SetValueStyle valuestyle) {
+		this(text, "", valuestyle);
 	}
 	SetValueText(String text, String value, SetValueStyle valuestyle) {
-		this(text, valuestyle, new TextStyle());
+		this.text = text;
 		this.value = value;
 		this.newvalue = value;
-	}
-	SetValueText(String text, SetValueStyle valuestyle, TextStyle textstyle) {
-		this.text = text;
-		this.textstyle = textstyle;
 		this.valuestyle = valuestyle;
 		setwh(-1, -1);
 	}
@@ -113,12 +102,12 @@ abstract class SetValueText extends PWH implements IOverlay {
 
 	abstract void onchange();
 
-	void draw() {
-		textSize(textstyle.fontsize);
+	void draw(boolean hit) {
+		textSize(16);
 		if(selected) {
-			fill(textstyle.selectedtextcolor); 
+			fill(color(255,0,0)); 
 		} else {
-			fill(textstyle.textcolor); 
+			fill(c[0]); 
 		}
 		if(_width == -1 || _height == -1) {
 			textAlign(LEFT, TOP);
@@ -130,12 +119,12 @@ abstract class SetValueText extends PWH implements IOverlay {
 	}
 
 	Box getbound() {
-		textSize(textstyle.fontsize);
-		return new Box(max(_width, textWidth(text)*1), max(_height, textstyle.fontsize + textDescent()));
+		textSize(16);
+		return new Box(max(_width, textWidth(text)*1), max(_height, 16 + textDescent()));
 	}
 	
 	boolean ishit() {
-	  	return mouseX >= xpos && mouseX <= xpos+_width && mouseY >= ypos && mouseY <= ypos+_height;
+	  	return mouseX >= xpos && mouseX < xpos+_width && mouseY >= ypos && mouseY < ypos+_height;
 	}
 
 	void setxy(int xpos, int ypos) {
@@ -150,22 +139,17 @@ abstract class SetValueText extends PWH implements IOverlay {
 
 abstract class GetValueText extends PWH implements IOverlay {
 	String text;
-	TextStyle textstyle;
 
 	GetValueText(String text) {
-		this(text, new TextStyle());
-	}
-	GetValueText(String text, TextStyle textstyle) {
 		this.text = text;
-		this.textstyle = textstyle;
 		setwh(-1, -1);
 	}
 
 	abstract String getvalue();
 
-	void draw() {
-		textSize(textstyle.fontsize);
-		fill(textstyle.textcolor);
+	void draw(boolean hit) {
+		textSize(16);
+		fill(c[0]);
 		if(_width == -1 || _height == -1) {
 			textAlign(LEFT, TOP);
 			text(text + ": " + getvalue(), xpos,ypos);
@@ -176,12 +160,12 @@ abstract class GetValueText extends PWH implements IOverlay {
 	}
 
 	Box getbound() {
-		textSize(textstyle.fontsize);
-		return new Box(max(_width, textWidth(text)*1), max(_height, textstyle.fontsize + textDescent()));
+		textSize(16);
+		return new Box(max(_width, textWidth(text)*1), max(_height, 16 + textDescent()));
 	}
 	
 	boolean ishit() {
-	  	return mouseX >= xpos && mouseX <= xpos+_width && mouseY >= ypos && mouseY <= ypos+_height;
+	  	return mouseX >= xpos && mouseX < xpos+_width && mouseY >= ypos && mouseY < ypos+_height;
 	}
 
 	void setxy(int xpos, int ypos) {
@@ -207,26 +191,5 @@ class SetValueStyle {
 	SetValueStyle(int type, int maxlength) {
 		this.type = type;
 		this.maxlength = maxlength;
-	}
-}
-
-class TextStyle {
-	color textcolor;
-	color selectedtextcolor;
-	int fontsize;
-
-	TextStyle() {
-		this(16);
-	}
-	TextStyle(int fontsize) {
-		this(fontsize, color(255));
-	}
-	TextStyle(int fontsize, color textcolor) {
-		this(fontsize, textcolor, color(255,0,0));
-	}
-	TextStyle(int fontsize, color textcolor, color selectedtextcolor) {
-		this.fontsize = fontsize;
-		this.textcolor = textcolor;
-		this.selectedtextcolor = selectedtextcolor;
 	}
 }

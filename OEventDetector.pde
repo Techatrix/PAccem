@@ -25,8 +25,8 @@ abstract class EventDetector implements IOverlay {
 	}
 	abstract void onevent(EventType et, MouseEvent e);
 
-	void draw() {
-		drawitem(item);
+	void draw(boolean hit) {
+		drawitem(item, hit);
 	}
 
 	Box getbound() {

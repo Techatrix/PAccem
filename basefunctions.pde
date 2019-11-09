@@ -5,6 +5,19 @@ String getabout() {
 	text += lg.get("madeby") + ": " + appmaker + "\n";
 	return text;
 }
+String getaboutline(int i) {
+	switch(i) {
+		case 0:
+		return appname;
+		case 1:
+		return lg.get("version") + ": " + appversion;
+		case 2:
+		return lg.get("programmedwith") + ": " + "Processing";
+		case 3:
+		return lg.get("madeby") + ": " + appmaker;
+	}
+	return "";
+}
 
 void setKey(int k, boolean bool) {
   if      (k == UP    | k == 'W')   isKeyUp    = bool;

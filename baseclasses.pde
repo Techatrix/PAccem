@@ -21,14 +21,14 @@ class RPoint extends Point {
 class RPWH extends PWH {
 	float rot = 0;
 }
-// holds an integer (used for final variable in abstract class)
+// holds a integer (used for final variable in abstract class)
 class Temp {
 	int i;
 	Temp(int i) {
 		this.i = i;
 	}
 }
-// holds an string (used for final variable in abstract class)
+// holds a string (used for final variable in abstract class)
 class STemp {
 	String s;
 	STemp(String s) {

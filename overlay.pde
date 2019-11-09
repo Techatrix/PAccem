@@ -3,13 +3,16 @@ class Overlay {
 	boolean visible = true;
 	int xoff = 50;
 	int yoff = 30;
+	boolean drawpopup = false;
 
 	String newroomname = "";
 
 	Overlay() {
 		final String[] tabs = {"newroom", "viewmode", "loadroom", "saveroom", "settings", "debug", "roomgroups", "about", "reset"};
-		items = new Object[2];
-		items[0] = 
+		items = new Object[3];
+		items[0] =
+		new GetVisible(new Text(" ")) {@Override public boolean getvisible() {return drawpopup;}};
+		items[1] = 
 		new Tabbar(
 			new ListViewBuilder() {
 				@Override public Object i(int i) {
@@ -31,18 +34,16 @@ class Overlay {
 							new Builder() {
 								@Override public Object i(int i) {
 									final Temp temp = new Temp(i);
-									return new Container(new EventDetector(new Text("Room: " + rm.loadrooms()[i])) {
+									return new EventDetector(new Container(new Text("Room: " + rm.loadrooms()[i]))) {
 										@Override public void onevent(EventType et, MouseEvent e) {
 											if(et == EventType.MOUSEPRESSED) {
-												println("Load Room: " + temp.i);
+												rm.load(rm.loadrooms()[temp.i]);
 											}
 										}
-									});
+									};
 								}
-							}.build(rm.loadrooms().length),
-							300, height-yoff
-						),
-						Corner.TOPRIGHT
+							}.build(rm.loadrooms().length), 300, height-yoff
+						), Align.TOPRIGHT
 					),0,yoff
 				),
 				// Save Room
@@ -50,19 +51,21 @@ class Overlay {
 					new Transform(
 						new ListView(
 							new Object[] {
-								new Container(new SetValueText("Name") {
-									@Override public void onchange() {ov.newroomname = value;}
+								new Container(new SetValueText("Name", st.strings[0].value) {
+									@Override public void onchange() {ov.newroomname = newvalue;value = newvalue;}
 								}),
+								new SizedBox(),
 								new EventDetector(new Container(new Text("Save"))) {
 									@Override public void onevent(EventType et, MouseEvent e) {
 										if(et == EventType.MOUSEPRESSED) {
-											println("Save Room: " + newroomname);
+											rm.name = ov.newroomname;
+											rm.save(rm.name);
+											ov = new Overlay();
 										}
 									}
 								},
 							}, 300, height-yoff
-						),
-						Corner.TOPRIGHT
+						), Align.TOPRIGHT
 					),0,yoff
 				),
 				// Settings
@@ -76,12 +79,23 @@ class Overlay {
 										String result = st.set(temp.i, newvalue);
 										if(result != null) {
 											value = result;
+											switch(temp.i) {
+												case 1:
+												lg.setlang(st.strings[1].value);
+												ov = new Overlay();
+												break;
+												case 2:
+												am.setfont(st.strings[2].value);
+												break;
+												case 3:
+												am.recalculatecolor();
+												break;
+											}
 										}
 									}
 								});
 							}
-						}.build(st.getsize(), 300, height-yoff),
-						Corner.TOPRIGHT
+						}.build(st.getsize(), 300, height-yoff), Align.TOPRIGHT
 					),0,yoff
 				),
 				// Debug
@@ -105,8 +119,7 @@ class Overlay {
 								new Container(new GetValueText("New Roomtilegroup") {@ Override public String getvalue() {return str(rm.newroomtilegroup);}}),
 								new Container(new GetValueText("Selectionid") {@ Override public String getvalue() {return str(rm.selectionid);}}),
 							}, 300, height-yoff
-						),
-						Corner.TOPRIGHT
+						), Align.TOPRIGHT
 					),0,yoff
 				),
 				// Room Groups
@@ -140,8 +153,7 @@ class Overlay {
 									}
 								});
 							}
-						}.build(5, 300, height-yoff),
-						Corner.TOPRIGHT
+						}.build(5, 300, height-yoff), Align.TOPRIGHT
 					),0,yoff
 				)
 			}
@@ -153,24 +165,96 @@ class Overlay {
 					} else {
 						tabid = i-2;
 					}
-				}
-				switch(i) { // Popups
-					case 0: // New Room
-					println("New Room");
-					break;
-					case 1: // Viewmode
+				} else if(i == 1) {
 					rm.switchviewmode();
-					break;
-					case 7: // About
-					println("About");
-					break;
-					case 8: // Reset
-					println("Reset");
-					break;
+				} else {
+					Object o = new Object();
+					switch(i) { // Popups
+						case 0: // New Room
+							o =
+							new Container(
+								new Transform(
+									new ListView(
+										new Object[] {
+											new Text(lg.get("newroom")),
+											new SizedBox(),
+											new Container(new SetValueText(lg.get("newwidth"), "5", new SetValueStyle(2)) {
+												@Override public void onchange() {ov.newroomname = newvalue;value = newvalue;}
+											}),
+											new Container(new SetValueText(lg.get("newheight"), "5", new SetValueStyle(2)) {
+												@Override public void onchange() {ov.newroomname = newvalue;value = newvalue;}
+											}),
+											new EventDetector(new Container(new Text(lg.get("ok")))) {
+												@Override public void onevent(EventType et, MouseEvent e) {
+													if(et == EventType.MOUSEPRESSED) {drawpopup = false;}}
+											},
+										}, width/4, height/4
+									), Align.CENTERCENTER
+								), width, height, color(0,150)
+							);
+						break;
+						case 7: // About
+							o =
+							new Container(
+								new Transform(
+									new ListView(
+										new Object[] {
+											new Text(getaboutline(0)),
+											new Text(getaboutline(1)),
+											new Text(getaboutline(2)),
+											new Text(getaboutline(3)),
+											new EventDetector(new Container(new Text("Github"))) {
+												@Override public void onevent(EventType et, MouseEvent e) {
+													if(et == EventType.MOUSEPRESSED) {link(githublink);}
+												}
+											},
+											new EventDetector(new Container(new Text(lg.get("ok")))) {
+												@Override public void onevent(EventType et, MouseEvent e) {
+													if(et == EventType.MOUSEPRESSED) {drawpopup = false;}
+												}
+											},
+										}, width/4, height/4
+									), Align.CENTERCENTER
+								), width, height, color(0,150)
+							);
+						break;
+						case 8: // Reset
+							o =
+							new Container(
+								new Transform(
+									new ListView(
+										new Object[] {
+											new SizedBox(),
+											new Text(lg.get("areyousure")),
+											new ListView(
+												new Object[] {
+													new EventDetector(new Container(new Text(lg.get("ok")))) {
+														@Override public void onevent(EventType et, MouseEvent e) {
+															if(et == EventType.MOUSEPRESSED) {
+																drawpopup = false;
+																rm.reset();
+															}
+														}
+													},
+													new EventDetector(new Container(new Text(lg.get("cancel")))) {
+														@Override public void onevent(EventType et, MouseEvent e) {
+															if(et == EventType.MOUSEPRESSED) {drawpopup = false;}
+														}
+													},
+												}, width/4, 30, width/8, Dir.RIGHT
+											)
+										}, width/4, height/4
+									), Align.CENTERCENTER
+								), width, height, color(0,150)
+							);
+						break;
+					}
+					drawpopup = true;
+					items[0] = new GetVisible(o) {@Override public boolean getvisible() {return drawpopup;}};
 				}
 			}
 		};
-		items[1] =
+		items[2] =
 		new Transform(
 			new ListViewBuilder() {
 				@Override public Object i(int i) {
@@ -183,21 +267,32 @@ class Overlay {
 						}
 					};
 				}
-			}.build(6, xoff, height-yoff, xoff, Dir.DOWN),
-			0,yoff
+			}.build(6, xoff, height-yoff, xoff, Dir.DOWN), 0,yoff
 		);
-
-
 		for (Object item : items) {
 			setitemxy(item, 0,0);
 		}
 	}
-
 	void draw() {
 		if(visible) {
-			for (Object item : items) {
-				drawitem(item);
+			boolean hit = false;
+			boolean[] h = new boolean[items.length];
+			for (int i=0;i<items.length;i++) {
+				boolean newhit = getisitemhit(items[i]);
+				if(newhit) {
+					if(!hit) {
+						h[i] = true;
+					}
+					hit = true;
+				} else {
+					h[i] = false;
+				}
 			}
+
+			for (int i=items.length-1;i>=0;i--) {
+				drawitem(items[i], h[i]);
+			}
+
 		}
 	}
 
@@ -225,6 +320,7 @@ class Overlay {
 			for (Object item : items) {
 				if(mousePresseditem(item)) {
 					hit = true;
+					return true;
 				}
 			}
 		}
@@ -256,11 +352,12 @@ void mouseWheelitem(Object item, MouseEvent e) {
 		((Container)item).mouseWheel(e);
 	} else if (item instanceof Transform) {
 		((Transform)item).mouseWheel(e);
-	}else if (item instanceof EventDetector) {
+	} else if (item instanceof GetVisible) {
+		((GetVisible)item).mouseWheel(e);
+	} else if (item instanceof EventDetector) {
 		((EventDetector)item).mouseWheel(e);
 	}
 }
-
 boolean mousePresseditem(Object item) {
 	if (item instanceof Tabbar) {
 		return ((Tabbar)item).mousePressed();
@@ -274,12 +371,13 @@ boolean mousePresseditem(Object item) {
 		return ((SetValueText)item).mousePressed();
 	} else if(item instanceof Transform) {
 		return ((Transform)item).mousePressed();
-	}else if (item instanceof EventDetector) {
+	} else if(item instanceof GetVisible) {
+		return ((GetVisible)item).mousePressed();
+	} else if (item instanceof EventDetector) {
 		((EventDetector)item).mousePressed();
 	}
 	return false;
 }
-
 void keyPresseditem(Object item) {
 	if (item instanceof Tabbar) {
 		((Tabbar)item).keyPressed();
@@ -293,11 +391,12 @@ void keyPresseditem(Object item) {
 		((SetValueText)item).keyPressed();
 	} else if (item instanceof Transform) {
 		((Transform)item).keyPressed();
+	} else if (item instanceof GetVisible) {
+		((GetVisible)item).keyPressed();
 	} else if (item instanceof EventDetector) {
 		((EventDetector)item).keyPressed();
 	}
 }
-
 int getlistindex(Object item) {
 	if (item instanceof ListView) {
 		return ((ListView)item).getindex();
@@ -306,7 +405,6 @@ int getlistindex(Object item) {
 	}
 	return -1;
 }
-
 boolean getisitemhit(Object item) {
 	if (item instanceof Tabbar) {
 		return ((Tabbar)item).ishit();
@@ -322,35 +420,36 @@ boolean getisitemhit(Object item) {
 		return ((GetValueText)item).ishit();
 	} else if(item instanceof Transform) {
 		return ((Transform)item).ishit();
-	}else if(item instanceof EventDetector) {
+	} else if(item instanceof GetVisible) {
+		return ((GetVisible)item).ishit();
+	} else if(item instanceof EventDetector) {
 		return ((EventDetector)item).ishit();
 	}
 	return false;
 }
-
-void drawitem(Object item) {
+void drawitem(Object item, boolean hit) {
 	if (item instanceof Tabbar) {
-		((Tabbar)item).draw();
+		((Tabbar)item).draw(hit);
 	} else if (item instanceof ListView) {
-		((ListView)item).draw();
+		((ListView)item).draw(hit);
 	} else if(item instanceof GridView) {
-		((GridView)item).draw();
+		((GridView)item).draw(hit);
 	} else if(item instanceof Container) {
-		((Container)item).draw();
+		((Container)item).draw(hit);
 	} else if(item instanceof Text) {
-		((Text)item).draw();
+		((Text)item).draw(hit);
 	} else if(item instanceof SetValueText) {
-		((SetValueText)item).draw();
+		((SetValueText)item).draw(hit);
 	} else if(item instanceof GetValueText) {
-		((GetValueText)item).draw();
+		((GetValueText)item).draw(hit);
 	} else if(item instanceof Image) {
-		((Image)item).draw();
+		((Image)item).draw(hit);
 	} else if(item instanceof Transform) {
-		((Transform)item).draw();
-	}else if(item instanceof EventDetector) {
-		((EventDetector)item).draw();
-	} else {
-		println("Can't draw item: " + item.getClass().getName());
+		((Transform)item).draw(hit);
+	} else if(item instanceof GetVisible) {
+		((GetVisible)item).draw(hit);
+	} else if(item instanceof EventDetector) {
+		((EventDetector)item).draw(hit);
 	}
 }
 void setitemwh(Object item, int _width, int _height) {
@@ -362,6 +461,8 @@ void setitemwh(Object item, int _width, int _height) {
 		((GridView)item).setwh(_width, _height);
 	} else if(item instanceof Container) {
 		((Container)item).setwh(_width, _height);
+	} else if(item instanceof SizedBox) {
+		((SizedBox)item).setwh(_width, _height);
 	} else if(item instanceof Text) {
 		((Text)item).setwh(_width, _height);
 	} else if(item instanceof SetValueText) {
@@ -372,10 +473,10 @@ void setitemwh(Object item, int _width, int _height) {
 		((Image)item).setwh(_width, _height);
 	} else if(item instanceof Transform) {
 		((Transform)item).setwh(_width, _height);
-	}else if(item instanceof EventDetector) {
+	} else if(item instanceof GetVisible) {
+		((GetVisible)item).setwh(_width, _height);
+	} else if(item instanceof EventDetector) {
 		((EventDetector)item).setwh(_width, _height);
-	} else {
-		println("Can't set WH of item: " + item.getClass().getName());
 	}
 }
 void setitemxy(Object item, int xpos, int ypos) {
@@ -387,6 +488,8 @@ void setitemxy(Object item, int xpos, int ypos) {
 		((GridView)item).setxy(xpos, ypos);
 	} else if(item instanceof Container) {
 		((Container)item).setxy(xpos, ypos);
+	} else if(item instanceof SizedBox) {
+		((SizedBox)item).setxy(xpos, ypos);
 	} else if(item instanceof Text) {
 		((Text)item).setxy(xpos, ypos);
 	} else if(item instanceof SetValueText) {
@@ -397,10 +500,10 @@ void setitemxy(Object item, int xpos, int ypos) {
 		((Image)item).setxy(xpos, ypos);
 	} else if(item instanceof Transform) {
 		((Transform)item).setxy(xpos, ypos);
-	}else if(item instanceof EventDetector) {
+	} else if(item instanceof GetVisible) {
+		((GetVisible)item).setxy(xpos, ypos);
+	} else if(item instanceof EventDetector) {
 		((EventDetector)item).setxy(xpos, ypos);
-	} else {
-		println("Can't set XY of item: " + item.getClass().getName());
 	}
 }
 Box getboundry(Object item) {
@@ -412,6 +515,8 @@ Box getboundry(Object item) {
 		return ((GridView)item).getbound();
 	} else if(item instanceof Container) {
 		return ((Container)item).getbound();
+	} else if(item instanceof SizedBox) {
+		return ((SizedBox)item).getbound();
 	} else if(item instanceof Text) {
 		return ((Text)item).getbound();
 	} else if(item instanceof SetValueText) {
@@ -422,7 +527,9 @@ Box getboundry(Object item) {
 		return ((Image)item).getbound();
 	} else if(item instanceof Transform) {
 		return ((Transform)item).getbound();
-	}else if(item instanceof EventDetector) {
+	} else if(item instanceof GetVisible) {
+		return ((GetVisible)item).getbound();
+	} else if(item instanceof EventDetector) {
 		return ((EventDetector)item).getbound();
 	}
 	return null;
@@ -431,8 +538,8 @@ Box getboundry(Object item) {
 enum Dir {
     UP, RIGHT, DOWN, LEFT;
 }
-enum Corner {
-    TOPLEFT, TOPRIGHT, BOTTOMLEFT, BOTTOMRIGHT;
+enum Align {
+    TOPLEFT, TOPRIGHT, BOTTOMLEFT, BOTTOMRIGHT, CENTERCENTER;
 }
 
 class Box {

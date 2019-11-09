@@ -24,12 +24,12 @@ class Settings {
 		strings[1] = new SettingStringValue("language", "english");
 		strings[2] = new SettingStringValue("font", "Roboto");
 
-		booleans[0] = new SettingBooleanValue("darkmode", false);
+		booleans[0] = new SettingBooleanValue("darkmode", true);
 		booleans[1] = new SettingBooleanValue("hide overlay", false);
 		booleans[2] = new SettingBooleanValue("fullscreen", false);
 		booleans[3] = new SettingBooleanValue("Use OpenGl Renderer", false);
 
-		ints[0] = new SettingIntValue("width", 1200, 800, displayWidth);
+		ints[0] = new SettingIntValue("width", 1200, 600, displayWidth);
 		ints[1] = new SettingIntValue("height", 800, 600, displayHeight);
 		ints[2] = new SettingIntValue("Anti-aliasing", 4, 0, 8);
 
