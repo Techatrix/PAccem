@@ -4,14 +4,11 @@ class ListView extends PWH implements IOverlay {
 	Enum dir = Dir.DOWN;
 
 	int off = 0;
-
 	ListView(Object[] items, int _width, int _height) {
 		this(items, _width, _height, 30);
 	}
 	ListView(Object[] items, int _width, int _height, int itemheight) {
-		this.items = items;
-		this.itemheight = itemheight;
-		setwh(_width, _height);
+		this(items, _width, _height, itemheight, Dir.DOWN);
 	}
 	ListView(Object[] items, int _width, int _height, int itemheight, Dir dir) {
 		this.items = items;
@@ -22,8 +19,8 @@ class ListView extends PWH implements IOverlay {
 
 	void mouseWheel(MouseEvent e) {
 		if(ishit()) {
+			int length = items.length * itemheight;
 			if(dir == Dir.UP || dir == Dir.DOWN) {
-				int length = items.length * itemheight;
 
 				if(length > _height) {
 					off -= e.getCount()*15;
@@ -32,10 +29,18 @@ class ListView extends PWH implements IOverlay {
 					} else {
 						off = constrain(off, _height - length, 0);
 					}
-					recalculateitems();
+				}
+			} else {
+				if(length > _width) {
+					off -= e.getCount()*15;
+					if(dir == Dir.DOWN) {
+						off = constrain(off, 0, length - _width);
+					} else {
+						off = constrain(off, _width - length, 0);
+					}
 				}
 			}
-
+			recalculateitems();
 		}
 	}
 	boolean mousePressed() {
@@ -49,24 +54,14 @@ class ListView extends PWH implements IOverlay {
 			keyPresseditem(item);
 		}
 	}
-	
-	int getindex() {
-		for (int i=0;i<items.length;i++) {
-			Object item = items[i];
-			if(mousePresseditem(item)) {
-				return i;
-			}
-		}
-		return -1;
-	}
 
-	void draw() {
+	void draw(boolean hit) {
 		fill(c[6]);
 		clip(xpos, ypos, _width, _height);
 		rect(xpos, ypos, _width, _height);
 
 		for (Object item : items) {
-			drawitem(item);
+			drawitem(item, hit);
 		}
     	noClip();
 	}
@@ -84,8 +79,10 @@ class ListView extends PWH implements IOverlay {
 		recalculateitems();
 	}
 	void setwh(int _width, int _height) {
-		this._width = _width;
-		this._height = _height;
+		if(this._width == 0 && this._height == 0) {
+			this._width = _width;
+			this._height = _height;
+		}
 		recalculateitems();
 	}
 	void recalculateitems() {
@@ -103,6 +100,15 @@ class ListView extends PWH implements IOverlay {
 				setitemwh(item, _width, itemheight);
 			}
 		}
+	}
+	int getindex() {
+		for (int i=0;i<items.length;i++) {
+			Object item = items[i];
+			if(mousePresseditem(item)) {
+				return i;
+			}
+		}
+		return -1;
 	}
 }
 

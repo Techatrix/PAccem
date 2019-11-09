@@ -1,17 +1,15 @@
-class Image extends PWH implements IOverlay {
-	PImage image;
+class SizedBox extends PWH implements IOverlay {
+	boolean expand; // to be implemented
 
-	Image(PImage image) {
-		this.image = image;
+	SizedBox() {
+		this(false);
+	}
+	SizedBox(boolean expand) {
 		setwh(-1, -1);
+		this.expand = expand;
 	}
 
 	void draw(boolean hit) {
-		if(_width == -1 || _height == -1) {
-			image(image, xpos, ypos);
-		} else {
-			image(image, xpos, ypos, _width, _height);
-		}
 	}
 
 	Box getbound() {

@@ -1,6 +1,6 @@
 interface IOverlay{
 
-	void draw();
+	void draw(boolean hit);
 	Box getbound();
 	boolean ishit();
 

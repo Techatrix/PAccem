@@ -39,13 +39,13 @@ class GridView extends PWH implements IOverlay {
 		return -1;
 	}
 
-	void draw() {
+	void draw(boolean hit) {
 		fill(c[6]);
 		clip(xpos, ypos, _width, _height);
 		rect(xpos, ypos, _width, _height);
 
 		for (Object item : items) {
-			drawitem(item);
+			drawitem(item, hit);
 		}
     	noClip();
 	}
