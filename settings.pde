@@ -1,5 +1,5 @@
 class Settings {
-	SettingColorValue[] colors;
+	//SettingColorValue[] colors;
 	SettingFloatValue[] floats;
 	SettingIntValue[] ints;
 	SettingStringValue[] strings;
@@ -9,17 +9,12 @@ class Settings {
 		if(deb) {
 			println("Load Settings Class");
 		}
-		colors = new SettingColorValue[0];
+		//colors = new SettingColorValue[0];
 		floats = new SettingFloatValue[2];
 		ints = new SettingIntValue[3];
 		strings = new SettingStringValue[3];
 		booleans = new SettingBooleanValue[4];
-		/*
-		colors[0] = new SettingColorValue("backgroundcolor", color(0, 0, 0));
-		colors[1] = new SettingColorValue("overlaybackgroundcolor", color(200, 200, 200));
-		colors[2] = new SettingColorValue("overlaycolor", color(100, 100, 100));
-		colors[3] = new SettingColorValue("gridlinecolor", color(255, 255, 255));
-		*/
+
 		floats[0] = new SettingFloatValue("gridlineweight", 1);
 		floats[1] = new SettingFloatValue("overlayscale", 1, 0.7, 1.5);
 
@@ -40,7 +35,7 @@ class Settings {
 	}
 	
 	int getsize() {
-		return colors.length + floats.length + ints.length + strings.length + booleans.length;
+		return floats.length + ints.length + strings.length + booleans.length;
 	}
 
 	void load() {
@@ -52,11 +47,13 @@ class Settings {
 		if (f1.exists())
 		{
   			JSONObject j = loadJSONObject("data/settings.json");
+  			/*
   			for (int i=0;i<colors.length;i++) {
   				SettingColorValue c = colors[i];
   				c.setvalue(color(j.getFloat(c.name + "red"), j.getFloat(c.name + "green"), j.getFloat(c.name + "blue")));
   				colors[i] = c;
   			}
+  			*/
   			for (int i=0;i<floats.length;i++) {
   				SettingFloatValue f = floats[i];
   				f.setvalue(j.getFloat(f.name));
@@ -94,12 +91,14 @@ class Settings {
 		{
   			j = loadJSONObject("data/settings.json");
 		}
+		/*
   		for (int i=0;i<colors.length;i++) {
   			SettingColorValue c = colors[i];
 	  		j.setFloat(c.name + "red", red(c.getvalue()));
 	  		j.setFloat(c.name + "green", green(c.getvalue()));
 	  		j.setFloat(c.name + "blue", blue(c.getvalue()));
   		}
+  		*/
   		for (int i=0;i<floats.length;i++) {
   			SettingFloatValue f = floats[i];
 	  		j.setFloat(f.name, f.getvalue());
@@ -120,6 +119,7 @@ class Settings {
 	}
 }
 
+/*
 class SettingColorValue {
 	String name;
 	color _value;
@@ -146,6 +146,7 @@ class SettingColorValue {
 		return text;
 	}
 }
+*/
 class SettingFloatValue {
 	String name;
 	float _value;

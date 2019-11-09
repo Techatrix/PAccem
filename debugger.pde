@@ -15,8 +15,8 @@ class Debugger {
 		items[6] = new DebuggerItem("3D Z-off") {@ Override public String getvalue() {return str(rm.dzoff);}};
 		items[7] = new DebuggerItem("Angle 1") {@ Override public String getvalue() {return str(rm.angle1);}};
 		items[8] = new DebuggerItem("Angle 2") {@ Override public String getvalue() {return str(rm.angle2);}};
-		items[9] = new DebuggerItem("X-gridsize") {@ Override public String getvalue() {return str(rm.xgridsize);}};
-		items[10] = new DebuggerItem("Y-gridsize") {@ Override public String getvalue() {return str(rm.ygridsize);}};
+		items[9] = new DebuggerItem("X-gridsize") {@ Override public String getvalue() {return " ";}};
+		items[10] = new DebuggerItem("Y-gridsize") {@ Override public String getvalue() {return " ";}};
 		items[11] = new DebuggerItem("Gridtilesize") {@ Override public String getvalue() {return str(rm.gridtilesize);}};
 		items[12] = new DebuggerItem("Tool") {@ Override public String getvalue() {return str(rm.tool);}};
 		items[13] = new DebuggerItem("Viewmode") {@ Override public String getvalue() {return str(rm.viewmode);}};
