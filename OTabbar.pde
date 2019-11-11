@@ -1,7 +1,6 @@
 abstract class Tabbar implements IOverlay {
 	Object list;
 	Object[] tabs;
-	int tabid = -1;
 
 	Tabbar(Object list, Object[] tabs) {
 		this.list = list;
@@ -11,14 +10,14 @@ abstract class Tabbar implements IOverlay {
 	void draw(boolean hit) {
 		drawitem(list, hit);
 		if(isvalidtab()) {
-			drawitem(tabs[tabid], hit);
+			drawitem(tabs[getid()], hit);
 		}
 	}
 
 	void mouseWheel(MouseEvent e) {
 		mouseWheelitem(list, e);
 		if(isvalidtab()) {
-			mouseWheelitem(tabs[tabid], e);
+			mouseWheelitem(tabs[getid()], e);
 		}
 	}
 	boolean mousePressed() {
@@ -28,7 +27,7 @@ abstract class Tabbar implements IOverlay {
 		}
 		ontab(getlistindex(list));
 		if(isvalidtab()) {
-			if(mousePresseditem(tabs[tabid])) {
+			if(mousePresseditem(tabs[getid()])) {
 				hit = true;
 			}
 		}
@@ -37,14 +36,15 @@ abstract class Tabbar implements IOverlay {
 	void keyPressed() {
 		keyPresseditem(list);
 		if(isvalidtab()) {
-			keyPresseditem(tabs[tabid]);
+			keyPresseditem(tabs[getid()]);
 		}
 	}
 
 	abstract void ontab(int i);
+	abstract int getid();
 
 	boolean isvalidtab() {
-		return -1 < tabid && tabid < tabs.length;
+		return -1 < getid() && getid() < tabs.length;
 	}
 
 	Box getbound() {
@@ -57,7 +57,7 @@ abstract class Tabbar implements IOverlay {
 			hit = true;
 		}
 		if(isvalidtab()) {
-			if(getisitemhit(tabs[tabid])) {
+			if(getisitemhit(tabs[getid()])) {
 				hit = true;
 			}
 		}

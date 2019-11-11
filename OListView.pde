@@ -1,9 +1,12 @@
 class ListView extends PWH implements IOverlay {
 	Object[] items;
 	int itemheight;
-	Enum dir = Dir.DOWN;
+	Enum dir;
 
 	int off = 0;
+	ListView(Object[] items) {
+		this(items, 0, 0, 30);
+	}
 	ListView(Object[] items, int _width, int _height) {
 		this(items, _width, _height, 30);
 	}
@@ -17,13 +20,26 @@ class ListView extends PWH implements IOverlay {
 		setwh(_width, _height);
 	}
 
-	void mouseWheel(MouseEvent e) {
+	void mouseWheel(MouseEvent ee) {
 		if(ishit()) {
-			int length = items.length * itemheight;
-			if(dir == Dir.UP || dir == Dir.DOWN) {
+			int length = 0;
 
+			for (Object item : items) {
+				boolean e = false;
+				if(item instanceof SizedBox) {
+					if(((SizedBox)item).expand) {
+						e = true;
+					}
+				}
+				if(!e) {
+					Box b = getboundry(item);
+					length += max(itemheight, (dir == Dir.DOWN || dir == Dir.UP) ? b.h : b.w);
+				}
+			}
+
+			if(dir == Dir.UP || dir == Dir.DOWN) {
 				if(length > _height) {
-					off -= e.getCount()*15;
+					off -= ee.getCount()*15;
 					if(dir == Dir.UP) {
 						off = constrain(off, 0, length - _height);
 					} else {
@@ -32,7 +48,7 @@ class ListView extends PWH implements IOverlay {
 				}
 			} else {
 				if(length > _width) {
-					off -= e.getCount()*15;
+					off -= ee.getCount()*15;
 					if(dir == Dir.DOWN) {
 						off = constrain(off, 0, length - _width);
 					} else {
@@ -86,18 +102,67 @@ class ListView extends PWH implements IOverlay {
 		recalculateitems();
 	}
 	void recalculateitems() {
-		for (int i=0;i<items.length;i++) {
-			Object item = items[i];
+		int sizelength = 0;
+		int expands = 0;
 
-			int offset = (dir == Dir.LEFT ? _width : _height) - itemheight*(i+1);
-			int x = (dir == Dir.RIGHT ? itemheight*i+off : 0) + (dir == Dir.LEFT ? offset+off : 0);
-			int y = (dir == Dir.DOWN ? itemheight*i+off : 0) + (dir == Dir.UP ? offset+off : 0);
-			setitemxy(item, xpos+x, ypos+y);
+		for (Object item : items) {
+			boolean e = false;
+			if(item instanceof SizedBox) {
+				if(((SizedBox)item).expand) {
+					e = true;
+					expands++;
+				}
+			}
+			if(!e) {
+				Box b = getboundry(item);
+				sizelength += max(itemheight, (dir == Dir.DOWN || dir == Dir.UP) ? b.h : b.w);
+			}
+		}
+		int expandsize = 0;
+		if(expands > 0) {
+			expandsize = (((dir == Dir.DOWN || dir == Dir.UP) ? _height : _width) - sizelength)/expands;
+			if(expandsize < 0) {
+				expandsize = 0;
+			}
+		}
 
-			if(dir == Dir.RIGHT || dir == Dir.LEFT) {
-				setitemwh(item, itemheight, _height);
+		int off2 = 0;
+		for (Object item : items) {
+			boolean e = false;
+			if(item instanceof SizedBox) {
+				if(((SizedBox)item).expand) {
+					e = true;
+				}
+			}
+			Box b = getboundry(item);
+			if(dir == Dir.DOWN || dir == Dir.UP) {
+				if(dir == Dir.DOWN) {
+					setitemxy(item, xpos, ypos+off+off2);
+				}
+				if(e) {
+					setitemwh(item, _width, expandsize);
+					off2 += expandsize;
+				} else {
+					setitemwh(item, _width, max(itemheight, b.h));
+					off2 += max(itemheight, b.h);
+				}
+				if(dir == Dir.UP) {
+					setitemxy(item, xpos, ypos+_height-off-off2);
+				}
 			} else {
-				setitemwh(item, _width, itemheight);
+				if(dir == Dir.RIGHT) {
+					setitemxy(item, xpos+off+off2, ypos);
+				}
+				if(e) {
+					setitemwh(item, expandsize, _height);
+					off2 += expandsize;
+				} else {
+					setitemwh(item, max(itemheight, b.w), _height);
+					off2 += max(itemheight, b.w);
+				}
+				if(dir == Dir.LEFT) {
+					setitemxy(item, xpos+_width-off-off2, ypos);
+				}
 			}
 		}
 	}
