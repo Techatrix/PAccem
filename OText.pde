@@ -1,9 +1,14 @@
 class Text extends PWH implements IOverlay {
 	String text;
+	int lines = 1;
 
 	Text(String text) {
 		this.text = text;
 		setwh(-1, -1);
+	}
+	Text(String text, int lines) {
+		this(text);
+		this.lines = lines;
 	}
 
 	void draw(boolean hit) {
@@ -18,7 +23,7 @@ class Text extends PWH implements IOverlay {
 	}
 
 	Box getbound() {
-		return new Box(max(_width, textWidth(text)*1), max(_height, 16 + textDescent()));
+		return new Box(max(_width, textWidth(text)), max(_height, lines*(16 + textDescent())));
 	}
 	
 	boolean ishit() {

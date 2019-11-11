@@ -207,15 +207,12 @@ class Roommanager {
 						break;
 					}
 				}
-			} else if(key == 't') { // t
-				/*
-				for (int i=0; i<furnitures.size(); i++) {
-					if(selectionid == i) {
-						Furniture f = furnitures.get(i);
-						f.rotate90();
-					}
-				}
-				*/
+			} else if(key == 't') {
+			} else if(key == 'h') {
+				ov.visible = !ov.visible;
+				st.booleans[1].value = !ov.visible;
+				st.save();
+				ov.build();
 			} else if(keyCode < 54 && keyCode > 48) {
 				newroomtilegroup = keyCode - 49;
 			} else if(keyCode == UP || keyCode == DOWN || keyCode == LEFT || keyCode == RIGHT) {

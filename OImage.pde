@@ -2,8 +2,11 @@ class Image extends PWH implements IOverlay {
 	PImage image;
 
 	Image(PImage image) {
+		this(image, -1, -1);
+	}
+	Image(PImage image, int _width, int _height) {
 		this.image = image;
-		setwh(-1, -1);
+		setwh(_width, _height);
 	}
 
 	void draw(boolean hit) {

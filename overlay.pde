@@ -1,13 +1,22 @@
 class Overlay {
 	Object[] items;
 	boolean visible = true;
+
 	int xoff = 50;
 	int yoff = 30;
 	boolean drawpopup = false;
+	int tabid = -1;
+	String newroomname;
+	int newroomxsize = 15, newroomysize = 15;
 
-	String newroomname = "";
 
 	Overlay() {
+		visible = !st.booleans[1].value;
+		newroomname = st.strings[0].value;
+		build();
+	}
+
+	void build() {
 		final String[] tabs = {"newroom", "viewmode", "loadroom", "saveroom", "settings", "debug", "roomgroups", "about", "reset"};
 		items = new Object[3];
 		items[0] =
@@ -51,7 +60,7 @@ class Overlay {
 					new Transform(
 						new ListView(
 							new Object[] {
-								new Container(new SetValueText("Name", st.strings[0].value) {
+								new Container(new SetValueText("Name", newroomname) {
 									@Override public void onchange() {ov.newroomname = newvalue;value = newvalue;}
 								}),
 								new SizedBox(),
@@ -60,7 +69,7 @@ class Overlay {
 										if(et == EventType.MOUSEPRESSED) {
 											rm.name = ov.newroomname;
 											rm.save(rm.name);
-											ov = new Overlay();
+											ov.build();
 										}
 									}
 								},
@@ -82,13 +91,39 @@ class Overlay {
 											switch(temp.i) {
 												case 1:
 												lg.setlang(st.strings[1].value);
-												ov = new Overlay();
+												ov.build();
 												break;
 												case 2:
 												am.setfont(st.strings[2].value);
 												break;
 												case 3:
 												am.recalculatecolor();
+												break;
+												case 4: // Hide Overlay
+												visible = !st.booleans[1].value;
+												break;
+												case 5: // Fullscreen
+												requirerestart();
+												break;
+												case 6: // OPENGL Renderer
+												requirerestart();
+												break;
+												case 7: // Width
+												surface.setSize(st.ints[0].value,st.ints[1].value);
+												if(st.booleans[3].value) {
+													pg.setSize(width,height);
+												}
+												ov.build();
+												break;
+												case 8: // Height
+												surface.setSize(st.ints[0].value,st.ints[1].value);
+												if(st.booleans[3].value) {
+													pg.setSize(width,height);
+												}
+												ov.build();
+												break;
+												case 9: // AA
+												requirerestart();
 												break;
 											}
 										}
@@ -155,9 +190,29 @@ class Overlay {
 							}
 						}.build(5, 300, height-yoff), Align.TOPRIGHT
 					),0,yoff
-				)
+				),
+				new Transform(
+					new Transform(
+						new GridView(
+							new Builder() {
+								@Override public Object i(int i) {
+									final Temp temp = new Temp(i);
+									return new Container(
+										new ListView(
+											new Object[] {
+												new Image(dm.furnitures[temp.i].image, 150, round(150*0.75)),
+												new Text(dm.furnitures[temp.i].name),
+											}
+										)
+									);
+									//return new Container(new Text(dm.furnitures[temp.i].name));
+								}
+							}.build(dm.furnitures.length),300, height-yoff,2
+						), Align.TOPRIGHT
+					),0,yoff
+				),
 			}
-		) {
+			) {
 			@Override public void ontab(int i) {
 				if(1 < i && i < 7) {
 					if(tabid == i-2) {
@@ -177,12 +232,20 @@ class Overlay {
 									new ListView(
 										new Object[] {
 											new Text(lg.get("newroom")),
-											new SizedBox(),
-											new Container(new SetValueText(lg.get("newwidth"), "5", new SetValueStyle(2)) {
-												@Override public void onchange() {ov.newroomname = newvalue;value = newvalue;}
+											new SizedBox(true),
+											new Container(new SetValueText(lg.get("newwidth"), str(newroomxsize), new SetValueStyle(2)) {
+												@Override public void onchange() {
+													int v = constrain(int(newvalue), 1,100);
+													value = str(v);
+													newroomxsize = v;
+												}
 											}),
-											new Container(new SetValueText(lg.get("newheight"), "5", new SetValueStyle(2)) {
-												@Override public void onchange() {ov.newroomname = newvalue;value = newvalue;}
+											new Container(new SetValueText(lg.get("newheight"), str(newroomysize), new SetValueStyle(2)) {
+												@Override public void onchange() {
+													int v = constrain(int(newvalue), 1,100);
+													value = str(v);
+													newroomysize = v;
+												}
 											}),
 											new EventDetector(new Container(new Text(lg.get("ok")))) {
 												@Override public void onevent(EventType et, MouseEvent e) {
@@ -199,10 +262,8 @@ class Overlay {
 								new Transform(
 									new ListView(
 										new Object[] {
-											new Text(getaboutline(0)),
-											new Text(getaboutline(1)),
-											new Text(getaboutline(2)),
-											new Text(getaboutline(3)),
+											new Text(getabout(), 5),
+											new SizedBox(true),
 											new EventDetector(new Container(new Text("Github"))) {
 												@Override public void onevent(EventType et, MouseEvent e) {
 													if(et == EventType.MOUSEPRESSED) {link(githublink);}
@@ -224,8 +285,9 @@ class Overlay {
 								new Transform(
 									new ListView(
 										new Object[] {
-											new SizedBox(),
+											new SizedBox(true),
 											new Text(lg.get("areyousure")),
+											new SizedBox(true),
 											new ListView(
 												new Object[] {
 													new EventDetector(new Container(new Text(lg.get("ok")))) {
@@ -253,6 +315,9 @@ class Overlay {
 					items[0] = new GetVisible(o) {@Override public boolean getvisible() {return drawpopup;}};
 				}
 			}
+			@Override public int getid() {
+				return tabid;
+			}
 		};
 		items[2] =
 		new Transform(
@@ -263,6 +328,9 @@ class Overlay {
 						@Override public void onevent(EventType et, MouseEvent e) {
 							if(et == EventType.MOUSEPRESSED) {
 								rm.tool = temp.i;
+								if(rm.tool == 2) {
+									tabid = (tabid == 5) ? -1 : 5;
+								}
 							}
 						}
 					};
@@ -273,6 +341,7 @@ class Overlay {
 			setitemxy(item, 0,0);
 		}
 	}
+
 	void draw() {
 		if(visible) {
 			boolean hit = false;
@@ -339,6 +408,31 @@ class Overlay {
 	}
 	void keyReleased() {
 	}
+
+	void requirerestart() {
+		Object o =
+		new Container(
+			new Transform(
+				new ListView(
+					new Object[] {
+						new SizedBox(true),
+						new Text(lg.get("ratste"), 3),
+						new SizedBox(true),
+						new EventDetector(new Container(new Text(lg.get("ok")))) {
+							@Override public void onevent(EventType et, MouseEvent e) {
+								if(et == EventType.MOUSEPRESSED) {drawpopup = false;}
+							}
+						},
+					}, width/4, height/4
+				), Align.CENTERCENTER
+			), width, height, color(0,150)
+		);
+
+		drawpopup = true;
+		items[0] = new GetVisible(o) {@Override public boolean getvisible() {return drawpopup;}};
+	}
+
+
 }
 
 void mouseWheelitem(Object item, MouseEvent e) {
