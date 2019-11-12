@@ -195,15 +195,3 @@ abstract class ListViewBuilder{
 
 	abstract Object i(int i);
 }
-abstract class Builder{
-
-	Object[] build(int length) {
-		Object[] items = new Object[length];
-		for (int i=0;i<length;i++) {
-			items[i] = i(i);
-		}
-		return items;
-	}
-
-	abstract Object i(int i);
-}

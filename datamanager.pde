@@ -1,14 +1,14 @@
 class DataManager {
-	final PImage[] icons;
-	final FurnitureData[] furnitures;
-	final PrefabData[] prefabs;
+	final PImage[] icons;				// list of all icons
+	final FurnitureData[] furnitures;	// list of all furnitures that can be used
+	final PrefabData[] prefabs;			// list of all prefabs that can be used
 
 	DataManager() {
 		if(deb) {
 			println("Load DataManager");
 		}
+		/* --------------- load icon data --------------- */
 		icons = new PImage[7];
-
 		icons[0] = loadImage("data/assets/icon/0.png");
 		icons[1] = loadImage("data/assets/icon/1.png");
 		icons[2] = loadImage("data/assets/icon/2.png");
@@ -17,7 +17,7 @@ class DataManager {
 		icons[5] = loadImage("data/assets/icon/5.png");
 		icons[6] = loadImage("data/assets/icon/6.png");
 
-		// ---------- Load Furniture Data ----------
+		/* --------------- load furniture data --------------- */
 		JSONArray furnituredata;
 		File f1 = new File(sketchPath("data/furnituredata.json"));
 		if (f1.exists()) {
@@ -42,8 +42,8 @@ class DataManager {
 			String name = furn.getString("name", "Name not Found");
 			furnitures[i] = new FurnitureData(i, _width, _height, image, shape, name, price);
 		}
-
-		// ---------- Load Prefab Data ----------
+		
+		/* --------------- load prefab data --------------- */
 		JSONArray prefabdata;
 		File f2 = new File(sketchPath("data/prefabdata.json"));
 		if (f2.exists()) {

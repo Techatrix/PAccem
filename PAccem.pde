@@ -1,32 +1,31 @@
-ApplicationManager am;
-Settings st;
-LanguageManager lg;
-Roommanager rm;
-DataManager dm;
-Overlay ov;
+ApplicationManager am;	// manages the overal application (title, size, initialization)
+Settings st;			// loads and stores the current settings
+LanguageManager lg;		// loads the current language file
+Roommanager rm;			// manages the room(grid, furniture & user input)
+DataManager dm;			// stores data (3D-models, images, etc.)
+Overlay ov;				// draws & manages the user interface
 
-PGraphics pg;
-PFont font;
+PGraphics pg;			// used for 3D-graphics
+PFont font;				// the current font
 
-int[] c = new int[9];
-boolean isKeyUp, isKeyRight, isKeyLeft, isKeyDown, isKeyT;
+int[] c = new int[9];	// easily accessible color values (0-8 => 0 - 255 or 255 - 0)
+boolean isKeyUp, isKeyRight, isKeyLeft, isKeyDown, isKeyT;	// stores whether or not a arrow key is down
 
-void settings() {
+/* --------------- main --------------- */
+void settings() { // is being executed once before the window is created	(pre-main())
 	am = new ApplicationManager();
 	am.initsettings();
 }
-void setup() {
+void setup() { // is being executed once after the window is being created 	(main())
 	am.initsetup();
 }
 
-void draw() {
-	push();
-	am.loop();
-	rm.draw();
-	pop();
-	ov.draw();
+void draw() { // is being executed on every frame
+	am.loop();	// application manager
+	rm.draw();	// room manager
+	ov.draw();	// overlay
 }
-
+/* --------------- mouse input --------------- */
 void mouseWheel(MouseEvent e) {
 	ov.mouseWheel(e);
 	if(ov.ishit()) {
@@ -52,6 +51,7 @@ void mousePressed() {
 	}
 	rm.mousePressed();
 }
+/* --------------- keyboard input --------------- */
 void keyPressed() {
 	ov.keyPressed();
 	if(ov.ishit()) {

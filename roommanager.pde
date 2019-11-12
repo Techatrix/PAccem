@@ -1,24 +1,25 @@
 class Roommanager {
-	ArrayList<Furniture> furnitures;
-	Grid roomgrid;
-	int selectionid = -1;
-	String name;
+	ArrayList<Furniture> furnitures;	// list of furnitures
+	Grid roomgrid;						// the current roomgrid
+	int selectionid = -1;				// id of the currently selected furniture (-1 = none)
+	String name;						// name of the room
 
 	float xoff, yoff, scale; // 2D
 	float dxoff, dyoff, dzoff, angle1, angle2, dspeed; // 3D
 
-	int gridtilesize;
+	int gridtilesize;					// size of one tile
 
-	int tool = 0;
+	int tool = 0;						// id of the currently selected tool
+	// 0=move, 1=draw to roomgrid, 2=place furn. or pref., 3=select furn., 4=fill, 5=place window,
 
-	boolean viewmode = false; // true = 3D , false = 2D
+	boolean viewmode = false; 			// true = 3D , false = 2D
 
-	ArrayList<int[]> dragtiles = new ArrayList<int[]>();
-	boolean dragstate;
+	ArrayList<int[]> dragtiles = new ArrayList<int[]>();	// list of all tiles that have already been draged over
+	boolean dragstate;										// state to switch over when draging
 
-	int newfurnitureid = 0;
-	int newroomtilegroup = 0;
-	boolean isprefab = false;
+	int newfurnitureid = 0;				// id of the currently selected furniture
+	int newroomtilegroup = 0;			// id of the current roomtilegroup you are drawing
+	boolean isprefab = false;			// whether or not you are placing a furniture or a prefab
 
 	Roommanager() {
 		resetcam(true);
@@ -28,8 +29,8 @@ class Roommanager {
 		resetcam(true);
 		load(loadname);
 	}
-
-	void mouseWheel(MouseEvent e) {
+	/* --------------- Mouse Input --------------- */
+	void mouseWheel(MouseEvent e) { // mouse wheel zoom in & out
 		float delta = e.getCount() > 0 ? 1.0/1.1 : e.getCount() < 0 ? 1.1 : 1.0;
 		if(!viewmode) {
 			float mx = mouseX-ov.xoff;
@@ -50,14 +51,14 @@ class Roommanager {
 		}
 	}
 	void mouseDragged() {
-		if(!viewmode) {
+		if(!viewmode) { // 2D
 			// Only dont drag if the mouseclick was a hit
 			if(!ov.ishit()) {
 				if(mouseButton == CENTER || tool == 0) {
 					xoff += mouseX - pmouseX;
 					yoff += mouseY - pmouseY;
 				}
-				if(mouseButton == LEFT && tool == 1) {
+				if(mouseButton == LEFT && tool == 1) { // draw roomgrid
 					int x = floor(getxpos());
 					int y = floor(getypos());
 					if(!isfurniture(x,y)){
@@ -73,7 +74,8 @@ class Roommanager {
 					}
 				}
 			}
-		} else {
+		} else { // 3D
+			// move 3D-Camera
 			if(mouseButton == CENTER || mouseButton == RIGHT) {
 				angle2 -= map(mouseY - pmouseY, 0, height, 0, PI);
 				angle1 += map(mouseX - pmouseX, 0, width, 0, TWO_PI);
@@ -88,14 +90,14 @@ class Roommanager {
 	void mousePressed() {
 		if(mouseButton == LEFT && !viewmode) {
 			selectionid = -1;
-			if(tool == 1) {
+			if(tool == 1) { // draw to roomgrid
 				int x = floor(getxpos());
 				int y = floor(getypos());
 				if(!isfurniture(x,y)){
 					roomgrid.settilestate(!roomgrid.gettilestate(x,y), x,y);
 					roomgrid.gettile(x,y).roomgroup = newroomtilegroup;
 				}
-			} else if(tool == 2) { // Place Furniture
+			} else if(tool == 2) { // place a new furniture or prefab
 				int xpos = floor(getxpos());
 				int ypos = floor(getypos());
 
@@ -158,7 +160,7 @@ class Roommanager {
 						furnitures.add(new Furniture(fdata, xpos, ypos));
 					}
 				}
-			} else if(tool == 3) { // Select Furniture
+			} else if(tool == 3) { // select furniture
 				boolean found = false;
 				for (int i=0; i<furnitures.size(); i++) {
 					if(!found) {
@@ -168,11 +170,11 @@ class Roommanager {
 						}
 					}
 				}
-			} else if(tool == 4) { // Fill
+			} else if(tool == 4) { // fill
 				int x = floor(getxpos());
 				int y = floor(getypos());
 				roomgrid.filltool(!roomgrid.gettilestate(x,y), x,y);
-			} else if(tool == 5) { // Window
+			} else if(tool == 5) { // place window
 				float fx = getxpos();
 				float fy = getypos();
 				int ix = floor(fx);
@@ -201,10 +203,11 @@ class Roommanager {
 			}
 		}
 	}
+	/* --------------- Keyboard Input --------------- */
 	void keyPressed() {
 		setKey(keyCode, true);
 		if(!viewmode) {
-			if(key == 127) { // Delete
+			if(key == 127) { // delete
 				for (int i=0; i<furnitures.size(); i++) {
 					if(selectionid == i) {
 						furnitures.remove(i);
@@ -216,7 +219,7 @@ class Roommanager {
 				roomgrid.cgol();
 			} else if(keyCode < 54 && keyCode > 48) { // 1-5
 				newroomtilegroup = keyCode - 49;
-			} else if(keyCode == UP || keyCode == DOWN || keyCode == LEFT || keyCode == RIGHT) {
+			} else if(keyCode == UP || keyCode == DOWN || keyCode == LEFT || keyCode == RIGHT) { // arrow keys
 				if(selectionid != -1) {
 					Furniture f = new Furniture();
 					for (int i=0; i<furnitures.size(); i++) {
@@ -270,15 +273,14 @@ class Roommanager {
 			}
 		}
 	}
-	 
 	void keyReleased() {
 	  setKey(keyCode, false);
 	}
 
-	float getxpos() {
+	float getxpos() { // Converts Mouse-X position to roomgrid X-Pos
 		return (mouseX-xoff-ov.xoff)/gridtilesize/scale;
 	}
-	float getypos() {
+	float getypos() { // Converts Mouse-Y position to roomgrid Y-Pos
 		return (mouseY-yoff-ov.yoff)/gridtilesize/scale;
 	}
 	boolean isfurniture(int xpos, int ypos) {
@@ -290,20 +292,20 @@ class Roommanager {
 		}
 		return false;
 	}
-	int getxgridsize() {
+	int getxgridsize() { // get X-Size of the current roomgrid
 		if(roomgrid == null) {
 			return 5;
 		}
 		return roomgrid.tiles.length;
 	}
-	int getygridsize() {
+	int getygridsize() { // get Y-Size of the current roomgrid
 		if(roomgrid == null) {
 			return 5;
 		}
 		return roomgrid.tiles[0].length;
 	}
 
-	String[] loadrooms() {
+	String[] loadrooms() { // loads all stored rooms in data/rooms/
 		File[] files = listFiles(sketchPath("data/rooms"));
 		if(files == null) {
 			return new String[0];
@@ -327,7 +329,7 @@ class Roommanager {
 		}
 		return rooms;
 	}
-	void save(String name) {
+	void save(String name) { // saves the current room to data/rooms/
 		if(deb) {
 			println("Save: " + name);
 		}
@@ -399,7 +401,7 @@ class Roommanager {
 		am.settitle(name);
 		this.name = name;
 	}
-	void load(String name) {
+	void load(String name) { // loads the choosen room from data/rooms/
 		if(deb) {
 			println("Load Roommanager: " + name);
 		}
@@ -470,7 +472,7 @@ class Roommanager {
 		this.name = name;
 	}
 
-	int getprice() {
+	int getprice() { // calculate the complete price of the room
 		int price = 0;
 		for (Furniture f : furnitures) {
 			price += f.price;
@@ -479,9 +481,9 @@ class Roommanager {
 		return price;
 	}
 
-	void reset() {
-		resetcam(true);
-		resetcam(false);
+	void reset() { // reset everything (mostly everything)
+		resetcam(true); // reset 3D Camera
+		resetcam(false); // 2D Camera
 		viewmode = false;
 		roomgrid = new Grid(getxgridsize(), getygridsize());
 		furnitures = new ArrayList<Furniture>();
@@ -489,41 +491,43 @@ class Roommanager {
 		st.load();
 		am.settitle(name);
 	}
-	void newroom(int xsize, int ysize) {
+	void newroom(int xsize, int ysize) { // create a new room with the choosen size
 		roomgrid = new Grid(xsize, ysize);
 		//ov.showmessage("New Room: " + xsize + "x" + ysize);
 	}
 
-	void switchviewmode() {
+	void switchviewmode() {	// well... switch the viewmode (2D -> 3D, 3D -> 2D)
 		viewmode = !viewmode;
 	}
-	void resetcam(boolean viewmode) {
-		if(viewmode) {
+	void resetcam(boolean viewmode) { // reset the choosen camera to the default view
+		if(viewmode) { // 3D
 			angle1 = PI*5/4;
 			angle2 = -2;
 			dxoff = 0;
 			dyoff = 0;
 			dzoff = 0.4;
-		} else {
+		} else { // 2D
 			xoff = 0;
 			yoff = 0;
 			scale = 1;
 		}
 	}
 
-	void draw() {
+	void draw() { // draw the roomgrid and furnitures and some other things...
+		push();
 		background(c[8]);
 		// Setup 2D or 3D View
-		if(!viewmode) {
+		if(!viewmode) { // 2D
 			xoff = constrain(xoff, Integer.MIN_VALUE, 0);
 			yoff = constrain(yoff, Integer.MIN_VALUE, 0);
 			// 2D View
 
 			translate(xoff+ov.xoff, yoff+ov.yoff);
 			scale(scale);
-		} else {
+		} else { // 3D
+			// move camera according to the given key inputs
 			if(isKeyUp || isKeyDown || isKeyLeft || isKeyRight) {
-				dspeed += 10/frameRate;
+				dspeed += 10/frameRate; // acceleration
 				dspeed = constrain(dspeed, 0, 12);
 				if(isKeyUp) {
 					dxoff -= sin(-angle1+PI/2)*dspeed;
@@ -542,11 +546,11 @@ class Roommanager {
 					dyoff -= cos(-angle1)*dspeed;
 				}
 			} else {
-				dspeed -= 30/frameRate;
+				dspeed -= 30/frameRate; // deaccelerate
 				dspeed = constrain(dspeed, 0, 12);
 			}
 
-			// 3D View
+			// setup 3D view
 			dxoff = constrain(dxoff, 0, Integer.MAX_VALUE);
 			dyoff = constrain(dyoff, 0, Integer.MAX_VALUE);
 			angle2 = constrain(angle2, -PI+0.1, 0);
@@ -557,16 +561,15 @@ class Roommanager {
 
 			pg.perspective(60*PI/180, width/height, 1, 10000);
 
-			// Camera
+			// setup camera
 			float centerx = sin(angle2) * cos(angle1);
 			float centery = cos(angle2);
 			float centerz = sin(angle2) * sin(angle1);
 
 			pg.camera(dxoff,-height/2*dzoff,dyoff, dxoff+centerx,-height/2*dzoff-centery,dyoff+centerz, 0, 1, 0);
 
-			// Debug
+			// draw axis
 			pg.pushStyle();
-			// Axis
 			pg.strokeWeight(5);
 			pg.stroke(150,0,0);
 			pg.line(0,0,0,1000,0,0); // X
@@ -576,18 +579,17 @@ class Roommanager {
 			pg.line(0,0,0,0,1000,0); // Y
 			pg.popStyle();
 		}
-		// Roomgrid
+		// draw roomgrid
 		roomgrid.draw(viewmode, gridtilesize);
 
-		// Furnitures
+		// draw urnitures
 		for (int i=0; i<furnitures.size(); i++) {
 			furnitures.get(i).draw(viewmode, selectionid == i);
 		}
 
-		// 2D Tooltips
-		if(!viewmode) {
+		if(!viewmode) { // 2D tooltips
 			if(!ov.ishit()) {
-				if(tool == 1) { // Room
+				if(tool == 1) { // draw to roomgrid
 					int x = floor(getxpos());
 					int y = floor(getypos());
 					if(roomgrid.isingrid(x,y)) {
@@ -595,11 +597,11 @@ class Roommanager {
 						fill(c[0], 50);
 						rect(x,y,1,1);
 					}
-				} else if(tool == 2) { // Place Furniture
+				} else if(tool == 2) { // place a new furniture or prefab
 					int xpos = floor(getxpos());
 					int ypos = floor(getypos());
 
-					if(isprefab) {
+					if(isprefab) { // place prefab
 						PrefabData pdata = dm.getprefabdata(newfurnitureid);
 						noStroke();
 						fill(c[0], 50);
@@ -626,7 +628,7 @@ class Roommanager {
 							image(fdata.image, xpos+pfd.xpos, ypos+pfd.ypos, fdata._width, fdata._height);
 						}
 						noTint();
-					} else {
+					} else { // place furniture
 						FurnitureData fdata = dm.getfurnituredata(newfurnitureid);
 						boolean block = false;
 						for (int x=0;x<fdata._width;x++) {
@@ -643,7 +645,7 @@ class Roommanager {
 						image(fdata.image, xpos, ypos, fdata._width, fdata._height);
 						noTint();
 					}
-				} else if(tool == 3) { // Select Furniture
+				} else if(tool == 3) { // select furniture
 					int x = floor(getxpos());
 					int y = floor(getypos());
 
@@ -654,7 +656,9 @@ class Roommanager {
 							f.drawframe(selectionid == i);
 						}
 					}
-				} else if(tool == 5) { // Window
+				} else if(tool == 4) { // fill
+					// TODO: add preview
+				} else if(tool == 5) { // place window
 					float fx = getxpos();
 					float fy = getypos();
 					int ix = floor(fx);
@@ -680,10 +684,10 @@ class Roommanager {
 					}
 				}
 			}
-		} else {
-			// Draw 3D Graphics
+		} else { // 3D graphics
 			pg.endDraw();
-			image(pg,0,0);
+			image(pg,0,0); // draw the graphics to the screen
 		}
+		pop();
 	}
 }

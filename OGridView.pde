@@ -2,7 +2,8 @@ class GridView extends PWH implements IOverlay {
 	Object[] items;
 	int itemheight;
 	int gridlength;
-	Enum dir = Dir.DOWN;
+	//Enum dir = Dir.DOWN;
+	// TODO: include direction
 
 	GridView(Object[] items, int _width, int _height) {
 		this(items, _width, _height, 1);
