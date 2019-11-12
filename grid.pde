@@ -28,22 +28,22 @@ class Grid {
 			if(rm.scale >= 1) {
 				for (int x=1;x<=tiles.length;x++) {
 					if(x % 5 == 0) {
- 						strokeWeight(1.5*st.floats[0].getvalue()/gts*2);
+ 						strokeWeight(1.5*st.floats[0].value/gts*2);
 					} else {
- 						strokeWeight(1.5*st.floats[0].getvalue()/gts);
+ 						strokeWeight(1.5*st.floats[0].value/gts);
 					}
 					line(x,0,x,tiles[0].length);
 				}
 				for (int y=1; y<=tiles[0].length;y++) {
 					if(y % 5 == 0) {
- 						strokeWeight(1.5*st.floats[0].getvalue()/gts*2);
+ 						strokeWeight(1.5*st.floats[0].value/gts*2);
 					} else {
- 						strokeWeight(1.5*st.floats[0].getvalue()/gts);
+ 						strokeWeight(1.5*st.floats[0].value/gts);
 					}
 					line(0,y,tiles.length,y);
 				}
 			} else {
- 				strokeWeight(1.5*st.floats[0].getvalue()/gts);
+ 				strokeWeight(1.5*st.floats[0].value/gts);
 				for (int x=1;x<=tiles.length;x++) {
 					if(x % 5 == 0) { // Include Border
 						line(x,0,x,tiles[0].length);
@@ -57,7 +57,7 @@ class Grid {
 			}
 		} else {
 			pg.scale(gts);
-			pg.strokeWeight(st.floats[0].getvalue()/gts);
+			pg.strokeWeight(st.floats[0].value/gts);
 		}
 		strokeCap(PROJECT);
 		for (int x=0; x<tiles.length; x++) {
@@ -111,7 +111,7 @@ class Grid {
 
 						pg.stroke(200);
 						pg.fill(200);
-						pg.strokeWeight(st.floats[0].getvalue()/gts);
+						pg.strokeWeight(st.floats[0].value/gts);
 
 						GridTile t = gettile(x,y);
 						if(t == null) {

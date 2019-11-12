@@ -1,965 +1,715 @@
 class Overlay {
-	int _height;
-	int _width;
-	int sidebarwidth;
+	Object[] items;
+	boolean visible = true;
 
-	ButtonList tabbar;
-	ButtonList[] sidebars;
-	int sidebarid;
-	ButtonList toolbar;
-	Popup popup;
-	String message = "";
-	float messagetimer = 5;
+	int xoff = 50;
+	int yoff = 30;
+	boolean drawpopup = false;
+	int tabid = -1;
+	String newroomname;
+	int newroomxsize = 15, newroomysize = 15;
+
 
 	Overlay() {
-		if(deb) {
-			println("Load Overlay");
-		}
-		sidebars = new ButtonList[7];
-		_height = 25;
-		_width = 50;
-		sidebarwidth = 300;
-		sidebarid = -1;
-		refresh();
-		showmessage("Welcome to " + appname);
+		visible = !st.booleans[1].value;
+		newroomname = st.strings[0].value;
+		build();
 	}
 
-	void showmessage(String message) {
-		this.message = message;
-		messagetimer = 5;
-	}
-
-	void requirerestart() {
-		popup = new Popup(250,150) {
-			@ Override public void ontrue() {}
-			@ Override public void onfalse() {}
-		};
-		popup.text = lg.get("ratste");
-		popup.truetext = lg.get("ok");
-		popup.single = true;
-	}
-
-	void save() {
-		rm.save(rm.name);
-		ov.sidebarrefresh();
-	}
-
-	void refresh() {
-		float scale = st.floats[1].getvalue();
-		// Tool-bar
-		ListItem[] toolbarbuttons = new ListItem[6];
-		toolbarbuttons[0] = new ListItem(dm.icons[1]) {@ Override public void action() {rm.tool = 0;}};
-		toolbarbuttons[1] = new ListItem(dm.icons[2]) {@ Override public void action() {rm.tool = 1;}};
-		toolbarbuttons[2] = new ListItem(dm.icons[3]) {@ Override public void action() {
-			rm.tool = 2;
-			if(rm.isprefab) {
-				ov.sidebarid = ov.sidebarid == 6 ? -1 : 6;
-			} else {
-				ov.sidebarid = ov.sidebarid == 5 ? -1 : 5;
+	void build() {
+		final String[] tabs = {"newroom", "viewmode", "loadroom", "saveroom", "settings", "debug", "roomgroups", "about", "reset"};
+		items = new Object[3];
+		items[0] =
+		new GetVisible(new Text(" ")) {@Override public boolean getvisible() {return drawpopup;}};
+		items[1] = 
+		new Tabbar(
+			new ListViewBuilder() {
+				@Override public Object i(int i) {
+					final Temp temp = new Temp(i);
+					if(i == 1) {
+						return new Container(new GetValueText(lg.get(tabs[temp.i])) {
+							@ Override public String getvalue() {return rm.viewmode ? "3D" : "2D";}
+						});
+					} else {
+						return new Container(new Text(lg.get(tabs[temp.i])));
+					}
+				}
+			}.build(tabs.length, width, yoff, 120, Dir.RIGHT),
+			new Object[] {
+				// Load Room
+				new Transform(
+					new Transform(
+						new ListView(
+							new Builder() {
+								@Override public Object i(int i) {
+									final Temp temp = new Temp(i);
+									return new EventDetector(new Container(new Text("Room: " + rm.loadrooms()[i]))) {
+										@Override public void onevent(EventType et, MouseEvent e) {
+											if(et == EventType.MOUSEPRESSED) {
+												rm.load(rm.loadrooms()[temp.i]);
+											}
+										}
+									};
+								}
+							}.build(rm.loadrooms().length), 300, height-yoff
+						), Align.TOPRIGHT
+					),0,yoff
+				),
+				// Save Room
+				new Transform(
+					new Transform(
+						new ListView(
+							new Object[] {
+								new Container(new SetValueText("Name", newroomname) {
+									@Override public void onchange() {ov.newroomname = newvalue;value = newvalue;}
+								}),
+								new SizedBox(),
+								new EventDetector(new Container(new Text("Save"))) {
+									@Override public void onevent(EventType et, MouseEvent e) {
+										if(et == EventType.MOUSEPRESSED) {
+											rm.name = ov.newroomname;
+											rm.save(rm.name);
+											ov.build();
+										}
+									}
+								},
+							}, 300, height-yoff
+						), Align.TOPRIGHT
+					),0,yoff
+				),
+				// Settings
+				new Transform(
+					new Transform(
+						new ListViewBuilder() {
+							@Override public Object i(int i) {
+								final Temp temp = new Temp(i);
+								return new Container(new SetValueText(cap(st.get(temp.i).name), st.get(temp.i).value, new SetValueStyle(st.get(temp.i).type)) {
+									@Override public void onchange() {
+										String result = st.set(temp.i, newvalue);
+										if(result != null) {
+											value = result;
+											switch(temp.i) {
+												case 1:
+												lg.setlang(st.strings[1].value);
+												ov.build();
+												break;
+												case 2:
+												am.setfont(st.strings[2].value);
+												break;
+												case 3:
+												am.recalculatecolor();
+												break;
+												case 4: // Hide Overlay
+												visible = !st.booleans[1].value;
+												break;
+												case 5: // Fullscreen
+												requirerestart();
+												break;
+												case 6: // OPENGL Renderer
+												requirerestart();
+												break;
+												case 7: // Width
+												surface.setSize(st.ints[0].value,st.ints[1].value);
+												if(st.booleans[3].value) {
+													pg.setSize(width,height);
+												}
+												ov.build();
+												break;
+												case 8: // Height
+												surface.setSize(st.ints[0].value,st.ints[1].value);
+												if(st.booleans[3].value) {
+													pg.setSize(width,height);
+												}
+												ov.build();
+												break;
+												case 9: // AA
+												requirerestart();
+												break;
+											}
+										}
+									}
+								});
+							}
+						}.build(st.getsize(), 300, height-yoff), Align.TOPRIGHT
+					),0,yoff
+				),
+				// Debug
+				new Transform(
+					new Transform(
+						new ListView(
+							new Object[] {
+								new Container(new GetValueText("Name") {@ Override public String getvalue() {return rm.name;}}),
+								new Container(new GetValueText("X-off") {@ Override public String getvalue() {return str(rm.xoff);}}),
+								new Container(new GetValueText("Y-off") {@ Override public String getvalue() {return str(rm.yoff);}}),
+								new Container(new GetValueText("Scale") {@ Override public String getvalue() {return str(rm.scale);}}),
+								new Container(new GetValueText("DX-off") {@ Override public String getvalue() {return str(rm.dxoff);}}),
+								new Container(new GetValueText("DY-off") {@ Override public String getvalue() {return str(rm.dyoff);}}),
+								new Container(new GetValueText("DZ-off") {@ Override public String getvalue() {return str(rm.dzoff);}}),
+								new Container(new GetValueText("Angle 1") {@ Override public String getvalue() {return str(rm.angle1);}}),
+								new Container(new GetValueText("Angle 2") {@ Override public String getvalue() {return str(rm.angle2);}}),
+								new Container(new GetValueText("D-Speed") {@ Override public String getvalue() {return str(rm.dspeed);}}),
+								new Container(new GetValueText("Gridtilesize") {@ Override public String getvalue() {return str(rm.gridtilesize);}}),
+								new Container(new GetValueText("Tool") {@ Override public String getvalue() {return str(rm.tool);}}),
+								new Container(new GetValueText("Viewmode") {@ Override public String getvalue() {return str(rm.viewmode);}}),
+								new Container(new GetValueText("New Furnitureid") {@ Override public String getvalue() {return str(rm.newfurnitureid);}}),
+								new Container(new GetValueText("Is Prefab") {@ Override public String getvalue() {return str(rm.isprefab);}}),
+								new Container(new GetValueText("New Roomtilegroup") {@ Override public String getvalue() {return str(rm.newroomtilegroup);}}),
+								new Container(new GetValueText("Selectionid") {@ Override public String getvalue() {return str(rm.selectionid);}}),
+							}, 300, height-yoff
+						), Align.TOPRIGHT
+					),0,yoff
+				),
+				// Room Groups
+				new Transform(
+					new Transform(
+						new ListViewBuilder() {
+							@Override public Object i(int i) {
+								color c = rm.roomgrid.roomgroups[i];
+								final STemp stemp = new STemp(int(red(c)) + " " + int(green(c)) + " " + int(blue(c)));
+								final Temp temp = new Temp(i);
+								return new Container(new SetValueText(lg.get("group") + " " + (temp.i+1), stemp.s) {
+									@Override public void onchange() {
+										String[] strings = split(newvalue, " ");
+										int[] ints = new int[strings.length];
+										boolean a = true;
+										for (int i=0; i<strings.length;i++) {
+											if(strings[i].length() == 0) {
+												a = false;
+											}
+											int newint = int(strings[i]);
+											if(newint > 255 || newint < 0) {
+												a = false;
+											}
+											ints[i] = newint;
+										}
+										if(a && ints.length == 3) {
+											color c = color(ints[0], ints[1], ints[2]);
+											value = ints[0]+" "+ints[1]+" "+ints[2];
+											rm.roomgrid.roomgroups[temp.i] = c;
+										}
+									}
+								});
+							}
+						}.build(5, 300, height-yoff), Align.TOPRIGHT
+					),0,yoff
+				),
+				// Furniture List
+				new Transform(
+					new Transform(
+						new ListView(
+							new Object[] {
+								new GridView(
+									new Builder() {
+										@Override public Object i(int i) {
+											final Temp temp = new Temp(i);
+											return new EventDetector(new Container(
+													new ListView(
+														new Object[] {
+															new Image(dm.furnitures[temp.i].image, 150, round(150*0.75), Fit.RATIO),
+															new Text(dm.furnitures[temp.i].name),
+														}
+													)
+												)
+											) {
+												@Override public void onevent(EventType et, MouseEvent e) {
+													if(et == EventType.MOUSEPRESSED) {
+														rm.newfurnitureid = temp.i;
+														rm.isprefab = false;
+														rm.tool = 2;
+													}
+												}
+											};
+										}
+									}.build(dm.furnitures.length),300, height-yoff-30,2
+								),
+								new EventDetector(new Container(new Text("Prefab List"), 300, 30)) {
+									@Override public void onevent(EventType et, MouseEvent e) {
+										if(et == EventType.MOUSEPRESSED) {
+											tabid = 6;
+										}
+									}
+								},
+							},300, height-yoff
+						), Align.TOPRIGHT
+					),0,yoff
+				),
+				// Prefab List
+				new Transform(
+					new Transform(
+						new ListView(
+							new Object[] {
+								new GridView(
+									new Builder() {
+										@Override public Object i(int i) {
+											final Temp temp = new Temp(i);
+											return new EventDetector(new Container(
+													new ListView(
+														new Object[] {
+															new Image(dm.prefabs[temp.i].getimage(), 150, round(150*0.75), Fit.RATIO),
+															new Text(dm.prefabs[temp.i].name),
+														}
+													)
+												)
+											) {
+												@Override public void onevent(EventType et, MouseEvent e) {
+													if(et == EventType.MOUSEPRESSED) {
+														rm.newfurnitureid = temp.i;
+														rm.isprefab = true;
+														rm.tool = 2;
+													}
+												}
+											};
+										}
+									}.build(dm.prefabs.length),300, height-yoff-30,2
+								),
+								new EventDetector(new Container(new Text("Furniture List"), 300, 30)) {
+									@Override public void onevent(EventType et, MouseEvent e) {
+										if(et == EventType.MOUSEPRESSED) {
+											tabid = 5;
+										}
+									}
+								},
+							},300, height-yoff
+						), Align.TOPRIGHT
+					),0,yoff
+				),
 			}
-		}};
-		toolbarbuttons[3] = new ListItem(dm.icons[4]) {@ Override public void action() {rm.tool = 3;}};
-		toolbarbuttons[4] = new ListItem(dm.icons[5]) {@ Override public void action() {rm.tool = 4;}};
-		toolbarbuttons[5] = new ListItem(dm.icons[6]) {@ Override public void action() {rm.tool = 5;}};
-		toolbar = new ButtonList(0, _height, 50, ceil(height/scale)-_height, false, 50, 0, toolbarbuttons);
-
-		// Tab-bar
-		ListItem[] tabbarbuttons = new ListItem[9];
-
-		tabbarbuttons[0] = new ListItem(lg.get("newroom")) {
-			@ Override public void action() {
-				ListItem[] listitems = new ListItem[2];
-				listitems[0] = new ListItem(lg.get("newwidth"), true, 2, true) {@ Override public void action() {}};
-				listitems[1] = new ListItem(lg.get("newheight"),true, 2, true) {@ Override public void action() {}};
-				popup = new Popup(250,150, listitems) {
-					@ Override public void ontrue() {
-						int newxgridsize = int(values[0].bv.value);
-						int newygridsize = int(values[1].bv.value);
-
-						if(newxgridsize > 0 && newygridsize > 0) {
-							rm.newroom(newxgridsize, newygridsize);
-							rm.reset();
+			) {
+			@Override public void ontab(int i) {
+				if(1 < i && i < 7) {
+					if(tabid == i-2) {
+						tabid = -1;
+					} else {
+						tabid = i-2;
+					}
+				} else if(i == 1) {
+					rm.switchviewmode();
+				} else {
+					Object o = new Object();
+					switch(i) { // Popups
+						case 0: // New Room
+							o =
+							new Container(
+								new Transform(
+									new ListView(
+										new Object[] {
+											new Text(lg.get("newroom")),
+											new SizedBox(true),
+											new Container(new SetValueText(lg.get("newwidth"), str(newroomxsize), new SetValueStyle(2)) {
+												@Override public void onchange() {
+													int v = constrain(int(newvalue), 1,100);
+													value = str(v);
+													newroomxsize = v;
+												}
+											}),
+											new Container(new SetValueText(lg.get("newheight"), str(newroomysize), new SetValueStyle(2)) {
+												@Override public void onchange() {
+													int v = constrain(int(newvalue), 1,100);
+													value = str(v);
+													newroomysize = v;
+												}
+											}),
+											new EventDetector(new Container(new Text(lg.get("ok")))) {
+												@Override public void onevent(EventType et, MouseEvent e) {
+													if(et == EventType.MOUSEPRESSED) {
+														drawpopup = false;
+														rm.newroom(newroomxsize, newroomysize);
+													}}
+											},
+										}, width/4, height/4
+									), Align.CENTERCENTER
+								), width, height, color(0,150)
+							);
+						break;
+						case 7: // About
+							o =
+							new Container(
+								new Transform(
+									new ListView(
+										new Object[] {
+											new Text(getabout(), 5),
+											new SizedBox(true),
+											new EventDetector(new Container(new Text("Github"))) {
+												@Override public void onevent(EventType et, MouseEvent e) {
+													if(et == EventType.MOUSEPRESSED) {link(githublink);}
+												}
+											},
+											new EventDetector(new Container(new Text(lg.get("ok")))) {
+												@Override public void onevent(EventType et, MouseEvent e) {
+													if(et == EventType.MOUSEPRESSED) {drawpopup = false;}
+												}
+											},
+										}, width/4, height/4
+									), Align.CENTERCENTER
+								), width, height, color(0,150)
+							);
+						break;
+						case 8: // Reset
+							o =
+							new Container(
+								new Transform(
+									new ListView(
+										new Object[] {
+											new SizedBox(true),
+											new Text(lg.get("areyousure")),
+											new SizedBox(true),
+											new ListView(
+												new Object[] {
+													new EventDetector(new Container(new Text(lg.get("ok")))) {
+														@Override public void onevent(EventType et, MouseEvent e) {
+															if(et == EventType.MOUSEPRESSED) {
+																drawpopup = false;
+																rm.reset();
+															}
+														}
+													},
+													new EventDetector(new Container(new Text(lg.get("cancel")))) {
+														@Override public void onevent(EventType et, MouseEvent e) {
+															if(et == EventType.MOUSEPRESSED) {drawpopup = false;}
+														}
+													},
+												}, width/4, 30, width/8, Dir.RIGHT
+											)
+										}, width/4, height/4
+									), Align.CENTERCENTER
+								), width, height, color(0,150)
+							);
+						break;
+					}
+					drawpopup = true;
+					items[0] = new GetVisible(o) {@Override public boolean getvisible() {return drawpopup;}};
+				}
+			}
+			@Override public int getid() {
+				return tabid;
+			}
+		};
+		items[2] =
+		new Transform(
+			new ListViewBuilder() {
+				@Override public Object i(int i) {
+					final Temp temp = new Temp(i);
+					return new EventDetector(new Container(new Image(dm.icons[temp.i+1]))) {
+						@Override public void onevent(EventType et, MouseEvent e) {
+							if(et == EventType.MOUSEPRESSED) {
+								rm.tool = temp.i;
+								if(rm.tool == 2) {
+									tabid = (tabid == 5) ? -1 : 5;
+								}
+							}
 						}
-					}
-					@ Override public void onfalse() {}
-				};
-				popup.text = lg.get("createnewroom");
-				popup.truetext = lg.get("confirm");
-				popup.falsetext = lg.get("cancel");
-			}
-		};
-		tabbarbuttons[1] = new ListItem(lg.get("viewmode") + " 2D") {@ Override public void action() {
-			if(st.booleans[3].getvalue()) {
-				rm.switchviewmode();
-				name = rm.viewmode ? (lg.get("viewmode") + " 3D") : (lg.get("viewmode") + " 2D");
-			}
-		}};
-		tabbarbuttons[2] = new ListItem(lg.get("loadroom")) {@ Override public void action() {ov.sidebarid = ov.sidebarid == 0 ? -1 : 0;}};
-		tabbarbuttons[3] = new ListItem(lg.get("saveroom")) {@ Override public void action() {ov.sidebarid = ov.sidebarid == 1 ? -1 : 1;}};
-		tabbarbuttons[4] = new ListItem(lg.get("settings")) {@ Override public void action() {ov.sidebarid = ov.sidebarid == 2 ? -1 : 2;}};
-		tabbarbuttons[5] = new ListItem(lg.get("debug")) {@ Override public void action() {ov.sidebarid = ov.sidebarid == 3 ? -1 : 3;}};
-		tabbarbuttons[6] = new ListItem(lg.get("roomgroups")) {@ Override public void action() {ov.sidebarid = ov.sidebarid == 4 ? -1 : 4;}};
-		tabbarbuttons[7] = new ListItem(lg.get("about")) {@ Override public void action() {
-			ListItem[] listitems = new ListItem[2];
-			listitems[0] = new ListItem("Github Repos") {@ Override public void action() {link(githublink);}};
-			listitems[1] = new ListItem(lg.get("tutorial")) {@ Override public void action() {link(githubtutoriallink);}};
-			popup = new Popup(width/4,height/3, listitems) {
-				@ Override public void ontrue() {}
-				@ Override public void onfalse() {}
-			};
-			popup.text = getabout();	
-			popup.single = true;
-			popup.truetext = lg.get("ok");
-		}};
-		tabbarbuttons[8] = new ListItem(lg.get("reset")) {
-			@ Override public void action() {
-				popup = new Popup(250,150) {
-					@ Override public void ontrue() {rm.reset();ov.refresh();}
-					@ Override public void onfalse() {}
-				};
-			}
-		};
-		tabbar = new ButtonList(0,0,ceil(width/scale),_height, true, 120, 0, tabbarbuttons);
-
-		sidebarrefresh();
-
-		// Popup
-		popup = new Popup(250,150) {
-			@ Override public void ontrue() {
-			}
-			@ Override public void onfalse() {}
-		};
-		popup.visible = false;
-	}
-
-	void sidebarrefresh() {
-		// Load-buttons
-		String[] rooms = rm.loadrooms();
-		ListItem[] loadbuttons = new ListItem[rooms.length];
-		for (int i=0;i<rooms.length;i++ ) {
-			loadbuttons[i] = new ListItem(rooms[i]) {@ Override public void action() {rm.load(name);}};
+					};
+				}
+			}.build(6, xoff, height-yoff, xoff, Dir.DOWN), 0,yoff
+		);
+		for (Object item : items) {
+			setitemxy(item, 0,0);
 		}
-
-		// Save-buttons
-		ListItem[] savebuttons = new ListItem[2];
-		savebuttons[0] = new ListItem(lg.get("name"), true, 3, -99) {@ Override public void action() {}};
-		savebuttons[1] = new ListItem(lg.get("save")) {@ Override public void action() {
-
-			if(rm.name == st.strings[0].getvalue()) {
-				popup = new Popup(250, 150) {
-					@ Override public void ontrue() {
-						save();
-					}
-					@ Override public void onfalse() {}
-				};
-				popup.text = lg.get("overwritedefaultroom");
-			} else {
-				save();
-			}
-		}};
-
-		// Room-Groups
-		ListItem[] roomgroupsbuttons = new ListItem[5];
-		roomgroupsbuttons[0] = new ListItem(lg.get("group") + " 1", true, 0, -1) {@ Override public void action() {}};
-		roomgroupsbuttons[1] = new ListItem(lg.get("group") + " 2", true, 0, -2) {@ Override public void action() {}};
-		roomgroupsbuttons[2] = new ListItem(lg.get("group") + " 3", true, 0, -3) {@ Override public void action() {}};
-		roomgroupsbuttons[3] = new ListItem(lg.get("group") + " 4", true, 0, -4) {@ Override public void action() {}};
-		roomgroupsbuttons[4] = new ListItem(lg.get("group") + " 5", true, 0, -5) {@ Override public void action() {}};
-		float scale = st.floats[1].getvalue();
-
-		// Side-Bars
-		int sxpos = ceil((width-sidebarwidth*scale)/scale);
-		int sypos = ceil(_height);
-		int swidth = ceil(sidebarwidth);
-		int sheight = ceil(height/scale)-sypos;
-
-		sidebars[0] = new ButtonList(sxpos,sypos,swidth,sheight, false, _height, 10, loadbuttons);
-		sidebars[1] = new ButtonList(sxpos,sypos,swidth,sheight, false, _height, 10, savebuttons);
-		sidebars[2] = new ButtonList(sxpos,sypos,swidth,sheight, false, _height, 2, 0); // Settings
-		sidebars[3] = new ButtonList(sxpos,sypos,swidth,sheight, false, _height, 2, 1);// Debugger
-		sidebars[4] = new ButtonList(sxpos,sypos,swidth,sheight, false, _height, 10, roomgroupsbuttons);
-		sidebars[5] = new ButtonList(sxpos,sypos,swidth,sheight, false, swidth/2, 10, 2); // Furniture
-		sidebars[6] = new ButtonList(sxpos,sypos,swidth,sheight, false, swidth/2, 10, 3); // Prefab
-		sidebars[3].live = true;
 	}
 
 	void draw() {
-		if(!st.booleans[1].getvalue()) {
-			resetMatrix();
-			float ovscale = st.floats[1].getvalue();
-
-			scale(ovscale);
-			if(sidebarid != -1) {
-				sidebars[sidebarid].draw();
+		if(visible) {
+			boolean hit = false;
+			boolean[] h = new boolean[items.length];
+			for (int i=0;i<items.length;i++) {
+				boolean newhit = getisitemhit(items[i]);
+				if(newhit) {
+					if(!hit) {
+						h[i] = true;
+					}
+					hit = true;
+				} else {
+					h[i] = false;
+				}
 			}
-			if(!rm.viewmode) {
-				toolbar.draw();
+
+			for (int i=items.length-1;i>=0;i--) {
+				drawitem(items[i], h[i]);
 			}
-			tabbar.draw();
-			popup.draw();
 
+		}
+	}
 
-			// Date
-			String date = str(day())+"."+str(month())+"."+str(year());
-			fill(c[0]);
-			textAlign(RIGHT, TOP);
-			text(date, width/ovscale, 0);
-
-			// Message
-			messagetimer = max(messagetimer-1/frameRate, 0);
-			textAlign(LEFT, BOTTOM);
-			fill(c[0], min(255/1*messagetimer, 255));
-			text(message, _width/ovscale, height/ovscale);
+	boolean ishit() {
+		if(visible) {
+			for (Object item : items) {
+				if(getisitemhit(item)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	void mouseWheel(MouseEvent e) {
+		if(visible) {
+			for (Object item : items) {
+				mouseWheelitem(item, e);
+			}
 		}
 	}
 	boolean mousePressed() {
-		boolean hit = ishit();
-		if(popup.mousePressed()) {
-			return true;
-		}
-		toolbar.mousePressed();
-		if(sidebarid != -1) {
-			sidebars[sidebarid].mousePressed();
+		boolean hit = false;
+		if(visible) {
+			for (Object item : items) {
+				if(mousePresseditem(item)) {
+					hit = true;
+					return true;
+				}
+			}
 		}
 		return hit;
 	}
 	void mouseReleased() {
-		if(popup.visible) {
-			return;
-		}
-		tabbar.mousePressed();
-	}
-	boolean mouseDragged() {
-		if(popup.visible) {
-			return true;
-		}
-		toolbar.mouseDragged();
-		tabbar.mouseDragged();
-		if(sidebarid != -1) {
-			sidebars[sidebarid].mouseDragged();
-		}
-		return false;
-	}
-	boolean keyPressed() {
-		boolean hit = false;
-		if(popup.visible) {
-			popup.keyPressed();
-			return true;
-		}
-		if(sidebarid != -1) {
-			ButtonList sb = sidebars[sidebarid];
-			if(sb.keyPressed()) {
-				hit = true;
-			}
-		}
-		if(!hit) {
-			if(key == 'h') {
-				st.booleans[1].setvalue(!st.booleans[1].getvalue());
-				if(!st.booleans[1].getvalue()) {
-					sidebarrefresh();
-				}
-			} else if( key == 'r') {
-				popup = new Popup(250,150) {
-					@ Override public void ontrue() {rm.reset();sidebarrefresh();}
-					@ Override public void onfalse() {}
-				};
-			}
-		}
-		return hit;
-	}
-	boolean ishit() {
-		float scale = st.floats[1].getvalue();
-		if(popup.visible) {
-			return true;
-		}
-		if(checkraw(toolbar.xpos, toolbar.ypos, toolbar._width, toolbar._height)) {
-			return true;
-		}
-		if(checkraw(tabbar.xpos, tabbar.ypos, tabbar._width, tabbar._height)) {
-			return true;
-		}
-		if(sidebarid != -1) {
-			ButtonList sb = sidebars[sidebarid];
-			if(checkraw(sb.xpos, sb.ypos, sb._width, sb._height)) {
-				return true;
-			}
-		}
-		return false;
-	}
-}
-
-class ButtonList extends PWH{
-	ListItem[] listitems = new ListItem[0];
-	ListItem[] lastlistitems = new ListItem[0];
-	boolean direction;
-	int off = 0;
-	int buttonsize = 25;
-	int lastbuttonsize = 25;
-	int buttonmargin = 10;
-	boolean live = false;
-	int rowlength = 1;
-
-
-	ButtonList(int newxpos, int newypos, int newwidth, int newheight) {
-		xpos = newxpos;
-		ypos = newypos;
-		_width = newwidth;
-		_height = newheight;
-	}
-	ButtonList(int newxpos, int newypos, int newwidth, int newheight, boolean newdirection) {
-		this(newxpos, newypos, newwidth, newheight);
-		direction = newdirection;
-	}
-	ButtonList(int newxpos, int newypos, int newwidth, int newheight, boolean newdirection, int newbuttonsize, int newbuttonmargin) {
-		this(newxpos, newypos, newwidth, newheight, newdirection);
-		buttonsize = newbuttonsize;
-		buttonmargin = newbuttonmargin;
-	}
-	ButtonList(int newxpos, int newypos, int newwidth, int newheight, boolean newdirection, int newbuttonsize, int newbuttonmargin, ListItem[] newlistitems) {
-		this(newxpos, newypos, newwidth, newheight, newdirection, newbuttonsize, newbuttonmargin);
-		listitems = newlistitems;
-	}
-	ButtonList(int newxpos, int newypos, int newwidth, int newheight, boolean newdirection, int newbuttonsize, int newbuttonmargin, int type) {
-		this(newxpos, newypos, newwidth, newheight, newdirection, newbuttonsize, newbuttonmargin);
-		if(type == 0) {
-			newsettings(st);
-		} else if(type == 1){
-			newdebugger(db);
-		} else if(type == 2) {
-			newfurnituremanager(dm.furnitures);
-		} else if(type == 3) {
-			newprefabmanager(dm.prefabs);
-		}
-	}
-
-	void newsettings(Settings settings) {
-		listitems = new ListItem[settings.getsize()];
-		int x=0;
-		/*
-		for (int i=0;i<settings.colors.length;i++ ) {
-			listitems[x] = new ListItem(settings.colors[i].name, true, 0, i) {@ Override public void action() {}};
-			x++;
-		}
-		*/
-		for (int i=0;i<settings.floats.length;i++ ) {
-			listitems[x] = new ListItem(settings.floats[i].name, true, 1, i) {@ Override public void action() {}};
-			x++;
-		}
-		for (int i=0;i<settings.ints.length;i++ ) {
-			listitems[x] = new ListItem(settings.ints[i].name, true, 2, i) {@ Override public void action() {}};
-			x++;
-		}
-		for (int i=0;i<settings.strings.length;i++ ) {
-			listitems[x] = new ListItem(settings.strings[i].name, true, 3, i) {@ Override public void action() {}};
-			x++;
-		}
-		for (int i=0;i<settings.booleans.length;i++ ) {
-			listitems[x] = new ListItem(settings.booleans[i].name, true, 4, i) {@ Override public void action() {}};
-			x++;
-		}
-		lastlistitems = new ListItem[1];
-		lastlistitems[0] = new ListItem(lg.get("save")) {@ Override public void action() {st.save();ov.showmessage("Saved Settings");}};
-
-	}
-	void newdebugger(Debugger debugger) {
-		listitems = new ListItem[debugger.items.length];
-		for (int i=0;i<debugger.items.length;i++ ) {
-			DebuggerItem item = debugger.items[i];
-			listitems[i] = new ListItem(item.name + ": " + item.getvalue()) {@ Override public void action() {}};
-		}
-	}
-
-	void newfurnituremanager(FurnitureData[] fd) {
-		listitems = new ListItem[fd.length];
-		for (int i=0;i<fd.length;i++ ) {
-			final Temp temp = new Temp(i);
-			listitems[i] = new ListItem(fd[i].name + " : " + fd[i].price, fd[i].image) {@ Override public void action() {rm.newfurnitureid = temp.i;rm.tool = 2;rm.isprefab = false;}};
-		}
-		lastlistitems = new ListItem[1];
-		lastlistitems[0] = new ListItem("Prefabs") {@ Override public void action() {ov.sidebarid = 6;}};
-		rowlength = 2;
-	}
-
-	void newprefabmanager(PrefabData[] pd) {
-		listitems = new ListItem[pd.length];
-		for (int i=0;i<pd.length;i++ ) {
-			final Temp temp = new Temp(i);
-			listitems[i] = new ListItem(pd[i].name, pd[i].getimage()) {@ Override public void action() {rm.newfurnitureid = temp.i;rm.tool = 2;rm.isprefab = true;}};
-		}
-		lastlistitems = new ListItem[1];
-		lastlistitems[0] = new ListItem("Models") {@ Override public void action() {ov.sidebarid = 5;}};
-		rowlength = 2;
-	}
-
-	void draw() {
-		noStroke();
-		fill(c[6]);
-		if(direction) {
-			rect(xpos+off, ypos, max(getlistheight(), _width), _height);
-		} else {
-			rect(xpos, ypos+off, _width, max(getlistheight(), _height));
-		}
-		if(live) {
-			newdebugger(db);
-		}
-		int rowi = 0;
-		int a = 0;
-		for (int i=0;i<listitems.length;i++) {
-			if(direction) {
-				listitems[i].draw(xpos+(buttonsize+buttonmargin)*a+off, ypos, buttonsize, _height);
-			} else {
-				listitems[i].draw(xpos+_width/rowlength*rowi, ypos+(buttonsize+buttonmargin)*a+off, _width/rowlength, buttonsize);
-			}
-			rowi++;
-			if(rowi == rowlength) {
-				rowi = 0;
-				a++;
-			}
-		}
-		if(lastlistitems != null) {
-			for(int i=lastlistitems.length-1;i>=0;i--) {
-				if(direction) {
-					lastlistitems[i].draw(xpos+_width-(lastbuttonsize+buttonmargin)*(i+1)+buttonmargin, ypos, lastbuttonsize, _height);
-				} else {
-					lastlistitems[i].draw(xpos, ypos+_height-(lastbuttonsize+buttonmargin)*(i+1)+buttonmargin, _width, lastbuttonsize);
-				}
-			}
-		}
-	}
-
-	int getlistheight() {
-		return ceil(listitems.length/rowlength) * (buttonsize+buttonmargin);
-	}
-
-	void mousePressed() {
-		if(mouseButton == LEFT) {
-			int rowi = 0;
-			int a = 0;
-			for (int i=0;i<listitems.length;i++) {
-				ListItem l = listitems[i];
-				if(direction) {
-					l.check(xpos+(buttonsize+buttonmargin)*a+off, ypos, buttonsize, _height);
-				} else {
-					l.check(xpos+_width/rowlength*rowi, ypos+(buttonsize+buttonmargin)*a+off, _width/rowlength, buttonsize);
-				}
-				rowi++;
-				if(rowi == rowlength) {
-					rowi = 0;
-					a++;
-				}
-			}
-			for (int i=0;i<lastlistitems.length;i++) {
-				ListItem l = lastlistitems[i];
-				if(direction) {
-					l.check(xpos+_width-(lastbuttonsize+buttonmargin)*(i+1)+buttonmargin, ypos, lastbuttonsize, _height);
-				} else {
-					l.check(xpos, ypos+_height-(lastbuttonsize+buttonmargin)*(i+1)+buttonmargin, _width, lastbuttonsize);
-				}
-			}
-		}
 	}
 	void mouseDragged() {
-		if(checkraw(xpos, ypos, _width, _height)) {
-			if(mouseButton == LEFT) {
-				if(direction) {
-					if(getlistheight() > _width) {
-						off += mouseX - pmouseX;
-						int listheight = getlistheight() < _width ? _width : getlistheight();
-						off = constrain(off, _width-listheight, 0);
-					}
-				} else {
-					if(getlistheight() > _height) {
-						off += mouseY - pmouseY;
-						int listheight = getlistheight() < _height ? _height : getlistheight();
-						off = constrain(off, _height-listheight, 0);
-					}
-				}
+	}
+	void keyPressed() {
+		if(visible) {
+			for (Object item : items) {
+				keyPresseditem(item);
 			}
 		}
 	}
-	boolean keyPressed() {
-		for (ListItem li : listitems) {
-			if(li.keyPressed()) {
-				return true;
-			}
-		}
-		for (ListItem lli : lastlistitems) {
-			if(lli.keyPressed()) {
-				return true;
-			}
-		}
-		return false;
-	}
-}
-
-abstract class ListItem {
-	String name;
-	PImage image;
-	boolean editable = false;
-	boolean editmode= false;
-	ButtonValue bv;
-
-	ListItem(String newname) {
-		name = newname;
-	}
-	ListItem(PImage newimage) {
-		name = "";
-		image = newimage;
-	}
-	ListItem(String newname, PImage newimage) {
-		name = newname;
-		image = newimage;
-	}
-	ListItem(String newname, boolean neweditable, int type, int newindex) {
-		name = newname;
-		editable = neweditable;
-		bv = new ButtonValue(type, newindex);
-	}
-	ListItem(String newname, boolean neweditable, int type, boolean newisreadonly) {
-		name = newname;
-		editable = neweditable;
-		bv = new ButtonValue(type, newisreadonly);
-	}
-	
-	void draw(int xpos, int ypos, int _width, int _height) {
-		if(image == null) {
-			textSize(16);
-			textAlign(CENTER, CENTER);
-			noStroke();
-			fill(c[5]);
-			rect(xpos,ypos,_width, _height);
-			if(checkraw(xpos, ypos, _width, _height) && !ov.popup.visible) {
-				fill(0, 50);
-				rect(xpos,ypos,_width, _height);
-			}
-			fill(editmode ? color(255,0,0) : c[0]);
-			text(name + (editable ? ": " + (editmode ? bv.newvalue : bv.value) : ""), xpos, ypos, _width, _height);
-
-		} else {
-			push();
-			imageMode(CENTER);
-			int margin = name.length() > 0 ? 25 : 0;
-
-			float w = image.width;
-			float h = image.height;
-			if(w > _width) {
-				float ratio = _width/w;
-				w *= ratio;
-				h *= ratio;
-			}
-			if(h > _height - margin) {
-				float ratio = (_height - margin)/h;
-				w *= ratio;
-				h *= ratio;
-			}
-			image(image, xpos+_width/2, ypos+_height/2, w, h);
-			fill(c[0]);
-			textAlign(CENTER, CENTER);
-			text(name,xpos,ypos+_height-20, _width, 20);
-			if(checkraw(xpos, ypos, _width, _height) && !ov.popup.visible) {
-				fill(0, 50);
-				rect(xpos,ypos,_width, _height);
-			}
-			pop();
-		}
-	}
-	abstract void action();
-
-	boolean check(int xpos, int ypos, int _width, int _height) {
-		if(checkraw(xpos,ypos,_width, _height)) {
-			action();
-			if(editable) {
-				editmode = !editmode;
-			}
-			return true;
-		} else {
-		  	editmode = false;
-		  	if(editable) {
-		  		bv.newvalue = bv.value;
-		  	}
-		  	return false;
-		}
-	}
-	boolean keyPressed() {
-		boolean hit = false;
-		if(editmode) {
-			if(bv.keyPressed()) {
-				hit = true;
-			}
-			if(keyCode == ENTER) {
-				editmode = false;
-			}
-		}
-		return hit;
-	}
-}
-
-class ButtonValue{
-	String value;
-	String newvalue;
-	int type;
-	int index;
-	boolean readonly;
-
-	ButtonValue(int newtype, int newindex) {
-		value = "";
-		newvalue = "";
-		type = newtype;
-		index = newindex;
-		getsetting();
-		newvalue = value;
-		readonly = false;
-	}
-	ButtonValue(int newtype, boolean newreadonly) {
-		value = "";
-		newvalue = "";
-		type = newtype;
-		index = -99;
-		readonly = newreadonly;
+	void keyReleased() {
 	}
 
-	void getsetting() {
-		if(index != -99) {
-			switch(type) {
-				/*
-				case 0:
-				// 0 = color
-					if(index < 0) {
-						color c = rm.roomgrid.roomgroups[abs(index)-1];
-						value = int(red(c)) + " " + int(green(c)) + " " + int(blue(c));
-					} else {
-						color c = st.colors[index].getvalue();
-						value = int(red(c)) + " " + int(green(c)) + " " + int(blue(c));
-					}
-				break;
-				*/
-				case 1:
-				// 1 = float
-					value = str(st.floats[index].getvalue());
-				break;
-				case 2:
-				// 2 = int
-					value = str(st.ints[index].getvalue());
-				break;
-				case 3:
-				// 3 = string
-					value = st.strings[index].getvalue();
-				break;
-				case 4:
-				// 4 = boolean
-					value = st.booleans[index].getvalue() == true ? "true" : "false";
-				break;	
-			}
-		} else {
-			value = rm.name;
-		}
-	}
-
-	void setsetting() {
-		if(!readonly) {
-			if(index != -99) {
-				switch(type) {
-					/*
-					case 0:
-					// 0 = color
-						String[] strings = split(value, " ");
-						int[] ints = new int[strings.length];
-						for (int i=0; i<strings.length;i++) {
-							ints[i] = int(strings[i]);
-						}
-						color c  = color(ints[0], ints[1], ints[2]);
-						if(index < 0) { // Roomgroup
-							rm.roomgrid.roomgroups[abs(index)-1] = c;
-						} else {
-							st.colors[index].setvalue(c);
-						}
-					break;
-					*/
-					case 1:
-					// 1 = float
-						st.floats[index].setvalue(float(value));
-						if(index == 1) { // Overlayscale
-							ov.refresh();
-						}
-					break;
-					case 2:
-					// 2 = int
-						st.ints[index].setvalue(int(value));
-
-						if(index == 0 || index == 1) { // Width, Height
-							int sw = st.ints[0].getvalue();
-							int sh = st.ints[1].getvalue();
-							surface.setSize(sw,sh);
-							ov.refresh();
-							if(st.booleans[3].getvalue()) {
-								pg.setSize(width,height);
+	void requirerestart() {
+		Object o =
+		new Container(
+			new Transform(
+				new ListView(
+					new Object[] {
+						new SizedBox(true),
+						new Text(lg.get("ratste"), 3),
+						new SizedBox(true),
+						new EventDetector(new Container(new Text(lg.get("ok")))) {
+							@Override public void onevent(EventType et, MouseEvent e) {
+								if(et == EventType.MOUSEPRESSED) {drawpopup = false;}
 							}
-						} else if(index == 2) { // Anti-aliasing
-							ov.requirerestart();
-						}
-					break;
-					case 3:
-					// 3 = string
-						st.strings[index].setvalue(value);
-						if(index == 1) { // Language
-							lg.setlang(st.strings[1].getvalue());
-							ov.refresh();
-						} else if(index == 2) { // Font
-							am.setfont(st.strings[2].getvalue());
-						}
-					break;
-					case 4:
-					// 4 = boolean
-						if(value.equals("0") || value.equals("1")) {
-							newvalue = value.equals("0") ? "false" : "true";
-							value = value.equals("0") ? "false" : "true";
-						}
-						st.booleans[index].setvalue(boolean(value));
-						if(index == 0) { // Darkmode
-							am.recalculatecolor();
-						} else if(index == 2) { // Fullscreen
-							ov.requirerestart();
-						} else if(index == 3) { // Use Opengl Renderer
-							ov.requirerestart();
-						}
-					break;
-				}
-			} else {
-				rm.name = value;
-			}
-		}
+						},
+					}, width/4, height/4
+				), Align.CENTERCENTER
+			), width, height, color(0,150)
+		);
+
+		drawpopup = true;
+		items[0] = new GetVisible(o) {@Override public boolean getvisible() {return drawpopup;}};
 	}
 
 
-
-	boolean keyPressed() {
-		if (keyCode == BACKSPACE) {
-			if (newvalue.length() > 0) {
-				newvalue = newvalue.substring(0, newvalue.length()-1);
-			}
-		} else if(keyCode == ENTER) {
-			if(check()) {
-				value = newvalue;
-				setsetting();
-			} else {
-				newvalue = value;
-			}
-		} else if(keyCode == ESC) {
-			newvalue = value;
-			key = 0;
-		}
-		switch(type) {
-			case 0:
-			// 0 = color
-				if ((keyCode > 47 && keyCode < 58 || keyCode == 32) && newvalue.toString().length() < 11) {
-				  newvalue = newvalue + key;
-				}
-			break;
-			case 1:
-			// 1 = float
-				if (((keyCode > 47 && keyCode < 58) || keyCode == 46) && newvalue.toString().length() < 12) {
-				  newvalue = newvalue + key;
-				}
-			break;
-			case 2:
-			// 2 = int
-				if (keyCode > 47 && keyCode < 58 && newvalue.length() < 12) {
-				  newvalue = newvalue + key;
-				}
-			break;
-			case 3:
-			// 3 = string
-				if ((keyCode > 47 && keyCode < 91  || keyCode == 32) && newvalue.length() < 24) {
-				  newvalue = newvalue + key;
-				}
-			break;
-			case 4:
-			// 4 = boolean
-				if ((keyCode > 47 && keyCode < 91  || keyCode == 32) && newvalue.length() < 5) {
-				  newvalue = newvalue + key;
-				}
-			break;
-		}
-		return true;
-	}
-	boolean check() {
-		if(newvalue.length() < 1) {
-			return false;
-		}
-		switch(type) {
-			case 0:
-			// 0 = color
-				String[] strings = split(newvalue, " ");
-				int[] ints = new int[strings.length];
-				for (int i=0; i<strings.length;i++) {
-					if(strings[i].length() == 0) {
-						return false;
-					}
-					int newint = int(strings[i]);
-					if(newint > 255 || newint < 0) {
-						return false;
-					}
-					ints[i] = newint;
-				}
-				if(ints.length == 3) {
-					return true;
-				}
-			break;
-			case 1:
-			// 1 = float
-				float f = float(newvalue);
-
-				if(!Float.isNaN(f)) {
-					return true;
-				}
-			break;
-			case 2:
-			// 2 = int
-				return true;
-			case 3:
-			// 3 = string
-				return true;
-			case 4:
-			// 4 = boolean
-				if(newvalue.equals("true") || newvalue.equals("false") || newvalue.equals("0") || newvalue.equals("1")) {
-					return true;
-				}
-			break;
-		}
-		return false;
-	}
 }
 
-abstract class Popup extends PWH {
-	boolean visible;
-	String text = lg.get("areyousure");
-	String truetext = lg.get("yes");
-	String falsetext = lg.get("no");
-	ListItem[] values = new ListItem[0];
-	boolean single = false;
-
-	Popup(int newwidth, int newheight) {
-		visible = true;
-		float scale = st.floats[1].getvalue();
-		float a = 2*scale*scale;
-		xpos = round((width-newwidth)/a);
-		ypos = round((height-newheight)/a);
-		_width = newwidth;
-		_height = newheight;
+void mouseWheelitem(Object item, MouseEvent e) {
+	if (item instanceof Tabbar) {
+		((Tabbar)item).mouseWheel(e);
+	} else if (item instanceof ListView) {
+		((ListView)item).mouseWheel(e);
+	} else if (item instanceof GridView) {
+		((GridView)item).mouseWheel(e);
+	} else if (item instanceof Container) {
+		((Container)item).mouseWheel(e);
+	} else if (item instanceof Transform) {
+		((Transform)item).mouseWheel(e);
+	} else if (item instanceof GetVisible) {
+		((GetVisible)item).mouseWheel(e);
+	} else if (item instanceof EventDetector) {
+		((EventDetector)item).mouseWheel(e);
 	}
-	Popup(int newwidth, int newheight, ListItem[] newvalues) {
-		visible = true;
-		float scale = st.floats[1].getvalue();
-		float a = 2*scale*scale;
-		xpos = round((width-newwidth)/a);
-		ypos = round((height-newheight)/a);
-		_width = newwidth;
-		_height = newheight;
-		values = newvalues;
+}
+boolean mousePresseditem(Object item) {
+	if (item instanceof Tabbar) {
+		return ((Tabbar)item).mousePressed();
+	} else if (item instanceof ListView) {
+		return ((ListView)item).mousePressed();
+	} else if(item instanceof GridView) {
+		return ((GridView)item).mousePressed();
+	} else if(item instanceof Container) {
+		return ((Container)item).mousePressed();
+	} else if(item instanceof SetValueText) {
+		return ((SetValueText)item).mousePressed();
+	} else if(item instanceof Transform) {
+		return ((Transform)item).mousePressed();
+	} else if(item instanceof GetVisible) {
+		return ((GetVisible)item).mousePressed();
+	} else if (item instanceof EventDetector) {
+		((EventDetector)item).mousePressed();
 	}
-	Popup(int newxpos, int newypos, int newwidth, int newheight) {
-		visible = true;
-		xpos = newxpos;
-		ypos = newypos;
-		_width = newwidth;
-		_height = newheight;
+	return false;
+}
+void keyPresseditem(Object item) {
+	if (item instanceof Tabbar) {
+		((Tabbar)item).keyPressed();
+	} else if (item instanceof ListView) {
+		((ListView)item).keyPressed();
+	} else if (item instanceof GridView) {
+		((GridView)item).keyPressed();
+	} else if (item instanceof Container) {
+		((Container)item).keyPressed();
+	} else if (item instanceof SetValueText) {
+		((SetValueText)item).keyPressed();
+	} else if (item instanceof Transform) {
+		((Transform)item).keyPressed();
+	} else if (item instanceof GetVisible) {
+		((GetVisible)item).keyPressed();
+	} else if (item instanceof EventDetector) {
+		((EventDetector)item).keyPressed();
 	}
-
-	void draw() {
-		if(visible) {
-			float scale = st.floats[1].getvalue();
-			// Background
-			noStroke();
-			fill(0, 200);
-			rect(0,0,width/scale,height/scale);
-			// Popup Frame
-			fill(c[5]);
-			rect(xpos,ypos, _width, _height);
-			// Inputs
-			for (int i=0;i<values.length;i++) {
-				values[i].draw(xpos, ypos+30*i+_height-30*(values.length+1), _width, 30);
-
-				if (checkraw(xpos, ypos+30*i+_height-30*(values.length+1), _width, 30)) {
-					fill(0, 50);
-					rect(xpos,ypos+30*i+_height-30*(values.length+1),_width, 30);
-				}
-			}
-
-			// True & False Button
-			fill(c[3]);
-			if(single) {
-				rect(xpos,ypos+_height-30, _width, 30);
-			} else {
-				rect(xpos,ypos+_height-30, _width/2, 30);
-				rect(xpos+_width/2,ypos+_height-30, _width/2, 30);
-			}
-
-			// Main Text
-			fill(c[0]);
-			textAlign(CENTER, CENTER);
-			push();
-			textSize(16/((st.floats[1].getvalue()+1)/2)*1.125);
-			rectMode(CENTER);
-			text(text, xpos+_width/2, ypos+(_height-30*(values.length+1))/2, _width, _height-30);
-			pop();
-			// True & False Text
-			if(single) {
-				text(truetext, xpos+_width/2, ypos+_height-15);
-			} else {
-				text(truetext, xpos+_width/4, ypos+_height-15);
-				text(falsetext, xpos+_width*3/4, ypos+_height-15);
-			}
-			if(single) {
-				if(checkraw(xpos, ypos+_height-30, _width, _height)) {
-					fill(0, 50);
-					rect(xpos,ypos+_height-30,_width, 30);
-				}
-			} else {
-				if(checkraw(xpos, ypos+_height-30, _width, _height)) {
-					fill(0, 50);
-					if(mouseX >= xpos*scale && mouseX <= (xpos+_width/2)*scale) {
-						rect(xpos,ypos+_height-30,_width/2, 30);
-					} else {
-						rect(xpos+_width/2,ypos+_height-30,_width/2, 30);
-					}
-				}
-			}
-		}
+}
+int getlistindex(Object item) {
+	if (item instanceof ListView) {
+		return ((ListView)item).getindex();
+	} else if(item instanceof GridView) {
+		return ((GridView)item).getindex();
 	}
-
-	abstract void ontrue();
-	abstract void onfalse();
-
-	boolean mousePressed() {
-		if(visible && (mouseButton == LEFT)) {
-			for (int i=0;i<values.length;i++) {
-				values[i].check(xpos, ypos+30*i+_height-30*(values.length+1), _width, 30);
-			}
-			float scale = st.floats[1].getvalue();
-
-			if(checkraw(xpos, ypos, _width, _height)) {
-				if(mouseY >= (ypos+_height-30)*scale && mouseY <= (ypos+_height)*scale) {
-					if(mouseX >= xpos*scale && mouseX <= (xpos+_width/2)*scale) {
-						ontrue();
-					} else {
-						onfalse();
-					}
-					visible = false;
-				}
-			}
-			return true;
-		}
-		return false;
+	return -1;
+}
+boolean getisitemhit(Object item) {
+	if (item instanceof Tabbar) {
+		return ((Tabbar)item).ishit();
+	} else if (item instanceof ListView) {
+		return ((ListView)item).ishit();
+	} else if(item instanceof GridView) {
+		return ((GridView)item).ishit();
+	} else if(item instanceof Container) {
+		return ((Container)item).ishit();
+	} else if(item instanceof SetValueText) {
+		return ((SetValueText)item).ishit();
+	} else if(item instanceof GetValueText) {
+		return ((GetValueText)item).ishit();
+	} else if(item instanceof Transform) {
+		return ((Transform)item).ishit();
+	} else if(item instanceof GetVisible) {
+		return ((GetVisible)item).ishit();
+	} else if(item instanceof EventDetector) {
+		return ((EventDetector)item).ishit();
 	}
-	boolean keyPressed() {
-		boolean hit = false;
-		if(visible) {
-			for (int i=0;i<values.length;i++) {
-				if(values[i].keyPressed()) {
-					hit = true;
-				}
-			}
-		}
-		return hit;
+	return false;
+}
+void drawitem(Object item, boolean hit) {
+	if (item instanceof Tabbar) {
+		((Tabbar)item).draw(hit);
+	} else if (item instanceof ListView) {
+		((ListView)item).draw(hit);
+	} else if(item instanceof GridView) {
+		((GridView)item).draw(hit);
+	} else if(item instanceof Container) {
+		((Container)item).draw(hit);
+	} else if(item instanceof Text) {
+		((Text)item).draw(hit);
+	} else if(item instanceof SetValueText) {
+		((SetValueText)item).draw(hit);
+	} else if(item instanceof GetValueText) {
+		((GetValueText)item).draw(hit);
+	} else if(item instanceof Image) {
+		((Image)item).draw(hit);
+	} else if(item instanceof Transform) {
+		((Transform)item).draw(hit);
+	} else if(item instanceof GetVisible) {
+		((GetVisible)item).draw(hit);
+	} else if(item instanceof EventDetector) {
+		((EventDetector)item).draw(hit);
+	}
+}
+void setitemwh(Object item, int _width, int _height) {
+	if(item instanceof Tabbar) {
+		((Tabbar)item).setwh(_width, _height);
+	} else if(item instanceof ListView) {
+		((ListView)item).setwh(_width, _height);
+	} else if(item instanceof GridView) {
+		((GridView)item).setwh(_width, _height);
+	} else if(item instanceof Container) {
+		((Container)item).setwh(_width, _height);
+	} else if(item instanceof SizedBox) {
+		((SizedBox)item).setwh(_width, _height);
+	} else if(item instanceof Text) {
+		((Text)item).setwh(_width, _height);
+	} else if(item instanceof SetValueText) {
+		((SetValueText)item).setwh(_width, _height);
+	} else if(item instanceof GetValueText) {
+		((GetValueText)item).setwh(_width, _height);
+	} else if(item instanceof Image) {
+		((Image)item).setwh(_width, _height);
+	} else if(item instanceof Transform) {
+		((Transform)item).setwh(_width, _height);
+	} else if(item instanceof GetVisible) {
+		((GetVisible)item).setwh(_width, _height);
+	} else if(item instanceof EventDetector) {
+		((EventDetector)item).setwh(_width, _height);
+	}
+}
+void setitemxy(Object item, int xpos, int ypos) {
+	if(item instanceof Tabbar) {
+		((Tabbar)item).setxy(xpos, ypos);
+	} else if(item instanceof ListView) {
+		((ListView)item).setxy(xpos, ypos);
+	} else if(item instanceof GridView) {
+		((GridView)item).setxy(xpos, ypos);
+	} else if(item instanceof Container) {
+		((Container)item).setxy(xpos, ypos);
+	} else if(item instanceof SizedBox) {
+		((SizedBox)item).setxy(xpos, ypos);
+	} else if(item instanceof Text) {
+		((Text)item).setxy(xpos, ypos);
+	} else if(item instanceof SetValueText) {
+		((SetValueText)item).setxy(xpos, ypos);
+	} else if(item instanceof GetValueText) {
+		((GetValueText)item).setxy(xpos, ypos);
+	} else if(item instanceof Image) {
+		((Image)item).setxy(xpos, ypos);
+	} else if(item instanceof Transform) {
+		((Transform)item).setxy(xpos, ypos);
+	} else if(item instanceof GetVisible) {
+		((GetVisible)item).setxy(xpos, ypos);
+	} else if(item instanceof EventDetector) {
+		((EventDetector)item).setxy(xpos, ypos);
+	}
+}
+Box getboundry(Object item) {
+	if (item instanceof Tabbar) {
+		return ((Tabbar)item).getbound();
+	} else if (item instanceof ListView) {
+		return ((ListView)item).getbound();
+	} else if(item instanceof GridView) {
+		return ((GridView)item).getbound();
+	} else if(item instanceof Container) {
+		return ((Container)item).getbound();
+	} else if(item instanceof SizedBox) {
+		return ((SizedBox)item).getbound();
+	} else if(item instanceof Text) {
+		return ((Text)item).getbound();
+	} else if(item instanceof SetValueText) {
+		return ((SetValueText)item).getbound();
+	} else if(item instanceof GetValueText) {
+		return ((GetValueText)item).getbound();
+	} else if(item instanceof Image) {
+		return ((Image)item).getbound();
+	} else if(item instanceof Transform) {
+		return ((Transform)item).getbound();
+	} else if(item instanceof GetVisible) {
+		return ((GetVisible)item).getbound();
+	} else if(item instanceof EventDetector) {
+		return ((EventDetector)item).getbound();
+	}
+	return null;
+}
+
+enum Dir {
+    UP, RIGHT, DOWN, LEFT;
+}
+enum Align {
+    TOPLEFT, TOPRIGHT, BOTTOMLEFT, BOTTOMRIGHT, CENTERCENTER;
+}
+
+class Box {
+	int w;
+	int h;
+	Box(int w, int h) {
+		this.w = w;
+		this.h = h;
+	}
+	Box(float w, float h) {
+		this.w = round(w);
+		this.h = round(h);
 	}
 }

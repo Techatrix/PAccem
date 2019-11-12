@@ -62,11 +62,10 @@ class Furniture extends RPWH {
 	}
 
 	boolean checkover() {
-		float ovscale = st.booleans[1].getvalue() ? 0 : st.floats[1].getvalue();
 		float a = rm.gridtilesize*rm.scale;
 
-		float x = xpos*a+ov._width*ovscale+rm.xoff;
-		float y = ypos*a+ov._height*ovscale+rm.yoff;
+		float x = xpos*a+ov.xoff+rm.xoff;
+		float y = ypos*a+ov.yoff+rm.yoff;
 
 		if (mouseX >= x && mouseX < x+_width*a &&
 			mouseY >= y && mouseY < y+_height*a) {

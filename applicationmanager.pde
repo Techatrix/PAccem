@@ -3,39 +3,38 @@ class ApplicationManager {
 
 	ApplicationManager() {
 		if(deb) {
-		println("Loaded ApplicationManager");
+			println("Loaded ApplicationManager");
 		}
 	}
 
 	void initsettings() {
 		st = new Settings();
-		if(st.booleans[2].getvalue()) {
-			fullScreen(st.booleans[2].getvalue() ? P2D : JAVA2D);
+		if(st.booleans[2].value) {
+			fullScreen(st.booleans[2].value ? P2D : JAVA2D);
 		} else {
-			size(max(st.ints[0].getvalue(), 600),max(st.ints[1].getvalue(),600), st.booleans[3].getvalue() ? P2D : JAVA2D); // MIN: 500 x 500
+			size(max(st.ints[0].value, 600),max(st.ints[1].value,600), st.booleans[3].value ? P2D : JAVA2D); // MIN: 500 x 500
 		}
-		if(st.booleans[3].getvalue()) {
+		if(st.booleans[3].value) {
 			PJOGL.setIcon("data/assets/icon/0.png");
 		}
-		smooth(st.ints[2].getvalue());
+		smooth(st.ints[2].value);
 		recalculatecolor();
 	}
 	void initsetup() {
-		if(st.booleans[3].getvalue()) {
+		if(st.booleans[3].value) {
 			pg = createGraphics(width,height, P3D);
-			pg.smooth(st.ints[2].getvalue());
+			pg.smooth(st.ints[2].value);
 		}
-		lg = new LanguageManager(st.strings[1].getvalue());
+		lg = new LanguageManager(st.strings[1].value);
 		dm = new DataManager();
 		rm = new Roommanager();
-		db = new Debugger();
 		ov = new Overlay();
 
-		if(!st.booleans[3].getvalue()) {
+		if(!st.booleans[3].value) {
 	  		surface.setIcon(dm.icons[0]);
 		}
-		setfont(st.strings[2].getvalue());
-		textSize(16/((st.floats[1].getvalue()+1)/2));
+		setfont(st.strings[2].value);
+		textSize(16);
 	}
 
 	void settitle(String name) {
@@ -87,14 +86,14 @@ class ApplicationManager {
 				newfont += "-Regular";
 			}
 			newfont += ".ttf";
-			font = createFont(newfont, 16/((st.floats[1].getvalue()+1)/2), true);
+			font = createFont(newfont, 16, true);
 			textFont(font);
-			if(st.booleans[3].getvalue()) {
+			if(st.booleans[3].value) {
 				pg.textFont(font);
 			}
 		} else {
 			setfontrawinput = newfontname;
-			thread("setfontraw");
+			thread("setfontrawthread");
 		}
 	}
 	void setfontraw() {
@@ -107,18 +106,18 @@ class ApplicationManager {
 			}
 		}
 		if(hit) {
-			font = createFont(setfontrawinput, 16/((st.floats[1].getvalue()+1)/2), true);
+			font = createFont(setfontrawinput, 16, true);
 		} else {
-			font = createFont("data/assets/font/Roboto-Regular.ttf", 16/((st.floats[1].getvalue()+1)/2), true);
+			font = createFont("data/assets/font/Roboto-Regular.ttf", 16, true);
 		}
 		textFont(font);
-		if(st.booleans[3].getvalue()) {
+		if(st.booleans[3].value) {
 			pg.textFont(font);
 		}
 	}
 
 	void recalculatecolor() {
-		boolean isdm = st.booleans[0].getvalue();
+		boolean isdm = st.booleans[0].value;
 
 		for (int i=0;i<c.length;i++) {
 			c[i] = isdm ? 255-32*i : 32*i;
@@ -126,16 +125,18 @@ class ApplicationManager {
 		}
 	}
 	void loop() {
-		int sw = st.ints[0].getvalue();
-		int sh = st.ints[1].getvalue();
+		int sw = st.ints[0].value;
+		int sh = st.ints[1].value;
 		if(width != sw || height != sh) {
 			st.ints[0].setvalue(width);
 			st.ints[1].setvalue(height);
-			ov.refresh();
-			if(st.booleans[3].getvalue()) {
+			if(st.booleans[3].value) {
 				pg.setSize(width,height);
 			}
 		}
 	}
 
+}
+void setfontrawthread() {
+	am.setfontraw();
 }
