@@ -3,7 +3,6 @@ Settings st;
 LanguageManager lg;
 Roommanager rm;
 DataManager dm;
-Debugger db;
 Overlay ov;
 
 PGraphics pg;
@@ -20,37 +19,47 @@ void setup() {
 	am.initsetup();
 }
 
+void draw() {
+	push();
+	am.loop();
+	rm.draw();
+	pop();
+	ov.draw();
+}
+
 void mouseWheel(MouseEvent e) {
-	if(!ov.ishit()) {
-		rm.mouseWheel(e);
+	ov.mouseWheel(e);
+	if(ov.ishit()) {
+		return;
 	}
+	rm.mouseWheel(e);
 }
 void mouseDragged() {
-	if(!ov.mouseDragged()) {
-		rm.mouseDragged();
+	ov.mouseDragged();
+	if(ov.ishit()) {
+		return;
 	}
+	rm.mouseDragged();
 }
 void mouseReleased() {
 	ov.mouseReleased();
 	rm.mouseReleased();
 }
-
 void mousePressed() {
-	if(!ov.mousePressed()) {
-		rm.mousePressed();
+	ov.mousePressed();
+	if(ov.ishit()) {
+		return;
 	}
+	rm.mousePressed();
 }
 void keyPressed() {
-	if(!ov.keyPressed()) {
-		rm.keyPressed();
+	ov.keyPressed();
+	if(ov.ishit()) {
+		return;
 	}
+	rm.keyPressed();
 }
 void keyReleased() {
+	ov.keyReleased();
 	rm.keyReleased();
-}
-
-void draw() {
-	am.loop();
-	rm.draw();
-	ov.draw();
 }

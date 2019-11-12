@@ -22,7 +22,7 @@ class Roommanager {
 
 	Roommanager() {
 		resetcam(true);
-		load(st.strings[0].getvalue());
+		load(st.strings[0].value);
 	}
 	Roommanager(String loadname) {
 		resetcam(true);
@@ -32,10 +32,8 @@ class Roommanager {
 	void mouseWheel(MouseEvent e) {
 		float delta = e.getCount() > 0 ? 1.0/1.1 : e.getCount() < 0 ? 1.1 : 1.0;
 		if(!viewmode) {
-			float ovscale = st.booleans[1].getvalue() ? 0 : st.floats[1].getvalue();
-
-			float mx = mouseX-ov._width*ovscale;
-			float my = mouseY-ov._height*ovscale;
+			float mx = mouseX-ov.xoff;
+			float my = mouseY-ov.yoff;
 
 			if(scale*delta > 5) {
 				delta = 5/scale;
@@ -96,8 +94,6 @@ class Roommanager {
 				if(!isfurniture(x,y)){
 					roomgrid.settilestate(!roomgrid.gettilestate(x,y), x,y);
 					roomgrid.gettile(x,y).roomgroup = newroomtilegroup;
-				} else {
-					ov.showmessage("Furniture is in the way");
 				}
 			} else if(tool == 2) { // Place Furniture
 				int xpos = floor(getxpos());
@@ -120,7 +116,7 @@ class Roommanager {
 									if(!roomgrid.isingrid(xpos+x,ypos+y)) {
 										message += "Out of Room ";
 									}
-									ov.showmessage(message);
+									//ov.showmessage(message);
 
 									block = true;
 									break;
@@ -152,7 +148,7 @@ class Roommanager {
 								if(!roomgrid.isingrid(xpos+x,ypos+y)) {
 									message += "Out of Room ";
 								}
-								ov.showmessage(message);
+								//ov.showmessage(message);
 								block = true;
 								break;
 							}
@@ -262,7 +258,7 @@ class Roommanager {
 							}
 							if(!roomgrid.gettilestate(x,y) || isfurniture(x,y) || !roomgrid.isingrid(x,y)) {
 								a = false;
-								ov.showmessage("Can't move Furniture");
+								//ov.showmessage("Can't move Furniture");
 								break;
 							}
 						}
@@ -280,10 +276,10 @@ class Roommanager {
 	}
 
 	float getxpos() {
-		return (mouseX-xoff-ov._width)/gridtilesize/scale;
+		return (mouseX-xoff-ov.xoff)/gridtilesize/scale;
 	}
 	float getypos() {
-		return (mouseY-yoff-ov._height)/gridtilesize/scale;
+		return (mouseY-yoff-ov.yoff)/gridtilesize/scale;
 	}
 	boolean isfurniture(int xpos, int ypos) {
 		for (int i=0; i<furnitures.size(); i++) {
@@ -402,7 +398,6 @@ class Roommanager {
 		//-------------------------------------------------------------------------------
 		am.settitle(name);
 		this.name = name;
-		ov.showmessage("Saved Room: " + name);
 	}
 	void load(String name) {
 		if(deb) {
@@ -473,12 +468,6 @@ class Roommanager {
 		//-------------------------------------------------------------------------------
 		am.settitle(name);
 		this.name = name;
-		if(ov != null) {
-			ov.showmessage("Loaded Room: " + name);
-			ov.sidebars[1].listitems[0].bv.value = name;
-			ov.sidebars[1].listitems[0].bv.newvalue = name;
-			ov.refresh();
-		}
 	}
 
 	int getprice() {
@@ -496,16 +485,13 @@ class Roommanager {
 		viewmode = false;
 		roomgrid = new Grid(getxgridsize(), getygridsize());
 		furnitures = new ArrayList<Furniture>();
-		name = st.strings[0].getvalue();
+		name = st.strings[0].value;
 		st.load();
 		am.settitle(name);
-		if(ov != null) {
-			ov.showmessage("Reset");
-		}
 	}
 	void newroom(int xsize, int ysize) {
 		roomgrid = new Grid(xsize, ysize);
-		ov.showmessage("New Room: " + xsize + "x" + ysize);
+		//ov.showmessage("New Room: " + xsize + "x" + ysize);
 	}
 
 	void switchviewmode() {
@@ -532,9 +518,8 @@ class Roommanager {
 			xoff = constrain(xoff, Integer.MIN_VALUE, 0);
 			yoff = constrain(yoff, Integer.MIN_VALUE, 0);
 			// 2D View
-			float ovscale = st.booleans[1].getvalue() ? 0 : st.floats[1].getvalue();
 
-			translate(xoff+ov._width*ovscale, yoff+ov._height*ovscale);
+			translate(xoff+ov.xoff, yoff+ov.yoff);
 			scale(scale);
 		} else {
 			if(isKeyUp || isKeyDown || isKeyLeft || isKeyRight) {
@@ -566,7 +551,7 @@ class Roommanager {
 			dyoff = constrain(dyoff, 0, Integer.MAX_VALUE);
 			angle2 = constrain(angle2, -PI+0.1, 0);
 			pg.beginDraw();
-			pg.background(st.booleans[0].getvalue() ? 0 : 240);
+			pg.background(st.booleans[0].value ? 0 : 240);
 			pg.directionalLight(200, 200, 200, 0.3, 1, 0.3);
 			pg.ambientLight(140,140,140);
 
@@ -580,18 +565,16 @@ class Roommanager {
 			pg.camera(dxoff,-height/2*dzoff,dyoff, dxoff+centerx,-height/2*dzoff-centery,dyoff+centerz, 0, 1, 0);
 
 			// Debug
-			if(ov.sidebarid == 3) {
-				pg.pushStyle();
-				// Axis
-				pg.strokeWeight(5);
-				pg.stroke(150,0,0);
-				pg.line(0,0,0,1000,0,0); // X
-				pg.stroke(0,150,0);
-				pg.line(0,0,0,0,0,1000); // Z
-				pg.stroke(0,0,150);
-				pg.line(0,0,0,0,1000,0); // Y
-				pg.popStyle();
-			}
+			pg.pushStyle();
+			// Axis
+			pg.strokeWeight(5);
+			pg.stroke(150,0,0);
+			pg.line(0,0,0,1000,0,0); // X
+			pg.stroke(0,150,0);
+			pg.line(0,0,0,0,0,1000); // Z
+			pg.stroke(0,0,150);
+			pg.line(0,0,0,0,1000,0); // Y
+			pg.popStyle();
 		}
 		// Roomgrid
 		roomgrid.draw(viewmode, gridtilesize);

@@ -5,6 +5,19 @@ String getabout() {
 	text += lg.get("madeby") + ": " + appmaker + "\n";
 	return text;
 }
+String getaboutline(int i) {
+	switch(i) {
+		case 0:
+		return appname;
+		case 1:
+		return lg.get("version") + ": " + appversion;
+		case 2:
+		return lg.get("programmedwith") + ": " + "Processing";
+		case 3:
+		return lg.get("madeby") + ": " + appmaker;
+	}
+	return "";
+}
 
 void setKey(int k, boolean bool) {
   if      (k == UP    | k == 'W')   isKeyUp    = bool;
@@ -14,8 +27,12 @@ void setKey(int k, boolean bool) {
   else if (             k == 'T')   isKeyT     = bool;
 }
 
+String cap(String str) {
+	return str.substring(0, 1).toUpperCase() + str.substring(1);
+}
+
 boolean checkraw(int xpos, int ypos, int _width, int _height) {
-	float scale = st.floats[1].getvalue();
+	float scale = st.floats[1].value;
 	if (mouseX >= xpos*scale && mouseX <= (xpos+_width)*scale && 
 	    mouseY >= ypos*scale && mouseY <= (ypos+_height)*scale) {
 	  	return true;
