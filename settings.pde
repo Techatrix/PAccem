@@ -12,7 +12,7 @@ class Settings {
 		strings = new SettingStringValue[3];
 		booleans = new SettingBooleanValue[4];
 		ints = new SettingIntValue[3];
-		floats = new SettingFloatValue[2];
+		floats = new SettingFloatValue[1];
 		/*
 		colors = new SettingColorValue[0];
 		colors[0] = new SettingColorValue("backgroundcolor", color(0, 0, 0));
@@ -34,7 +34,7 @@ class Settings {
 		ints[2] = new SettingIntValue("Anti-aliasing", 4, 0, 8);
 
 		floats[0] = new SettingFloatValue("gridlineweight", 1);
-		floats[1] = new SettingFloatValue("overlayscale", 1, 0.7, 1.5);
+		//floats[1] = new SettingFloatValue("overlayscale", 1, 0.7, 1.5);
 
 		load();
 	}
@@ -196,7 +196,7 @@ class SettingColorValue {
 }
 */
 class SettingStringValue {
-	String name;
+	final String name;
 	String value;
 	SettingStringValue(String newname) {
 		name = newname;
@@ -214,7 +214,7 @@ class SettingStringValue {
 	}
 }
 class SettingBooleanValue {
-	String name;
+	final String name;
 	boolean value;
 	SettingBooleanValue(String newname) {
 		name = newname;
@@ -242,19 +242,19 @@ class SettingBooleanValue {
 	}
 }
 class SettingIntValue {
-	String name;
+	final String name;
 	int value;
-	int min = Integer.MIN_VALUE;
-	int max = Integer.MAX_VALUE;
+	final int min;
+	final int max;
 	SettingIntValue(String newname) {
-		name = newname;
+		this(newname, 0);
 	}
 	SettingIntValue(String newname, int newdefaultvalue) {
-		name = newname;
-		this.value = newdefaultvalue;
+		this(newname, newdefaultvalue, Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
 	SettingIntValue(String newname, int newdefaultvalue, int minvalue, int maxvalue) {
-		this(newname, newdefaultvalue);
+		name = newname;
+		value = newdefaultvalue;
 		min = minvalue;
 		max = maxvalue;
 	}
@@ -270,19 +270,19 @@ class SettingIntValue {
 	}
 }
 class SettingFloatValue {
-	String name;
+	final String name;
 	float value;
-	float min = Float.MIN_VALUE;
-	float max = Float.MAX_VALUE;
+	final float min;
+	final float max;
 	SettingFloatValue(String newname) {
-		name = newname;
+		this(newname, 0.0);
 	}
 	SettingFloatValue(String newname, float newdefaultvalue) {
-		name = newname;
-		value = newdefaultvalue;
+		this(newname, newdefaultvalue, Float.MIN_VALUE, Float.MAX_VALUE);
 	}
 	SettingFloatValue(String newname, float newdefaultvalue, float minvalue, float maxvalue) {
-		this(newname, newdefaultvalue);
+		name = newname;
+		value = newdefaultvalue;
 		min = minvalue;
 		max = maxvalue;
 	}

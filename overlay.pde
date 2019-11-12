@@ -191,23 +191,83 @@ class Overlay {
 						}.build(5, 300, height-yoff), Align.TOPRIGHT
 					),0,yoff
 				),
+				// Furniture List
 				new Transform(
 					new Transform(
-						new GridView(
-							new Builder() {
-								@Override public Object i(int i) {
-									final Temp temp = new Temp(i);
-									return new Container(
-										new ListView(
-											new Object[] {
-												new Image(dm.furnitures[temp.i].image, 150, round(150*0.75)),
-												new Text(dm.furnitures[temp.i].name),
-											}
-										)
-									);
-									//return new Container(new Text(dm.furnitures[temp.i].name));
-								}
-							}.build(dm.furnitures.length),300, height-yoff,2
+						new ListView(
+							new Object[] {
+								new GridView(
+									new Builder() {
+										@Override public Object i(int i) {
+											final Temp temp = new Temp(i);
+											return new EventDetector(new Container(
+													new ListView(
+														new Object[] {
+															new Image(dm.furnitures[temp.i].image, 150, round(150*0.75), Fit.RATIO),
+															new Text(dm.furnitures[temp.i].name),
+														}
+													)
+												)
+											) {
+												@Override public void onevent(EventType et, MouseEvent e) {
+													if(et == EventType.MOUSEPRESSED) {
+														rm.newfurnitureid = temp.i;
+														rm.isprefab = false;
+														rm.tool = 2;
+													}
+												}
+											};
+										}
+									}.build(dm.furnitures.length),300, height-yoff-30,2
+								),
+								new EventDetector(new Container(new Text("Prefab List"), 300, 30)) {
+									@Override public void onevent(EventType et, MouseEvent e) {
+										if(et == EventType.MOUSEPRESSED) {
+											tabid = 6;
+										}
+									}
+								},
+							},300, height-yoff
+						), Align.TOPRIGHT
+					),0,yoff
+				),
+				// Prefab List
+				new Transform(
+					new Transform(
+						new ListView(
+							new Object[] {
+								new GridView(
+									new Builder() {
+										@Override public Object i(int i) {
+											final Temp temp = new Temp(i);
+											return new EventDetector(new Container(
+													new ListView(
+														new Object[] {
+															new Image(dm.prefabs[temp.i].getimage(), 150, round(150*0.75), Fit.RATIO),
+															new Text(dm.prefabs[temp.i].name),
+														}
+													)
+												)
+											) {
+												@Override public void onevent(EventType et, MouseEvent e) {
+													if(et == EventType.MOUSEPRESSED) {
+														rm.newfurnitureid = temp.i;
+														rm.isprefab = true;
+														rm.tool = 2;
+													}
+												}
+											};
+										}
+									}.build(dm.prefabs.length),300, height-yoff-30,2
+								),
+								new EventDetector(new Container(new Text("Furniture List"), 300, 30)) {
+									@Override public void onevent(EventType et, MouseEvent e) {
+										if(et == EventType.MOUSEPRESSED) {
+											tabid = 5;
+										}
+									}
+								},
+							},300, height-yoff
 						), Align.TOPRIGHT
 					),0,yoff
 				),

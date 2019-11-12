@@ -22,14 +22,18 @@ class GridView extends PWH implements IOverlay {
 	void mouseWheel(MouseEvent e) {
 	}
 	boolean mousePressed() {
-		for (Object item : items) {
-			mousePresseditem(item);
+		if(ishit()) {
+			for (Object item : items) {
+				mousePresseditem(item);
+			}
 		}
 		return ishit();
 	}
 	void keyPressed() {
-		for (Object item : items) {
-			keyPresseditem(item);
+		if(ishit()) {
+			for (Object item : items) {
+				keyPresseditem(item);
+			}
 		}
 	}
 
@@ -49,7 +53,7 @@ class GridView extends PWH implements IOverlay {
 		rect(xpos, ypos, _width, _height);
 
 		for (Object item : items) {
-			drawitem(item, hit);
+			drawitem(item, ishit());
 		}
     	noClip();
 	}

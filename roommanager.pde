@@ -30,8 +30,6 @@ class Roommanager {
 	void mouseWheel(MouseEvent e) {
 		float delta = e.getCount() > 0 ? 1.0/1.1 : e.getCount() < 0 ? 1.1 : 1.0;
 		if(!viewmode) {
-			float ovscale = st.booleans[1].value ? 0 : st.floats[1].value;
-
 			float mx = mouseX-ov.xoff;
 			float my = mouseY-ov.yoff;
 
