@@ -34,7 +34,7 @@ class ApplicationManager {
 	  		surface.setIcon(dm.icons[0]);
 		}
 		setfont(st.strings[2].value);
-		textSize(16/((st.floats[1].value+1)/2));
+		textSize(16);
 	}
 
 	void settitle(String name) {
@@ -86,7 +86,7 @@ class ApplicationManager {
 				newfont += "-Regular";
 			}
 			newfont += ".ttf";
-			font = createFont(newfont, 16/((st.floats[1].value+1)/2), true);
+			font = createFont(newfont, 16, true);
 			textFont(font);
 			if(st.booleans[3].value) {
 				pg.textFont(font);
@@ -106,9 +106,9 @@ class ApplicationManager {
 			}
 		}
 		if(hit) {
-			font = createFont(setfontrawinput, 16/((st.floats[1].value+1)/2), true);
+			font = createFont(setfontrawinput, 16, true);
 		} else {
-			font = createFont("data/assets/font/Roboto-Regular.ttf", 16/((st.floats[1].value+1)/2), true);
+			font = createFont("data/assets/font/Roboto-Regular.ttf", 16, true);
 		}
 		textFont(font);
 		if(st.booleans[3].value) {
