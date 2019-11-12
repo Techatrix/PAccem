@@ -1,9 +1,9 @@
 class Settings {
-	//final SettingColorValue[] colors;
-	final SettingStringValue[] strings;
-	final SettingBooleanValue[] booleans;
-	final SettingIntValue[] ints;
-	final SettingFloatValue[] floats;
+	//final SettingColorValue[] colors;		// setting values of type string ( not used)
+	final SettingStringValue[] strings;		// setting values of type string
+	final SettingBooleanValue[] booleans;	// setting values of type boolean
+	final SettingIntValue[] ints;			// setting values of type integer
+	final SettingFloatValue[] floats;		// setting values of type float
 
 	Settings() {
 		if(deb) {
@@ -20,6 +20,7 @@ class Settings {
 		colors[2] = new SettingColorValue("overlaycolor", color(100, 100, 100));
 		colors[3] = new SettingColorValue("gridlinecolor", color(255, 255, 255));
 		*/
+		// these settings should explain themselves
 		strings[0] = new SettingStringValue("defaultroomname", "new Room");
 		strings[1] = new SettingStringValue("language", "english");
 		strings[2] = new SettingStringValue("font", "Roboto");
@@ -27,22 +28,22 @@ class Settings {
 		booleans[0] = new SettingBooleanValue("darkmode", true);
 		booleans[1] = new SettingBooleanValue("hide overlay", false);
 		booleans[2] = new SettingBooleanValue("fullscreen", false);
-		booleans[3] = new SettingBooleanValue("Use OpenGl Renderer", false);
+		booleans[3] = new SettingBooleanValue("Use OpenGl Renderer", false);	// shoud be disabled on 32-bit and on old devices
 
 		ints[0] = new SettingIntValue("width", 1200, 600, displayWidth);
 		ints[1] = new SettingIntValue("height", 800, 600, displayHeight);
 		ints[2] = new SettingIntValue("Anti-aliasing", 4, 0, 8);
 
 		floats[0] = new SettingFloatValue("gridlineweight", 1);
-		//floats[1] = new SettingFloatValue("overlayscale", 1, 0.7, 1.5);
+		//floats[1] = new SettingFloatValue("overlayscale", 1, 0.7, 1.5); (used in old ui)
 
 		load();
 	}
 	
 	int getsize() {
-		return strings.length + booleans.length + ints.length + floats.length;
+		return /*colors.length +*/ strings.length + booleans.length + ints.length + floats.length;
 	}
-	String set(int id, String value) {
+	String set(int id, String value) { // sets choosen setting value to the given value (automatic data type conversion)
 		String result = null;
 		int index = 0;
 		for (int i=0;i<strings.length;i++) {
@@ -72,7 +73,7 @@ class Settings {
 		save();
 		return result;
 	}
-	SettingValue get(int id) {
+	SettingValue get(int id) { // return the setting value with the given id
 		int index = 0;
 		for (int i=0;i<strings.length;i++) {
 			if(index == id) {
@@ -101,7 +102,7 @@ class Settings {
 		println("Setting not found: " + id);
 		return null;
 	}
-	void load() {
+	void load() { // loads the settings from data/settings.json if possible
 		if(deb) {
 			println("Loaded Settings");
 		}
@@ -140,7 +141,7 @@ class Settings {
 		}
 	}
 
-	void save() {
+	void save() { // saves the settings to data/settings.json
 		if(deb) {
 			println("Saved Settings");
 		}
@@ -179,6 +180,7 @@ class Settings {
 		saveJSONObject(j, "data/settings.json");
 	}
 }
+/* --------------- setting value --------------- */
 /*
 class SettingColorValue {
 	String name;
@@ -301,9 +303,9 @@ class SettingFloatValue {
 	}
 }
 class SettingValue {
-	String name;
-	String value;
-	int type;
+	String name;	// name of the setting
+	String value;	// value of the setting
+	int type; 		// data type of the setting
 
 	SettingValue(String name, String value, int type) {
 		this.name = name;

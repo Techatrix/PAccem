@@ -1,5 +1,5 @@
 class LanguageManager {
-	JSONObject data;
+	JSONObject data; // languagedata
 
 	LanguageManager(String newlang) {
 		if(deb) {
@@ -7,7 +7,7 @@ class LanguageManager {
 		}
 		setlang(newlang);
 	}
-	boolean setlang(String newlang) {
+	boolean setlang(String newlang) { // sets the current language if available
 		newlang = newlang.toLowerCase();
 		File f = new File(sketchPath("data/assets/lang/" + newlang + ".json"));
 		if (f.exists()) {
@@ -19,7 +19,7 @@ class LanguageManager {
 		return false;
 	}
 
-	String get(String key) {
+	String get(String key) { // get a string value in the current language
 		return data.getString(key, "Not Found");
 	}
 

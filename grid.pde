@@ -1,6 +1,6 @@
 class Grid {
-	GridTile[][] tiles;
-	color[] roomgroups = new color[5];
+	GridTile[][] tiles; // 2 dimensionales array of tiles
+	color[] roomgroups = new color[5];	// color values of all roomgroups
 
 	Grid(int xsize, int ysize) {
 		color c = color(50,50,50);
@@ -18,15 +18,16 @@ class Grid {
 		}
 	}
 	
-	void draw(boolean viewmode, float gts) {
-		if(isKeyT) {
-			cgol();
+	void draw(boolean viewmode, float gts) { // draw the roomgrid
+		if(isKeyT) { // TODO: add confirm
+			cgol(); // thats a secret (but youve got the source code so its not hard to find out what it does)
 		}
-		if(!viewmode) {
+		if(!viewmode) { // setup 2D view
 			scale(gts);
 			stroke(c[1]);
-			if(rm.scale >= 1) {
-				for (int x=1;x<=tiles.length;x++) {
+			/* --------------- room grid grid lines --------------- */
+			if(rm.scale >= 1) { // close view
+				for (int x=1;x<=tiles.length;x++) { // Lines along Y-Axis
 					if(x % 5 == 0) {
  						strokeWeight(1.5*st.floats[0].value/gts*2);
 					} else {
@@ -34,7 +35,7 @@ class Grid {
 					}
 					line(x,0,x,tiles[0].length);
 				}
-				for (int y=1; y<=tiles[0].length;y++) {
+				for (int y=1; y<=tiles[0].length;y++) { // Lines along X-Axis
 					if(y % 5 == 0) {
  						strokeWeight(1.5*st.floats[0].value/gts*2);
 					} else {
@@ -42,29 +43,29 @@ class Grid {
 					}
 					line(0,y,tiles.length,y);
 				}
-			} else {
+			} else { // far view
  				strokeWeight(1.5*st.floats[0].value/gts);
-				for (int x=1;x<=tiles.length;x++) {
+				for (int x=1;x<=tiles.length;x++) { // Lines along Y-Axis
 					if(x % 5 == 0) { // Include Border
 						line(x,0,x,tiles[0].length);
 					}
 				}
-				for (int y=1; y<=tiles[0].length;y++) {
+				for (int y=1; y<=tiles[0].length;y++) { // Lines along X-Axis
 					if(y % 5 == 0) {
 						line(0,y,tiles.length,y);
 					}
 				}
 			}
-		} else {
+		} else { // setup 3D view
 			pg.scale(gts);
 			pg.strokeWeight(st.floats[0].value/gts);
 		}
+		/* --------------- draw grid tiles --------------- */
 		strokeCap(PROJECT);
 		for (int x=0; x<tiles.length; x++) {
 			for (int y=0; y<tiles[0].length; y++) {
 				if(gettilestate(x,y)) {
-					if(!viewmode) {
-						// 2D
+					if(!viewmode) { // 2D
 						noStroke();
 						fill(roomgroups[gettile(x,y).roomgroup]);
 						rect(x,y,1,1);
@@ -74,32 +75,31 @@ class Grid {
 						GridTile t = gettile(x,y);
 						if(t == null)
 							break;
-						if(!gettilestate(x+1,y)) { // Right
+						if(!gettilestate(x+1,y)) { // right side
 							if(t.window[0])
 								stroke(0,0,255);
 							line(x+1,y,x+1,y+1);
 							stroke(c[0]);
 						}
-						if(!gettilestate(x-1,y)) { // Left
+						if(!gettilestate(x-1,y)) { // left side
 							if(t.window[1])
 								stroke(0,0,255);
 							line(x,y,x,y+1);
 							stroke(c[0]);
 						}
-						if(!gettilestate(x,y+1)) { // Bottom
+						if(!gettilestate(x,y+1)) { // bottom side
 							if(t.window[2])
 								stroke(0,0,255);
 							line(x,y+1,x+1,y+1);
 							stroke(c[0]);
 						}
-						if(!gettilestate(x,y-1)) { // Top
+						if(!gettilestate(x,y-1)) { // top side
 							if(t.window[3])
 								stroke(0,0,255);
 							line(x,y,x+1,y);
 							stroke(c[0]);
 						}
-					} else {
-						// 3D
+					} else { // 3D
 						pg.noStroke();
 						pg.fill(roomgroups[gettile(x,y).roomgroup]);
 
@@ -117,11 +117,11 @@ class Grid {
 						if(t == null) {
 							break;
 						}
-						// Right
-						if(!gettilestate(x+1,y)) {
+
+						if(!gettilestate(x+1,y)) { // right side
 							pg.vertex(x+1, 0, y);
 							pg.vertex(x+1, 0, y+1);
-							if(t.window[0]) {
+							if(t.window[0]) { // right window
 								pg.vertex(x+1, -0.33, y+1);
 								pg.vertex(x+1, -0.33, y);
 								pg.vertex(x+1, -0.66, y);
@@ -130,11 +130,10 @@ class Grid {
 							pg.vertex(x+1, -1, y+1);
 							pg.vertex(x+1, -1, y);
 						}
-						// Left
-						if(!gettilestate(x-1,y)) {
+						if(!gettilestate(x-1,y)) { // left side
 							pg.vertex(x, 0, y);
 							pg.vertex(x, 0, y+1);
-							if(t.window[1]) {
+							if(t.window[1]) { // left window
 								pg.vertex(x, -0.33, y+1);
 								pg.vertex(x, -0.33, y);
 								pg.vertex(x, -0.66, y);
@@ -143,11 +142,10 @@ class Grid {
 							pg.vertex(x, -1, y+1);
 							pg.vertex(x, -1, y);
 						}
-						// Bottom
-						if(!gettilestate(x,y+1)) {
+						if(!gettilestate(x,y+1)) { // bottom side
 							pg.vertex(x  , 0, y+1);
 							pg.vertex(x+1, 0, y+1);
-							if(t.window[2]) {
+							if(t.window[2]) { // bottom window
 								pg.vertex(x+1, -0.33, y+1);
 								pg.vertex(x  , -0.33, y+1);
 								pg.vertex(x  , -0.66, y+1);
@@ -156,11 +154,10 @@ class Grid {
 							pg.vertex(x+1, -1, y+1);
 							pg.vertex(x  , -1, y+1);
 						}
-						// Top
-						if(!gettilestate(x,y-1)) {
+						if(!gettilestate(x,y-1)) { // top side
 							pg.vertex(x  , 0, y);
 							pg.vertex(x+1, 0, y);
-							if(t.window[3]) {
+							if(t.window[3]) { // top window
 								pg.vertex(x+1, -0.33, y);
 								pg.vertex(x  , -0.33, y);
 								pg.vertex(x  , -0.66, y);
@@ -198,32 +195,32 @@ class Grid {
 		}
 	}
 
-	boolean settilestate(boolean value, int x, int y) {
+	boolean settilestate(boolean value, int x, int y) { // sets the state of the grid tile on given state
 		if(isingrid(x,y)) {
 			tiles[x][y].state = value;
 			return true;
 		}
 		return false;
 	}
-	boolean gettilestate(int x, int y) {
+	boolean gettilestate(int x, int y) { // return the state of the grid tile on the chosen position
 		return gettile(x,y).state;
 	}
 
-	boolean settile(GridTile value, int x, int y) {
+	boolean settile(GridTile value, int x, int y) { // sets the grid tile on the chosen position to the given grid tile
 		if(isingrid(x,y)) {
 			tiles[x][y] = value;
 			return true;
 		}
 		return false;
 	}
-	GridTile gettile(int x, int y) {
+	GridTile gettile(int x, int y) { // return the grid tile on the chosen position if possible
 		if(isingrid(x,y)) {
 			return tiles[x][y];
 		}
 		return new GridTile();
 	}
 
-	boolean isingrid(int x, int y) {
+	boolean isingrid(int x, int y) { // return true if the chosen position is inside the roomgrid
 		return (x > -1 && x < tiles.length && y > -1 && y < tiles[0].length);
 	}
 
@@ -232,7 +229,6 @@ class Grid {
 		for (int x=0; x<tiles.length; x++) {
 			for (int y=0; y<tiles[0].length; y++) {
 				newtiles[x][y] = new GridTile();
-
 				int activetiles = 0;
 				for (int dx=-1;dx<2;dx++) {
 					for (int dy=-1;dy<2;dy++) {
@@ -251,18 +247,15 @@ class Grid {
 						alive = false;
 					}
 				} else {
-					if(activetiles == 3) {
-						alive = true;
-					}
+					alive = (activetiles == 3) ? true : false;
 				}
-
 				newtiles[x][y].state = alive;
 			}
 		}
 		tiles = newtiles;
 	}
 
-	int getprice() {
+	int getprice() { // calculate the price of the roomgrid
 		int price = 0;
 		for (int x=0; x<tiles.length; x++) {
 			for (int y=0; y<tiles[0].length; y++) {
@@ -276,9 +269,9 @@ class Grid {
 }
 
 class GridTile {
-	boolean state;
-	int roomgroup;
-	boolean[] window;
+	boolean state;		// whether or not this tile is part of the room
+	int roomgroup;		// roomgroup id
+	boolean[] window;	// window data
 
 	GridTile() {
 		this(false);

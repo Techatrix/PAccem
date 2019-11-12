@@ -69,6 +69,3 @@ class Image extends PWH implements IOverlay {
 		}
 	}
 }
-enum Fit {
-	EXPAND, RATIO
-}
