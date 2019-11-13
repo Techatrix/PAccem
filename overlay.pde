@@ -9,6 +9,10 @@ class Overlay {
 	String newroomname;							// the name of a new room 
 	int newroomxsize = 15, newroomysize = 15;	// the size of a new room
 
+	// TODO: Slider
+	// TODO: CheckBox
+	// TODO: Message Console
+
 	Overlay() {
 		visible = !st.booleans[1].value;
 		newroomname = st.strings[0].value;
@@ -111,14 +115,14 @@ class Overlay {
 												break;
 												case 7: // Width
 												surface.setSize(st.ints[0].value,st.ints[1].value);
-												if(st.booleans[3].value) {
+												if(usegl) {
 													pg.setSize(width,height);
 												}
 												ov.build();
 												break;
 												case 8: // Height
 												surface.setSize(st.ints[0].value,st.ints[1].value);
-												if(st.booleans[3].value) {
+												if(usegl) {
 													pg.setSize(width,height);
 												}
 												ov.build();
@@ -284,7 +288,9 @@ class Overlay {
 						tabid = i-2;
 					}
 				} else if(i == 1) {
-					rm.switchviewmode();
+					if(usegl) {
+						rm.switchviewmode();
+					}
 				} else {
 					Object o = new Object();
 					switch(i) { // popups
@@ -391,19 +397,36 @@ class Overlay {
 			new ListViewBuilder() {
 				@Override public Object i(int i) {
 					final Temp temp = new Temp(i);
-					return new EventDetector(new Container(new Image(dm.icons[temp.i+1]))) {
-						@Override public void onevent(EventType et, MouseEvent e) {
-							if(et == EventType.MOUSEPRESSED) {
-								rm.tool = temp.i;
-								if(rm.tool == 2) {
-									tabid = (tabid == 5) ? -1 : 5;
+					if (i < 6) {
+						return new EventDetector(new Container(new Image(dm.icons[temp.i+1]))) {
+							@Override public void onevent(EventType et, MouseEvent e) {
+								if(et == EventType.MOUSEPRESSED) {
+									rm.tool = temp.i;
+									if(rm.tool == 2) {
+										tabid = (tabid == 5) ? -1 : 5;
+									}
 								}
 							}
+						};
+					} else {
+						if(i == 6) {
+						return new SizedBox(true);
+						} else {
+						return new Container(new Text("CO"));
 						}
-					};
+					}
 				}
 			}.build(6, xoff, height-yoff, xoff, Dir.DOWN), 0,yoff
 		);
+		/*
+		// Console
+		items[3] = new Transform(
+			new Container(
+				new Text("abccc"),
+				width-xoff, 50
+			),xoff, height-50
+		);
+		*/
 		for (Object item : items) {
 			setitemxy(item, 0,0);
 		}
