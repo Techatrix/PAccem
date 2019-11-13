@@ -2,8 +2,8 @@ class ListView extends PWH implements IOverlay {
 	Object[] items;
 	int itemheight;
 	Enum dir;
-
 	int off = 0;
+
 	ListView(Object[] items) {
 		this(items, 0, 0, 30);
 	}

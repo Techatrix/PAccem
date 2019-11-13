@@ -36,7 +36,7 @@ class DataManager {
 			int price = furn.getInt("price", 0);
 			PImage image = loadImage("data/assets/furn/img/" + src +".png");
 			PShape shape = null;
-			if(st.booleans[3].value) {
+			if(usegl) {
 				shape = pg.loadShape("data/assets/furn/mdl/" + src +".obj");
 			}
 			String name = furn.getString("name", "Name not Found");
@@ -62,7 +62,7 @@ class DataManager {
 
 			JSONArray prefabfurnsdata = pref.getJSONArray("furnitures");
 			PrefabFurnitureData[] prefabfurns = new PrefabFurnitureData[prefabfurnsdata.size()];
-			// Check null
+			// TODO: Check null
 
 			for (int j=0;j<prefabfurnsdata.size();j++) {
 				JSONObject preffurn = prefabfurnsdata.getJSONObject(j);
@@ -77,7 +77,17 @@ class DataManager {
 		}
 	}
 
-	FurnitureData getfurnituredata(int id) {
+	// TODO: return list of invalid prefabs
+	int validate() { // checks if in every prefabs the used furnitures are in the given boundry box (can only be executed of class construction)
+		for (int i=0;i<prefabs.length;i++) {
+			if(!prefabs[i].validate()) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	FurnitureData getfurnituredata(int id) { // return the furniture data with the corresponding id
 		for (FurnitureData fdata : furnitures) {
 			if(id == fdata.id) {
 				return fdata;
@@ -85,7 +95,7 @@ class DataManager {
 		}
 		return null;
 	}
-	PrefabData getprefabdata(int id) {
+	PrefabData getprefabdata(int id) { // return the prefab data with the corresponding id
 		return prefabs[id];
 	}
 }
@@ -151,7 +161,6 @@ class PrefabData {
 
 	boolean isfurniture(int xpos, int ypos) {
 		if(xpos > -1 && xpos < _width && ypos > -1 && ypos < _height) {
-			boolean block = false;
 			for (int i=0;i<furnitures.length;i++) {
 				PrefabFurnitureData preffurndata = furnitures[i];
 				FurnitureData furndata = dm.getfurnituredata(preffurndata.id);
@@ -165,5 +174,24 @@ class PrefabData {
 			}
 		}
 		return false;
+	}
+
+	// TODO: can be optimized : only check boundry of furniture and not every tile
+	boolean validate() {
+		boolean result = true;
+		for (PrefabFurnitureData pfd : furnitures) {
+			FurnitureData fd = dm.getfurnituredata(pfd.id);
+			for (int x=0;x<fd._width;x++) {
+				for (int y=0;y<fd._height;y++) {
+					if(pfd.xpos+x >= _width || pfd.xpos+x < 0) {
+						result = false;
+					}
+					if(pfd.ypos+y >= _height || pfd.ypos+y < 0) {
+						result = false;
+					}
+				}
+			}
+		}
+		return result;
 	}
 }
