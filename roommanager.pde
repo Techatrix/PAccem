@@ -1,4 +1,4 @@
-class Roommanager {
+class RoomManager {
 	ArrayList<Furniture> furnitures;	// list of furnitures
 	Grid roomgrid;						// the current roomgrid
 	int selectionid = -1;				// id of the currently selected furniture (-1 = none)
@@ -21,11 +21,11 @@ class Roommanager {
 	int newroomtilegroup = 0;			// id of the current roomtilegroup you are drawing
 	boolean isprefab = false;			// whether or not you are placing a furniture or a prefab
 
-	Roommanager() {
+	RoomManager() {
 		resetcam(true);
 		load(st.strings[0].value);
 	}
-	Roommanager(String loadname) {
+	RoomManager(String loadname) {
 		resetcam(true);
 		load(loadname);
 	}
@@ -87,16 +87,27 @@ class Roommanager {
 			dragtiles = new ArrayList<int[]>();
 		}
 	}
+
+	void settilestate(int xpos, int ypos) {
+		if(!isfurniture(xpos,ypos)){
+			roomgrid.settilestate(!roomgrid.gettilestate(xpos,ypos), xpos,ypos);
+			roomgrid.gettile(xpos,ypos).roomgroup = newroomtilegroup;
+		}
+	}
+
 	void mousePressed() {
 		if(mouseButton == LEFT && !viewmode) {
 			selectionid = -1;
 			if(tool == 1) { // draw to roomgrid
+				/*
 				int x = floor(getxpos());
 				int y = floor(getypos());
 				if(!isfurniture(x,y)){
 					roomgrid.settilestate(!roomgrid.gettilestate(x,y), x,y);
 					roomgrid.gettile(x,y).roomgroup = newroomtilegroup;
 				}
+				*/
+				im.settilestate(floor(getxpos()), floor(getypos()));
 			} else if(tool == 2) { // place a new furniture or prefab
 				int xpos = floor(getxpos());
 				int ypos = floor(getypos());
@@ -118,7 +129,7 @@ class Roommanager {
 									if(!roomgrid.isingrid(xpos+x,ypos+y)) {
 										message += "Out of Room ";
 									}
-									//ov.showmessage(message);
+									ov.printconsole(message);
 
 									block = true;
 									break;
@@ -150,7 +161,7 @@ class Roommanager {
 								if(!roomgrid.isingrid(xpos+x,ypos+y)) {
 									message += "Out of Room ";
 								}
-								//ov.showmessage(message);
+								ov.printconsole(message);
 								block = true;
 								break;
 							}
@@ -204,7 +215,7 @@ class Roommanager {
 		}
 	}
 	/* --------------- Keyboard Input --------------- */
-	void keyPressed() {
+	void keyPressed(KeyEvent e) {
 		setKey(keyCode, true);
 		if(!viewmode) {
 			if(key == 127) { // delete
@@ -216,7 +227,19 @@ class Roommanager {
 					}
 				}
 			} else if(key == 't') { // t
+				// TODO: add Confirm
 				roomgrid.cgol();
+			} else if(key == 'h') { // h
+				if(key == 'h') {
+					ov.visible = !ov.visible;
+					st.booleans[1].setvalue(!st.booleans[1].value);
+					st.save();
+					ov.build();
+				}
+			} else if(e.isControlDown()) {
+				if(e.getKeyCode() == 89) {
+					im.undo();
+				}
 			} else if(keyCode < 54 && keyCode > 48) { // 1-5
 				newroomtilegroup = keyCode - 49;
 			} else if(keyCode == UP || keyCode == DOWN || keyCode == LEFT || keyCode == RIGHT) { // arrow keys
@@ -261,7 +284,7 @@ class Roommanager {
 							}
 							if(!roomgrid.gettilestate(x,y) || isfurniture(x,y) || !roomgrid.isingrid(x,y)) {
 								a = false;
-								//ov.showmessage("Can't move Furniture");
+								ov.printconsole("Can't move Furniture");
 								break;
 							}
 						}
@@ -493,7 +516,7 @@ class Roommanager {
 	}
 	void newroom(int xsize, int ysize) { // create a new room with the choosen size
 		roomgrid = new Grid(xsize, ysize);
-		//ov.showmessage("New Room: " + xsize + "x" + ysize);
+		ov.printconsole("New Room " + xsize + "x" + ysize);
 	}
 
 	void switchviewmode() {	// well... switch the viewmode (2D -> 3D, 3D -> 2D)
@@ -521,8 +544,9 @@ class Roommanager {
 			xoff = constrain(xoff, Integer.MIN_VALUE, 0);
 			yoff = constrain(yoff, Integer.MIN_VALUE, 0);
 			// 2D View
-
-			translate(xoff+ov.xoff, yoff+ov.yoff);
+			if(!st.booleans[1].value) {
+				translate(xoff+ov.xoff, yoff+ov.yoff);
+			}
 			scale(scale);
 		} else { // 3D
 			// move camera according to the given key inputs

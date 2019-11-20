@@ -28,8 +28,9 @@ class ApplicationManager {
 		}
 		lg = new LanguageManager(st.strings[1].value);	// initialise language manager
 		dm = new DataManager();							// initialise data manager
-		rm = new Roommanager();							// initialise room manager
+		rm = new RoomManager();							// initialise room manager
 		ov = new Overlay();								// initialise overlay
+		im = new InstructionManager();
 
 		//println(dm.validate());
 

@@ -1,9 +1,12 @@
+import java.util.Map;
+
 ApplicationManager am;	// manages the overal application (title, size, initialization)
 Settings st;			// loads and stores the current settings
 LanguageManager lg;		// loads the current language file
-Roommanager rm;			// manages the room(grid, furniture & user input)
+RoomManager rm;			// manages the room(grid, furniture & user input)
 DataManager dm;			// stores data (3D-models, images, etc.)
 Overlay ov;				// draws & manages the user interface
+InstructionManager im;	// 
 
 PGraphics pg;			// used for 3D-graphics
 PFont font;				// the current font
@@ -53,12 +56,12 @@ void mousePressed() {
 	rm.mousePressed();
 }
 /* --------------- keyboard input --------------- */
-void keyPressed() {
+void keyPressed(KeyEvent e) {
 	ov.keyPressed();
 	if(ov.ishit()) {
 		return;
 	}
-	rm.keyPressed();
+	rm.keyPressed(e);
 }
 void keyReleased() {
 	ov.keyReleased();

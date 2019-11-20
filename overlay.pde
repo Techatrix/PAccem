@@ -4,10 +4,18 @@ class Overlay {
 
 	final int xoff = 50;						// used for aligning the roomgrid with the overlay
 	final int yoff = 30;						// used for aligning the roomgrid with the overlay
+	final color cc = color(255,0);
+	
 	boolean drawpopup = false;					// visiblity state of current popup
 	int tabid = -1;								// used by Tabbar (in OTabbar.pde)
 	String newroomname;							// the name of a new room 
 	int newroomxsize = 15, newroomysize = 15;	// the size of a new room
+
+	// Console
+	ArrayList<String> messages = new ArrayList<String>(); // messages on the console
+	int consoleoff=0;							// offset of the message console
+	boolean drawconsole = false;				// visiblity state of message console
+
 
 	// TODO: Slider
 	// TODO: CheckBox
@@ -21,9 +29,10 @@ class Overlay {
 
 	void build() { // build/create the overlay
 		final String[] tabs = {"newroom", "viewmode", "loadroom", "saveroom", "settings", "debug", "roomgroups", "about", "reset"};
-		items = new Object[3];
+		items = new Object[4];
 		items[0] =
 		new GetVisible(new Text(" ")) {@Override public boolean getvisible() {return drawpopup;}};
+		// Tab bar 
 		items[1] = 
 		new Tabbar(
 			// Tab selection bar 
@@ -401,7 +410,8 @@ class Overlay {
 						return new EventDetector(new Container(new Image(dm.icons[temp.i+1]))) {
 							@Override public void onevent(EventType et, MouseEvent e) {
 								if(et == EventType.MOUSEPRESSED) {
-									rm.tool = temp.i;
+									//rm.tool = temp.i;
+									im.setTool(temp.i);
 									if(rm.tool == 2) {
 										tabid = (tabid == 5) ? -1 : 5;
 									}
@@ -410,25 +420,53 @@ class Overlay {
 						};
 					} else {
 						if(i == 6) {
-						return new SizedBox(true);
+							return new SizedBox(true);
 						} else {
-						return new Container(new Text("CO"));
+							return new EventDetector(new Container(new Image(dm.icons[7]))) {
+							@Override public void onevent(EventType et, MouseEvent e) {
+								if(et == EventType.MOUSEPRESSED) {
+									drawconsole = !drawconsole;
+								}
+							}
+						};
 						}
 					}
 				}
-			}.build(6, xoff, height-yoff, xoff, Dir.DOWN), 0,yoff
+			}.build(8, xoff, height-yoff, xoff, Dir.DOWN), 0,yoff
 		);
-		/*
 		// Console
-		items[3] = new Transform(
-			new Container(
-				new Text("abccc"),
-				width-xoff, 50
-			),xoff, height-50
-		);
-		*/
+		items[3] = 
+		new GetVisible(
+			new Transform(
+				new Dynamic() {
+					@Override public Object getitem() {
+						Object o = new EventDetector(
+							new ListViewBuilder() {
+								@Override public Object i(int i) {
+									final Temp temp = new Temp(i);
+									return new Container(new Text(messages.get(temp.i)), round(textWidth(messages.get(temp.i)))+10, 30, cc, true);
+								}
+							}.build(messages.size(),width-xoff,150, 30, Dir.DOWN)
+						) {
+							@Override public void onevent(EventType et, MouseEvent e) {
+								if(et == EventType.MOUSEWHEEL) {
+									int length = messages.size()*30;
+									if(length > 150) {
+										consoleoff -= e.getCount()*15;
+										consoleoff = constrain(consoleoff, 150 - length, 0);
+									}
+								}
+							}
+						};
+						((ListView)(((EventDetector)o).item)).off = consoleoff;
+						return o;
+					}
+				},xoff, height-150
+			)
+		) {@Override public boolean getvisible() {return drawconsole;}};
+
 		for (Object item : items) {
-			setitemxy(item, 0,0);
+			setitemxy(item, 0,0); // position all items at the origin
 		}
 	}
 
@@ -456,7 +494,7 @@ class Overlay {
 		}
 	}
 
-	boolean ishit() { // return whether or not you have clicked on the overlay
+	boolean ishit() { // return whether or not your mouse is on the overlay
 		if(visible) {
 			for (Object item : items) {
 				if(getisitemhit(item)) {
@@ -519,6 +557,14 @@ class Overlay {
 			), width, height, color(0,150)
 		)) {@Override public boolean getvisible() {return drawpopup;}};
 		drawpopup = true;
+	}
+
+	void printconsole(String text) { // add a message to the console
+		String message = fixlength(str(hour()), 2, '0') + ":" + fixlength(str(minute()), 2, '0') +": " + text;
+		messages.add(message);
+		if(messages.size() > 5) {
+			consoleoff -= 30;
+		}
 	}
 
 }
