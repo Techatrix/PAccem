@@ -53,6 +53,8 @@ void mouseWheelitem(Object item, MouseEvent e) {
 		((Container)item).mouseWheel(e);
 	} else if (item instanceof Transform) {
 		((Transform)item).mouseWheel(e);
+	} else if (item instanceof Dynamic) {
+		((Dynamic)item).mouseWheel(e);
 	} else if (item instanceof GetVisible) {
 		((GetVisible)item).mouseWheel(e);
 	} else if (item instanceof EventDetector) {
@@ -72,6 +74,8 @@ boolean mousePresseditem(Object item) {
 		return ((SetValueText)item).mousePressed();
 	} else if(item instanceof Transform) {
 		return ((Transform)item).mousePressed();
+	} else if(item instanceof Dynamic) {
+		return ((Dynamic)item).mousePressed();
 	} else if(item instanceof GetVisible) {
 		return ((GetVisible)item).mousePressed();
 	} else if (item instanceof EventDetector) {
@@ -92,6 +96,8 @@ void keyPresseditem(Object item) {
 		((SetValueText)item).keyPressed();
 	} else if (item instanceof Transform) {
 		((Transform)item).keyPressed();
+	} else if (item instanceof Dynamic) {
+		((Dynamic)item).keyPressed();
 	} else if (item instanceof GetVisible) {
 		((GetVisible)item).keyPressed();
 	} else if (item instanceof EventDetector) {
@@ -121,6 +127,8 @@ boolean getisitemhit(Object item) {
 		return ((GetValueText)item).ishit();
 	} else if(item instanceof Transform) {
 		return ((Transform)item).ishit();
+	} else if(item instanceof Dynamic) {
+		return ((Dynamic)item).ishit();
 	} else if(item instanceof GetVisible) {
 		return ((GetVisible)item).ishit();
 	} else if(item instanceof EventDetector) {
@@ -147,6 +155,8 @@ void drawitem(Object item, boolean hit) {
 		((Image)item).draw(hit);
 	} else if(item instanceof Transform) {
 		((Transform)item).draw(hit);
+	} else if(item instanceof Dynamic) {
+		((Dynamic)item).draw(hit);
 	} else if(item instanceof GetVisible) {
 		((GetVisible)item).draw(hit);
 	} else if(item instanceof EventDetector) {
@@ -174,6 +184,8 @@ void setitemwh(Object item, int _width, int _height) {
 		((Image)item).setwh(_width, _height);
 	} else if(item instanceof Transform) {
 		((Transform)item).setwh(_width, _height);
+	} else if(item instanceof Dynamic) {
+		((Dynamic)item).setwh(_width, _height);
 	} else if(item instanceof GetVisible) {
 		((GetVisible)item).setwh(_width, _height);
 	} else if(item instanceof EventDetector) {
@@ -201,6 +213,8 @@ void setitemxy(Object item, int xpos, int ypos) {
 		((Image)item).setxy(xpos, ypos);
 	} else if(item instanceof Transform) {
 		((Transform)item).setxy(xpos, ypos);
+	} else if(item instanceof Dynamic) {
+		((Dynamic)item).setxy(xpos, ypos);
 	} else if(item instanceof GetVisible) {
 		((GetVisible)item).setxy(xpos, ypos);
 	} else if(item instanceof EventDetector) {
@@ -228,6 +242,8 @@ Box getboundry(Object item) {
 		return ((Image)item).getbound();
 	} else if(item instanceof Transform) {
 		return ((Transform)item).getbound();
+	} else if(item instanceof Dynamic) {
+		return ((Dynamic)item).getbound();
 	} else if(item instanceof GetVisible) {
 		return ((GetVisible)item).getbound();
 	} else if(item instanceof EventDetector) {

@@ -8,14 +8,10 @@ class DataManager {
 			println("Load DataManager");
 		}
 		/* --------------- load icon data --------------- */
-		icons = new PImage[7];
-		icons[0] = loadImage("data/assets/icon/0.png");
-		icons[1] = loadImage("data/assets/icon/1.png");
-		icons[2] = loadImage("data/assets/icon/2.png");
-		icons[3] = loadImage("data/assets/icon/3.png");
-		icons[4] = loadImage("data/assets/icon/4.png");
-		icons[5] = loadImage("data/assets/icon/5.png");
-		icons[6] = loadImage("data/assets/icon/6.png");
+		icons = new PImage[8];
+		for (int i=0;i<icons.length;i++) {
+			icons[i] = loadImage("data/assets/icon/"+i+".png");
+		}
 
 		/* --------------- load furniture data --------------- */
 		JSONArray furnituredata;

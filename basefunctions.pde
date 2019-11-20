@@ -17,6 +17,12 @@ void setKey(int k, boolean bool) {	// sets the state of the arrow keys
 String cap(String str) { // converts the first letter of a string to upper case
 	return str.substring(0, 1).toUpperCase() + str.substring(1);
 }
+String fixlength(String str, int length, char c) {
+	while(str.length() < length) {
+		str += c;
+	}
+	return str;
+}
 
 boolean checkraw(int xpos, int ypos, int _width, int _height) { // checks if the mouse is inside a rectangle
 	float scale = st.floats[1].value;

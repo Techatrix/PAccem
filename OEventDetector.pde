@@ -13,7 +13,7 @@ abstract class EventDetector implements IOverlay {
 
 	void mouseWheel(MouseEvent e) {
 		if(ishit()) {
-			onevent(EventType.MOUSEPRESSED, e);
+			onevent(EventType.MOUSEWHEEL, e);
 		}
 		mouseWheelitem(item, e);
 	}
