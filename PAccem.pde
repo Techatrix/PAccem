@@ -1,4 +1,5 @@
 import java.util.Map;
+import java.io.*;
 
 ApplicationManager am;	// manages the overal application (title, size, initialization)
 Settings st;			// loads and stores the current settings
@@ -22,6 +23,19 @@ void settings() { // is being executed once before the window is created	(pre-ma
 }
 void setup() { // is being executed once after the window is being created 	(main())
 	am.initsetup();
+	/*
+	try {
+		SETemp t = new SETemp(1);
+		FileOutputStream fout= new FileOutputStream(sketchPath("f.txt"));  
+		ObjectOutputStream out=new ObjectOutputStream(fout);  
+		out.writeObject(t);  
+		out.flush();   
+		out.close();  
+		println("success");  
+	} catch (IOException i) {
+		i.printStackTrace();
+	}
+	*/
 }
 
 void draw() { // is being executed on every frame

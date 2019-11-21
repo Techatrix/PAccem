@@ -40,6 +40,31 @@ class InstructionManager {
 		}
 	}
 
+	String execcommand(String cmd) {
+		String[] a = split(cmd, " ");
+		if(a.length > 0) {
+			boolean found = false;
+			if(a.length > 1) {
+				println("Parameter: ");
+				for (int i=0;i<a.length-1;i++) {
+					println(a[i+1]);
+				}
+			}
+			switch(a[0]) {
+				case "undo":
+					found = true;
+					undo();
+				break;
+			}
+			if(found) {
+				return a[0];
+			} else {
+				return "cant find command: " + a[0];
+			}
+		}
+		return " ";
+	}
+
 	void setTool(int i) {
 		rm.tool = i;
 	}
