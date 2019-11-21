@@ -129,7 +129,7 @@ class RoomManager {
 									if(!roomgrid.isingrid(xpos+x,ypos+y)) {
 										message += "Out of Room ";
 									}
-									ov.printconsole(message);
+									ov.printmessage(message);
 
 									block = true;
 									break;
@@ -161,7 +161,7 @@ class RoomManager {
 								if(!roomgrid.isingrid(xpos+x,ypos+y)) {
 									message += "Out of Room ";
 								}
-								ov.printconsole(message);
+								ov.printmessage(message);
 								block = true;
 								break;
 							}
@@ -284,7 +284,7 @@ class RoomManager {
 							}
 							if(!roomgrid.gettilestate(x,y) || isfurniture(x,y) || !roomgrid.isingrid(x,y)) {
 								a = false;
-								ov.printconsole("Can't move Furniture");
+								ov.printmessage("Can't move Furniture");
 								break;
 							}
 						}
@@ -356,6 +356,7 @@ class RoomManager {
 		if(deb) {
 			println("Save: " + name);
 		}
+		/*
 		JSONObject json = new JSONObject();
 
 		json.setFloat("xoff", xoff);
@@ -420,6 +421,8 @@ class RoomManager {
 			roomarray.setJSONArray(x, row);
 		}
 		saveJSONArray(roomarray, "data/rooms/" + name + "/room.json");
+		*/
+
 		//-------------------------------------------------------------------------------
 		am.settitle(name);
 		this.name = name;
@@ -428,6 +431,7 @@ class RoomManager {
 		if(deb) {
 			println("Load Roommanager: " + name);
 		}
+		/*
 		File f1 = new File(sketchPath("data/rooms/" + name + "/data.json"));
 		File f2 = new File(sketchPath("data/rooms/" + name + "/furnitures.json"));
 		File f3 = new File(sketchPath("data/rooms/" + name + "/room.json"));
@@ -490,6 +494,58 @@ class RoomManager {
 				}
 			}
 		}
+		*/
+
+		
+		xoff = 0;
+		yoff = 0;
+		scale = 1;
+		gridtilesize = 50;
+		roomgrid = new Grid(15, 15);
+		furnitures = new ArrayList<Furniture>();
+		byte[] newb = new byte[5];
+		for (int i=0;i<newb.length;i++) {
+			newb[i] = -128;
+		}
+
+
+		saveBytes("data/rooms/" + name + "/room.dat", newb);
+		File f1 = new File(sketchPath("data/rooms/" + name + "/room.dat"));
+		if (f1.exists()) {
+			byte bdata[] = loadBytes("data/rooms/" + name + "/room.dat"); 
+			// beginroom:	00000000 0 
+			// endroom:		00000010 2
+			// beginfurn:	00000001 1
+			// endfurn:		00000011 3
+			// beginrow:	00000100 4
+			// endroom:		00000101 5
+
+			//Furniture: 3bytes: id, xpos, ypos
+			int state = -1;
+			for (byte b : bdata) {
+				switch(state) {
+					case -1:
+	  				int ib = b & 0xff; 
+					if(ib == 0) {
+						state = 0;
+						println("beginroom");
+					} else if(ib == 1) {
+						state = 1;
+						println("beginfurn");
+					} else {
+						state = -1;
+						println("huh?");
+					}
+					break;
+					case 0:
+					break;
+					case 1:
+					break;
+
+				}
+
+			}
+		}
 		//-------------------------------------------------------------------------------
 		am.settitle(name);
 		this.name = name;
@@ -516,7 +572,7 @@ class RoomManager {
 	}
 	void newroom(int xsize, int ysize) { // create a new room with the choosen size
 		roomgrid = new Grid(xsize, ysize);
-		ov.printconsole("New Room " + xsize + "x" + ysize);
+		ov.printmessage("New Room " + xsize + "x" + ysize);
 	}
 
 	void switchviewmode() {	// well... switch the viewmode (2D -> 3D, 3D -> 2D)

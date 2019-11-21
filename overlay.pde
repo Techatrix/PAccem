@@ -5,21 +5,22 @@ class Overlay {
 	final int xoff = 50;						// used for aligning the roomgrid with the overlay
 	final int yoff = 30;						// used for aligning the roomgrid with the overlay
 	final color cc = color(255,0);
-	
+
 	boolean drawpopup = false;					// visiblity state of current popup
 	int tabid = -1;								// used by Tabbar (in OTabbar.pde)
 	String newroomname;							// the name of a new room 
 	int newroomxsize = 15, newroomysize = 15;	// the size of a new room
 
-	// Console
+	// Message Box & Console
 	ArrayList<String> messages = new ArrayList<String>(); // messages on the console
-	int consoleoff=0;							// offset of the message console
-	boolean drawconsole = false;				// visiblity state of message console
-
+	int consoleoff=0;							// offset of the console
+	boolean drawconsole = false;				// visiblity state of console
+	final int consoleheight = 30;				// const. height of the console
+	final int messageboxheight = 200;			// const. height of the message box
 
 	// TODO: Slider
 	// TODO: CheckBox
-	// TODO: Message Console
+	// TODO: Console
 
 	Overlay() {
 		visible = !st.booleans[1].value;
@@ -29,7 +30,7 @@ class Overlay {
 
 	void build() { // build/create the overlay
 		final String[] tabs = {"newroom", "viewmode", "loadroom", "saveroom", "settings", "debug", "roomgroups", "about", "reset"};
-		items = new Object[4];
+		items = new Object[5];
 		items[0] =
 		new GetVisible(new Text(" ")) {@Override public boolean getvisible() {return drawpopup;}};
 		// Tab bar 
@@ -434,7 +435,7 @@ class Overlay {
 				}
 			}.build(8, xoff, height-yoff, xoff, Dir.DOWN), 0,yoff
 		);
-		// Console
+		// Message Box
 		items[3] = 
 		new GetVisible(
 			new Transform(
@@ -444,16 +445,16 @@ class Overlay {
 							new ListViewBuilder() {
 								@Override public Object i(int i) {
 									final Temp temp = new Temp(i);
-									return new Container(new Text(messages.get(temp.i)), round(textWidth(messages.get(temp.i)))+10, 30, cc, true);
+									return new Container(new Text(messages.get(temp.i)), round(textWidth(messages.get(temp.i)))+10, 30, cc, false);
 								}
-							}.build(messages.size(),width-xoff,150, 30, Dir.DOWN)
+							}.build(messages.size(),width-xoff,messageboxheight, 30, Dir.DOWN)
 						) {
 							@Override public void onevent(EventType et, MouseEvent e) {
 								if(et == EventType.MOUSEWHEEL) {
 									int length = messages.size()*30;
-									if(length > 150) {
+									if(length > messageboxheight) {
 										consoleoff -= e.getCount()*15;
-										consoleoff = constrain(consoleoff, 150 - length, 0);
+										consoleoff = constrain(consoleoff, messageboxheight - length, 0);
 									}
 								}
 							}
@@ -461,7 +462,20 @@ class Overlay {
 						((ListView)(((EventDetector)o).item)).off = consoleoff;
 						return o;
 					}
-				},xoff, height-150
+				},xoff, height-messageboxheight-consoleheight
+			)
+		) {@Override public boolean getvisible() {return drawconsole;}};
+		// Console
+		items[4] = 
+		new GetVisible(
+			new Transform(
+				new Container(new SetValueText("->") {
+					@Override public void onchange() {
+						printmessage(im.execcommand(newvalue));
+						value = "";
+						newvalue = "";
+					}
+				},width-xoff,consoleheight, color(50), false),xoff, height-consoleheight
 			)
 		) {@Override public boolean getvisible() {return drawconsole;}};
 
@@ -559,7 +573,7 @@ class Overlay {
 		drawpopup = true;
 	}
 
-	void printconsole(String text) { // add a message to the console
+	void printmessage(String text) { // add a message to the console
 		String message = fixlength(str(hour()), 2, '0') + ":" + fixlength(str(minute()), 2, '0') +": " + text;
 		messages.add(message);
 		if(messages.size() > 5) {
