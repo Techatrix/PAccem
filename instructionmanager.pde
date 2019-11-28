@@ -33,13 +33,44 @@ class InstructionManager {
 				int ypos = (int)dt.get("ypos");
 				settilestateraw(xpos, ypos);
 				break;
-				case 1:
+				case 1: // multi settilestate
+				GridTile[][] tiles = (GridTile[][])dt.get("tiles");
+				println("2:" + tiles[0][0].state);
+				rm.roomgrid.tiles = tiles;
 				break;
 			}
             instructions.remove(instructions.size() - 1);
 		}
 	}
 
+	void setTool(int i) {
+		rm.tool = i;
+	}
+
+	void settilestate(int xpos, int ypos) {
+		settilestateraw(xpos, ypos);
+		HashMap<String,Object> dt = new HashMap<String,Object>();
+		dt.put("id", 0);
+		dt.put("xpos", xpos);
+		dt.put("ypos", ypos);
+		instructions.add(new Instruction(dt));
+	}
+	void settilestateraw(int xpos, int ypos) {
+		rm.settilestate(xpos, ypos);
+	}
+	void setmultitilestate(int xpos, int ypos) {
+		GridTile[][] tiles = rm.roomgrid.tiles;
+		HashMap<String,Object> dt = new HashMap<String,Object>();
+		dt.put("id", 1);
+		dt.put("tiles", tiles);
+		println("0:" + tiles[0][0].state);
+		setmultitilestateraw(xpos, ypos);
+		println("1:" + tiles[0][0].state);
+		instructions.add(new Instruction(dt));
+	}
+	void setmultitilestateraw(int xpos, int ypos) {
+		rm.filltool(xpos,ypos);
+	}
 	String execcommand(String cmd) {
 		String[] a = split(cmd, " ");
 		if(a.length > 0) {
@@ -63,22 +94,6 @@ class InstructionManager {
 			}
 		}
 		return " ";
-	}
-
-	void setTool(int i) {
-		rm.tool = i;
-	}
-
-	void settilestate(int xpos, int ypos) {
-		settilestateraw(xpos, ypos);
-		HashMap<String,Object> dt = new HashMap<String,Object>();
-		dt.put("id", 0);
-		dt.put("xpos", xpos);
-		dt.put("ypos", ypos);
-		instructions.add(new Instruction(dt));
-	}
-	void settilestateraw(int xpos, int ypos) {
-		rm.settilestate(xpos, ypos);
 	}
 
 }
