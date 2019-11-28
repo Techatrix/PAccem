@@ -94,6 +94,11 @@ class RoomManager {
 			roomgrid.gettile(xpos,ypos).roomgroup = newroomtilegroup;
 		}
 	}
+	void filltool(int xpos, int ypos) {
+		//GridTile[][] tiles = roomgrid.tiles;
+		roomgrid.filltool(!roomgrid.gettilestate(xpos,ypos), xpos,ypos);
+		//return tiles;
+	}
 
 	void mousePressed() {
 		if(mouseButton == LEFT && !viewmode) {

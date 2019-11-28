@@ -1,5 +1,6 @@
 import java.util.Map;
 import java.io.*;
+import java.util.stream.IntStream;
 
 ApplicationManager am;	// manages the overal application (title, size, initialization)
 Settings st;			// loads and stores the current settings
@@ -42,6 +43,68 @@ void draw() { // is being executed on every frame
 	am.loop();	// application manager
 	rm.draw();	// room manager
 	ov.draw();	// overlay
+	/*
+	loadPixels();
+	int ww=300;
+	int hh=300;
+
+	int[] weights = {1, 2, 1, 2, 4, 2, 1, 2, 1};
+	int weightWidth = 3;
+
+
+
+    for (int h = hh - weights.length / weightWidth + 1, w = ww - weightWidth + 1, y = 0; y < h; y++) {
+        for (int x = 0; x < w; x++) {
+            int r = 0;
+            int g = 0;
+            int b = 0;
+            for (int filterIndex = 0, pixelIndex = y * width + x;filterIndex < weights.length;pixelIndex ++) {
+                for (int fx = 0; fx < weightWidth; fx++, pixelIndex++, filterIndex++) {
+                    color col = pixels[pixelIndex];
+                    int factor = weights[filterIndex];
+
+                    // sum up color channels seperately
+                    r += red(col) * factor;
+                    g += green(col) * factor;
+                    b += blue(col) * factor;
+                }
+            }
+            r /= 16;
+            g /= 16;
+            b /= 16;
+            // combine channels with full opacity
+            pixels[y * width + x] = color(r,g,b);
+        }
+    }
+    
+	/*
+	for (int x=0;x<100;x++) {
+		for (int y=0;y<100;y++) {
+			int i=0;
+			int r=0;
+			int g=0;
+			int b=0;
+			for (int dx=-5;dx<5;dx++) {
+				for (int dy=-5;dy<5;dy++) {
+					if(x+dx > -1 && y+dy> -1) {
+						color c = pixels[(y+dy)*width+x+dx];
+						r += red(c);
+						g += green(c);
+						b += blue(c);
+						i++;
+					}
+				}
+			}
+			r /= i;
+			g /= i;
+			b /= i;
+			pixels[y*width+x] = color(r,g,b);
+		}
+	}
+	*/
+	/*
+	updatePixels();
+	*/
 }
 /* --------------- mouse input --------------- */
 void mouseWheel(MouseEvent e) {
