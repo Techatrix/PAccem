@@ -189,7 +189,8 @@ class RoomManager {
 			} else if(tool == 4) { // fill
 				int x = floor(getxpos());
 				int y = floor(getypos());
-				roomgrid.filltool(!roomgrid.gettilestate(x,y), x,y);
+				im.setmultitilestate(x,y);
+				//roomgrid.filltool(!roomgrid.gettilestate(x,y), x,y);
 			} else if(tool == 5) { // place window
 				float fx = getxpos();
 				float fy = getypos();
@@ -508,6 +509,7 @@ class RoomManager {
 		gridtilesize = 50;
 		roomgrid = new Grid(15, 15);
 		furnitures = new ArrayList<Furniture>();
+		/*
 		byte[] newb = new byte[5];
 		for (int i=0;i<newb.length;i++) {
 			newb[i] = -128;
@@ -551,6 +553,7 @@ class RoomManager {
 
 			}
 		}
+		*/
 		//-------------------------------------------------------------------------------
 		am.settitle(name);
 		this.name = name;

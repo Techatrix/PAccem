@@ -1,6 +1,7 @@
 class Furniture extends RPWH {
 	int id;
 	int price;
+	color tint;
 
 	Furniture() {}
 	Furniture(int id) {
@@ -20,6 +21,7 @@ class Furniture extends RPWH {
 		this._width = fdata._width;
 		this._height = fdata._height;
 		this.price = fdata.price;
+		this.tint = color(floor(random(255)),floor(random(255)),floor(random(255)));
 	}
 	Furniture(FurnitureData fdata, int xpos, int ypos) {
 		this(fdata);
@@ -30,17 +32,21 @@ class Furniture extends RPWH {
 	void draw(boolean viewmode, boolean selected) {
 		if(!viewmode) { // 2D
 			translate(xpos, ypos);
-			
+			tint(tint);
 			image(dm.furnitures[id].image, 0, 0, _width, _height); // draw furniture
+			noTint();
 			if (selected == true) { // draw red selection box if selected
 				noStroke();
-				fill(color(255,0,0,100));
+				fill(255,255,255,140);
 				rect(0, 0, _width, _height);
 			}
 			translate(-xpos, -ypos);
 		} else { // 3D
 			pg.translate(xpos, 0, ypos);
-			pg.shape(dm.furnitures[id].shape); // draw furniture
+			PShape s = dm.furnitures[id].shape;
+			s.setFill(tint);
+			pg.shape(s); // draw furniture
+			s.setFill(255);
 			pg.translate(-xpos, 0, -ypos);
 		}
 	}
@@ -49,7 +55,7 @@ class Furniture extends RPWH {
 		if(selected) {
 			fill(c[8], 100);
 		} else {
-			fill(255,0,0, 50);
+			fill(255,255,255, 70);
 		}
 		translate(xpos, ypos);
 		rotate(rot);
