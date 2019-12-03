@@ -8,7 +8,7 @@ LanguageManager lg;		// loads the current language file
 RoomManager rm;			// manages the room(grid, furniture & user input)
 DataManager dm;			// stores data (3D-models, images, etc.)
 Overlay ov;				// draws & manages the user interface
-InstructionManager im;	// 
+InstructionManager im;	// manages all previously executed instructions to allow Strg+Z, undo feature
 
 PGraphics pg;			// used for 3D-graphics
 PFont font;				// the current font
@@ -16,6 +16,15 @@ boolean usegl;			// opengl setting when the application has started
 
 int[] c = new int[9];	// easily accessible color values (0-8 => 0 - 255 or 255 - 0)
 boolean isKeyUp, isKeyRight, isKeyLeft, isKeyDown, isKeyT;	// stores whether or not a arrow key is down
+
+/* --------------- Experimental Version! WIP --------------- */
+/* 
+ * InstructionManager (Strg+Z, undo feature)
+ * message box/console
+ * improved datastorage
+ * furniture color
+*/
+
 
 /* --------------- main --------------- */
 void settings() { // is being executed once before the window is created	(pre-main())
