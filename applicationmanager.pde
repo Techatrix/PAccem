@@ -30,7 +30,7 @@ class ApplicationManager {
 		dm = new DataManager();							// initialise data manager
 		rm = new RoomManager();							// initialise room manager
 		ov = new Overlay();								// initialise overlay
-		im = new InstructionManager();
+		//im = new InstructionManager();				// initialise instruction manager
 
 		//println(dm.validate());
 
