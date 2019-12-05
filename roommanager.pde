@@ -95,24 +95,20 @@ class RoomManager {
 		}
 	}
 	void filltool(int xpos, int ypos) {
-		//GridTile[][] tiles = roomgrid.tiles;
 		roomgrid.filltool(!roomgrid.gettilestate(xpos,ypos), xpos,ypos);
-		//return tiles;
 	}
 
 	void mousePressed() {
 		if(mouseButton == LEFT && !viewmode) {
 			selectionid = -1;
 			if(tool == 1) { // draw to roomgrid
-				/*
 				int x = floor(getxpos());
 				int y = floor(getypos());
 				if(!isfurniture(x,y)){
 					roomgrid.settilestate(!roomgrid.gettilestate(x,y), x,y);
 					roomgrid.gettile(x,y).roomgroup = newroomtilegroup;
 				}
-				*/
-				im.settilestate(floor(getxpos()), floor(getypos()));
+				//im.settilestate(floor(getxpos()), floor(getypos()));
 			} else if(tool == 2) { // place a new furniture or prefab
 				int xpos = floor(getxpos());
 				int ypos = floor(getypos());
@@ -189,8 +185,8 @@ class RoomManager {
 			} else if(tool == 4) { // fill
 				int x = floor(getxpos());
 				int y = floor(getypos());
-				im.setmultitilestate(x,y);
-				//roomgrid.filltool(!roomgrid.gettilestate(x,y), x,y);
+				//im.setmultitilestate(x,y);
+				roomgrid.filltool(!roomgrid.gettilestate(x,y), x,y);
 			} else if(tool == 5) { // place window
 				float fx = getxpos();
 				float fy = getypos();
@@ -244,7 +240,7 @@ class RoomManager {
 				}
 			} else if(e.isControlDown()) {
 				if(e.getKeyCode() == 89) {
-					im.undo();
+					//im.undo();
 				}
 			} else if(keyCode < 54 && keyCode > 48) { // 1-5
 				newroomtilegroup = keyCode - 49;

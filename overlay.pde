@@ -411,8 +411,8 @@ class Overlay {
 						return new EventDetector(new Container(new Image(dm.icons[temp.i+1]))) {
 							@Override public void onevent(EventType et, MouseEvent e) {
 								if(et == EventType.MOUSEPRESSED) {
-									//rm.tool = temp.i;
-									im.setTool(temp.i);
+									rm.tool = temp.i;
+									//im.setTool(temp.i);
 									if(rm.tool == 2) {
 										tabid = (tabid == 5) ? -1 : 5;
 									}
@@ -471,7 +471,7 @@ class Overlay {
 			new Transform(
 				new Container(new SetValueText("->") {
 					@Override public void onchange() {
-						printmessage(im.execcommand(newvalue));
+						//printmessage(im.execcommand(newvalue));
 						value = "";
 						newvalue = "";
 					}

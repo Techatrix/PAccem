@@ -8,7 +8,7 @@ LanguageManager lg;		// loads the current language file
 RoomManager rm;			// manages the room(grid, furniture & user input)
 DataManager dm;			// stores data (3D-models, images, etc.)
 Overlay ov;				// draws & manages the user interface
-InstructionManager im;	// manages all previously executed instructions to allow Strg+Z, undo feature
+//InstructionManager im;// manages all previously executed instructions to allow Strg+Z, undo feature
 
 PGraphics pg;			// used for 3D-graphics
 PFont font;				// the current font
@@ -19,7 +19,7 @@ boolean isKeyUp, isKeyRight, isKeyLeft, isKeyDown, isKeyT;	// stores whether or 
 
 /* --------------- Experimental Version! WIP --------------- */
 /* 
- * InstructionManager (Strg+Z, undo feature)
+ * InstructionManager (Strg+Z, undo feature)		abandoned
  * message box/console
  * improved datastorage
  * furniture color
