@@ -20,6 +20,9 @@ class Transform implements IOverlay {
 	boolean mousePressed() {
 		return mousePresseditem(item);
 	}
+	boolean mouseDragged() {
+		return mouseDraggeditem(item);
+	}
 	void keyPressed() {
 		keyPresseditem(item);
 	}

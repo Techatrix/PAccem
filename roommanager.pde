@@ -22,10 +22,16 @@ class RoomManager {
 	boolean isprefab = false;			// whether or not you are placing a furniture or a prefab
 
 	RoomManager() {
+		if(deb) {
+			println("Loading RoomManager");
+		}
 		resetcam(true);
 		load(st.strings[0].value);
 	}
 	RoomManager(String loadname) {
+		if(deb) {
+			println("Loading RoomManager");
+		}
 		resetcam(true);
 		load(loadname);
 	}
@@ -358,7 +364,7 @@ class RoomManager {
 		if(deb) {
 			println("Save: " + name);
 		}
-		/*
+		String path = "data/rooms/" + name;
 		JSONObject json = new JSONObject();
 
 		json.setFloat("xoff", xoff);
@@ -375,7 +381,7 @@ class RoomManager {
 
 		}
 
-		saveJSONObject(json, "data/rooms/" + name + "/data.json");
+		saveJSONObject(json, path + "/data.json");
 		//-------------------------------------------------------------------------------
 		JSONArray furnituresarray = new JSONArray();
 
@@ -390,7 +396,7 @@ class RoomManager {
 		  furnituresarray.setJSONObject(j, f);
 		}
 
-		saveJSONArray(furnituresarray, "data/rooms/" + name + "/furnitures.json");
+		saveJSONArray(furnituresarray, path + "/furnitures.json");
 		//-------------------------------------------------------------------------------
 		JSONArray roomarray = new JSONArray();
 
@@ -422,8 +428,7 @@ class RoomManager {
 			}
 			roomarray.setJSONArray(x, row);
 		}
-		saveJSONArray(roomarray, "data/rooms/" + name + "/room.json");
-		*/
+		saveJSONArray(roomarray, path + "/room.json");
 
 		//-------------------------------------------------------------------------------
 		am.settitle(name);
@@ -433,15 +438,15 @@ class RoomManager {
 		if(deb) {
 			println("Load Roommanager: " + name);
 		}
-		/*
-		File f1 = new File(sketchPath("data/rooms/" + name + "/data.json"));
-		File f2 = new File(sketchPath("data/rooms/" + name + "/furnitures.json"));
-		File f3 = new File(sketchPath("data/rooms/" + name + "/room.json"));
+		String path = "data/rooms/" + name;
+		File f1 = new File(sketchPath(path + "/data.json"));
+		File f2 = new File(sketchPath(path + "/furnitures.json"));
+		File f3 = new File(sketchPath(path + "/room.json"));
 
 		JSONObject json1;
 		if (f1.exists())
 		{
-			json1 = loadJSONObject("data/rooms/" + name + "/data.json");
+			json1 = loadJSONObject(path + "/data.json");
 		} else {
 			json1 = new JSONObject();
 		}
@@ -450,7 +455,7 @@ class RoomManager {
 		scale = json1.getFloat("scale", 1);
 		gridtilesize = json1.getInt("gridtilesize", 50);
 
-		roomgrid = new Grid(json1.getInt("xgridsize", 1), json1.getInt("ygridsize", 1));
+		roomgrid = new Grid(json1.getInt("xgridsize", 15), json1.getInt("ygridsize", 15));
 		// TODO: auto detect gridsize if file not available
 		for (int i=0;i<5;i++) {
 			float red = json1.getFloat("roomgroupcolor" + str(i) + "red", 50);
@@ -463,7 +468,7 @@ class RoomManager {
 		furnitures = new ArrayList<Furniture>();
 		if (f2.exists() && f1.exists())
 		{
-			JSONArray json = loadJSONArray("data/rooms/" + name + "/furnitures.json");
+			JSONArray json = loadJSONArray(path + "/furnitures.json");
 			for (int j = 0; j < json.size(); j++) {
 				JSONObject f = json.getJSONObject(j);
 				furnitures.add(new Furniture(f.getInt("id"), f.getInt("xpos", 0), f.getInt("ypos", 0)));
@@ -473,7 +478,7 @@ class RoomManager {
 
 		if (f3.exists())
 		{
-			JSONArray json = loadJSONArray("data/rooms/" + name + "/room.json");
+			JSONArray json = loadJSONArray(path + "/room.json");
 
 			for (int x = 0; x < getxgridsize(); x++) {
 				JSONArray row = json.getJSONArray(x);
@@ -496,7 +501,7 @@ class RoomManager {
 				}
 			}
 		}
-		*/
+		/*
 
 		
 		xoff = 0;

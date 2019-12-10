@@ -30,6 +30,9 @@ class GridView extends PWH implements IOverlay {
 		}
 		return ishit();
 	}
+	boolean mouseDragged() {
+		return false;
+	}
 	void keyPressed() {
 		if(ishit()) {
 			for (Object item : items) {

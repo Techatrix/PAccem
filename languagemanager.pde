@@ -3,7 +3,7 @@ class LanguageManager {
 
 	LanguageManager(String newlang) {
 		if(deb) {
-			println("Loaded LanguageManager");
+			println("Loading LanguageManager");
 		}
 		setlang(newlang);
 	}

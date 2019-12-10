@@ -5,7 +5,7 @@ class DataManager {
 
 	DataManager() {
 		if(deb) {
-			println("Load DataManager");
+			println("Loading DataManager");
 		}
 		/* --------------- load icon data --------------- */
 		icons = new PImage[8];
