@@ -33,6 +33,9 @@ abstract class Tabbar implements IOverlay {
 		}
 		return hit;
 	}
+	boolean mouseDragged() {
+		return false;
+	}
 	void keyPressed() {
 		keyPresseditem(list);
 		if(isvalidtab()) {

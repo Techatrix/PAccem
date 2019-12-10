@@ -29,6 +29,9 @@ class Container extends PWH implements IOverlay {
 		mousePresseditem(item);
 		return ishit();
 	}
+	boolean mouseDragged() {
+		return mouseDraggeditem(item);
+	}
 	void keyPressed() {
 		keyPresseditem(item);
 	}

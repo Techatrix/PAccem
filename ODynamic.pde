@@ -11,6 +11,9 @@ abstract class Dynamic extends PWH implements IOverlay {
 	void mouseWheel(MouseEvent e) {
 		mouseWheelitem(item, e);
 	}
+	boolean mouseDragged() {
+		return mouseDraggeditem(item);
+	}
 	void keyPressed() {
 		keyPresseditem(item);
 	}

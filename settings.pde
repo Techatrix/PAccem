@@ -7,7 +7,7 @@ class Settings {
 
 	Settings() {
 		if(deb) {
-			println("Load Settings Class");
+			println("Loading Settings Class");
 		}
 		strings = new SettingStringValue[3];
 		booleans = new SettingBooleanValue[4];
@@ -104,7 +104,7 @@ class Settings {
 	}
 	void load() { // loads the settings from data/settings.json if possible
 		if(deb) {
-			println("Loaded Settings");
+			println("Loading Settings");
 		}
 		File f1 = new File(sketchPath("data/settings.json"));
 

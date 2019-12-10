@@ -13,25 +13,33 @@ class Overlay {
 
 	// Message Box & Console
 	ArrayList<String> messages = new ArrayList<String>(); // messages on the console
-	int consoleoff=0;							// offset of the console
+	int consoleoff = 0;							// offset of the console
 	boolean drawconsole = false;				// visiblity state of console
 	final int consoleheight = 30;				// const. height of the console
 	final int messageboxheight = 200;			// const. height of the message box
 
-	// TODO: Slider
-	// TODO: CheckBox
-	// TODO: Console
 
 	Overlay() {
+		if(deb) {
+			println("Loading Overlay");
+		}
 		visible = !st.booleans[1].value;
 		newroomname = st.strings[0].value;
 		build();
+
 	}
 
 	void build() { // build/create the overlay
+		items = new Object[1];
+		items[0] = new Slider("Value") {
+			@Override public void onchange() {
+				println("Change!");
+			}
+		};
+		/*
 		final String[] tabs = {"newroom", "viewmode", "loadroom", "saveroom", "settings", "debug", "roomgroups", "about", "reset"};
 		items = new Object[5];
-		items[0] =
+		items[0] = 
 		new GetVisible(new Text(" ")) {@Override public boolean getvisible() {return drawpopup;}};
 		// Tab bar 
 		items[1] = 
@@ -82,9 +90,43 @@ class Overlay {
 								new EventDetector(new Container(new Text("Save"))) {
 									@Override public void onevent(EventType et, MouseEvent e) {
 										if(et == EventType.MOUSEPRESSED) {
-											rm.name = ov.newroomname;
-											rm.save(rm.name);
-											ov.build();
+											if(st.strings[0].value == ov.newroomname) {
+												Object o =
+												new Container(
+													new Transform(
+														new ListView(
+															new Object[] {
+																new SizedBox(true),
+																new Text(lg.get("overwritedefaultroom")),
+																new SizedBox(true),
+																new ListView(
+																	new Object[] {
+																		new EventDetector(new Container(new Text(lg.get("yes")))) {
+																			@Override public void onevent(EventType et, MouseEvent e) {
+																				if(et == EventType.MOUSEPRESSED) {
+																					drawpopup = false;
+																					rm.save(rm.name);
+																					ov.build();
+																				}}
+																		},
+																		new EventDetector(new Container(new Text(lg.get("no")))) {
+																			@Override public void onevent(EventType et, MouseEvent e) {
+																				if(et == EventType.MOUSEPRESSED) {
+																					drawpopup = false;
+																				}}
+																		},
+																	}, width/4, 30, width/8, Dir.RIGHT
+																)		
+															}, width/4, height/4
+														), Align.CENTERCENTER
+													), width, height, color(0,150)
+												);
+												drawpopup = true;
+												items[0] = new GetVisible(o) {@Override public boolean getvisible() {return drawpopup;}};
+											} else {
+												rm.save(rm.name);
+												ov.build();
+											}
 										}
 									}
 								},
@@ -326,13 +368,23 @@ class Overlay {
 													newroomysize = v;
 												}
 											}),
-											new EventDetector(new Container(new Text(lg.get("ok")))) {
-												@Override public void onevent(EventType et, MouseEvent e) {
-													if(et == EventType.MOUSEPRESSED) {
-														drawpopup = false;
-														rm.newroom(newroomxsize, newroomysize);
-													}}
-											},
+											new ListView(
+												new Object[] {
+													new EventDetector(new Container(new Text(lg.get("ok")))) {
+														@Override public void onevent(EventType et, MouseEvent e) {
+															if(et == EventType.MOUSEPRESSED) {
+																drawpopup = false;
+																rm.newroom(newroomxsize, newroomysize);
+															}}
+													},
+													new EventDetector(new Container(new Text(lg.get("cancel")))) {
+														@Override public void onevent(EventType et, MouseEvent e) {
+															if(et == EventType.MOUSEPRESSED) {
+																drawpopup = false;
+															}}
+													},
+												}, width/4, 30, width/8, Dir.RIGHT
+											)		
 										}, width/4, height/4
 									), Align.CENTERCENTER
 								), width, height, color(0,150)
@@ -472,13 +524,14 @@ class Overlay {
 				new Container(new SetValueText("->") {
 					@Override public void onchange() {
 						//printmessage(im.execcommand(newvalue));
+						printmessage(newvalue);
 						value = "";
 						newvalue = "";
 					}
 				},width-xoff,consoleheight, color(50), false),xoff, height-consoleheight
 			)
 		) {@Override public boolean getvisible() {return drawconsole;}};
-
+		*/
 		for (Object item : items) {
 			setitemxy(item, 0,0); // position all items at the origin
 		}
@@ -540,7 +593,17 @@ class Overlay {
 	}
 	void mouseReleased() {
 	}
-	void mouseDragged() {
+	boolean mouseDragged() {
+		boolean hit = false;
+		if(visible) {
+			for (Object item : items) {
+				if(mouseDraggeditem(item)) {
+					hit = true;
+					return true;
+				}
+			}
+		}
+		return hit;
 	}
 	/* --------------- keyboard input --------------- */
 	void keyPressed() {
@@ -553,7 +616,7 @@ class Overlay {
 	void keyReleased() {
 	}
 
-	void requirerestart() { // draws the requirerestart popup
+	void requirerestart() { // draws the requiresrestart popup
 		items[0] = new GetVisible(new Container(
 			new Transform(
 				new ListView(
@@ -574,8 +637,7 @@ class Overlay {
 	}
 
 	void printmessage(String text) { // add a message to the console
-		String message = fixlength(str(hour()), 2, '0') + ":" + fixlength(str(minute()), 2, '0') +": " + text;
-		messages.add(message);
+		messages.add(fixlength(str(hour()), 2, '0') + ":" + fixlength(str(minute()), 2, '0') +": " + text);
 		if(messages.size() > 5) {
 			consoleoff -= 30;
 		}

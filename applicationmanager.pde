@@ -3,7 +3,7 @@ class ApplicationManager {
 
 	ApplicationManager() {
 		if(deb) {
-			println("Loaded ApplicationManager");
+			println("Loading ApplicationManager");
 		}
 	}
 

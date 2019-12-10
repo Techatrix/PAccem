@@ -83,6 +83,28 @@ boolean mousePresseditem(Object item) {
 	}
 	return false;
 }
+boolean mouseDraggeditem(Object item) {
+	if (item instanceof Tabbar) {
+		return ((Tabbar)item).mouseDragged();
+	} else if (item instanceof ListView) {
+		return ((ListView)item).mouseDragged();
+	} else if(item instanceof GridView) {
+		return ((GridView)item).mouseDragged();
+	} else if(item instanceof Container) {
+		return ((Container)item).mouseDragged();
+	} else if(item instanceof Transform) {
+		return ((Transform)item).mouseDragged();
+	} else if(item instanceof Dynamic) {
+		return ((Dynamic)item).mouseDragged();
+	} else if(item instanceof GetVisible) {
+		return ((GetVisible)item).mouseDragged();
+	} else if (item instanceof EventDetector) {
+		((EventDetector)item).mouseDragged();
+	} else if (item instanceof Slider) {
+		((Slider)item).mouseDragged();
+	}
+	return false;
+}
 void keyPresseditem(Object item) {
 	if (item instanceof Tabbar) {
 		((Tabbar)item).keyPressed();
@@ -133,6 +155,8 @@ boolean getisitemhit(Object item) {
 		return ((GetVisible)item).ishit();
 	} else if(item instanceof EventDetector) {
 		return ((EventDetector)item).ishit();
+	} else if(item instanceof Slider) {
+		return ((Slider)item).ishit();
 	}
 	return false;
 }
@@ -161,6 +185,8 @@ void drawitem(Object item, boolean hit) {
 		((GetVisible)item).draw(hit);
 	} else if(item instanceof EventDetector) {
 		((EventDetector)item).draw(hit);
+	} else if(item instanceof Slider) {
+		((Slider)item).draw(hit);
 	}
 }
 void setitemwh(Object item, int _width, int _height) {
@@ -190,6 +216,8 @@ void setitemwh(Object item, int _width, int _height) {
 		((GetVisible)item).setwh(_width, _height);
 	} else if(item instanceof EventDetector) {
 		((EventDetector)item).setwh(_width, _height);
+	} else if(item instanceof Slider) {
+		((Slider)item).setwh(_width, _height);
 	}
 }
 void setitemxy(Object item, int xpos, int ypos) {
@@ -219,6 +247,8 @@ void setitemxy(Object item, int xpos, int ypos) {
 		((GetVisible)item).setxy(xpos, ypos);
 	} else if(item instanceof EventDetector) {
 		((EventDetector)item).setxy(xpos, ypos);
+	} else if(item instanceof Slider) {
+		((Slider)item).setxy(xpos, ypos);
 	}
 }
 Box getboundry(Object item) {

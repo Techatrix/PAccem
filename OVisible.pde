@@ -16,6 +16,13 @@ abstract class GetVisible implements IOverlay {
 		}
 		return false;
 	}
+	boolean mouseDragged() {
+		if(getvisible()) {
+			return mouseDraggeditem(item);
+		}
+		return false;
+	}
+
 	void keyPressed() {
 		if(getvisible()) {
 			keyPresseditem(item);

@@ -23,6 +23,8 @@ boolean isKeyUp, isKeyRight, isKeyLeft, isKeyDown, isKeyT;	// stores whether or 
  * message box/console
  * improved datastorage
  * furniture color
+ * Slider, Checkbox
+ * debugmode setting
 */
 
 
