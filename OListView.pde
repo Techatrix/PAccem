@@ -66,6 +66,11 @@ class ListView extends PWH implements IOverlay {
 		return ishit();
 	}
 	boolean mouseDragged() {
+		for (Object item : items) {
+			if(mouseDraggeditem(item)) {
+				return true;
+			}
+		}
 		return false;
 	}
 	void keyPressed() {

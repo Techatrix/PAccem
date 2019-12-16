@@ -11,11 +11,10 @@ class Overlay {
 	String newroomname;							// the name of a new room 
 	int newroomxsize = 15, newroomysize = 15;	// the size of a new room
 
-	// Message Box & Console
+	// Message Box
 	ArrayList<String> messages = new ArrayList<String>(); // messages on the console
-	int consoleoff = 0;							// offset of the console
+	int consoleoff = 0;							// offset of the console messages (scrolling)
 	boolean drawconsole = false;				// visiblity state of console
-	final int consoleheight = 30;				// const. height of the console
 	final int messageboxheight = 200;			// const. height of the message box
 
 
@@ -30,15 +29,8 @@ class Overlay {
 	}
 
 	void build() { // build/create the overlay
-		items = new Object[1];
-		items[0] = new Slider("Value") {
-			@Override public void onchange() {
-				println("Change!");
-			}
-		};
-		/*
 		final String[] tabs = {"newroom", "viewmode", "loadroom", "saveroom", "settings", "debug", "roomgroups", "about", "reset"};
-		items = new Object[5];
+		items = new Object[4];
 		items[0] = 
 		new GetVisible(new Text(" ")) {@Override public boolean getvisible() {return drawpopup;}};
 		// Tab bar 
@@ -354,18 +346,24 @@ class Overlay {
 										new Object[] {
 											new Text(lg.get("newroom")),
 											new SizedBox(true),
-											new Container(new SetValueText(lg.get("newwidth"), str(newroomxsize), new SetValueStyle(2)) {
-												@Override public void onchange() {
-													int v = constrain(int(newvalue), 1,100);
-													value = str(v);
+											new Container(new Slider(lg.get("newwidth"), (float)newroomxsize/100) {
+												@Override public void onchange(float newvalue) {
+													value = constrain(newvalue, 0.01, 1);
+													int v = constrain(int(value*100), 1,100);
 													newroomxsize = v;
 												}
+												@Override public String gettext() {
+													return str(constrain(round(value*100), 1, 100));
+												}
 											}),
-											new Container(new SetValueText(lg.get("newheight"), str(newroomysize), new SetValueStyle(2)) {
-												@Override public void onchange() {
-													int v = constrain(int(newvalue), 1,100);
-													value = str(v);
+											new Container(new Slider(lg.get("newheight"), (float)newroomysize/100) {
+												@Override public void onchange(float newvalue) {
+													value = constrain(newvalue, 0.01, 1);
+													int v = constrain(int(value*100), 1,100);
 													newroomysize = v;
+												}
+												@Override public String gettext() {
+													return str(constrain(round(value*100), 1, 100));
 												}
 											}),
 											new ListView(
@@ -514,24 +512,10 @@ class Overlay {
 						((ListView)(((EventDetector)o).item)).off = consoleoff;
 						return o;
 					}
-				},xoff, height-messageboxheight-consoleheight
+				},xoff, height-messageboxheight
 			)
 		) {@Override public boolean getvisible() {return drawconsole;}};
-		// Console
-		items[4] = 
-		new GetVisible(
-			new Transform(
-				new Container(new SetValueText("->") {
-					@Override public void onchange() {
-						//printmessage(im.execcommand(newvalue));
-						printmessage(newvalue);
-						value = "";
-						newvalue = "";
-					}
-				},width-xoff,consoleheight, color(50), false),xoff, height-consoleheight
-			)
-		) {@Override public boolean getvisible() {return drawconsole;}};
-		*/
+
 		for (Object item : items) {
 			setitemxy(item, 0,0); // position all items at the origin
 		}

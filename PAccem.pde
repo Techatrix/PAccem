@@ -1,6 +1,6 @@
-import java.util.Map;
-import java.io.*;
-import java.util.stream.IntStream;
+//import java.util.Map;
+//import java.io.*;
+//import java.util.stream.IntStream;
 
 ApplicationManager am;	// manages the overal application (title, size, initialization)
 Settings st;			// loads and stores the current settings
@@ -8,7 +8,7 @@ LanguageManager lg;		// loads the current language file
 RoomManager rm;			// manages the room(grid, furniture & user input)
 DataManager dm;			// stores data (3D-models, images, etc.)
 Overlay ov;				// draws & manages the user interface
-//InstructionManager im;// manages all previously executed instructions to allow Strg+Z, undo feature
+//InstructionManager im;// manages all previously executed instructions to allow Strg+Z, undo feature	abandoned
 
 PGraphics pg;			// used for 3D-graphics
 PFont font;				// the current font
@@ -20,10 +20,10 @@ boolean isKeyUp, isKeyRight, isKeyLeft, isKeyDown, isKeyT;	// stores whether or 
 /* --------------- Experimental Version! WIP --------------- */
 /* 
  * InstructionManager (Strg+Z, undo feature)		abandoned
- * message box/console
- * improved datastorage
+ * message box/console								console abandoned
+ * improved datastorage								delayed
  * furniture color
- * Slider, Checkbox
+ * Slider, Checkbox									Slider complete
  * debugmode setting
 */
 
@@ -35,7 +35,7 @@ void settings() { // is being executed once before the window is created	(pre-ma
 }
 void setup() { // is being executed once after the window is being created 	(main())
 	am.initsetup();
-	/*
+	/*	serialization
 	try {
 		SETemp t = new SETemp(1);
 		FileOutputStream fout= new FileOutputStream(sketchPath("f.txt"));  
@@ -54,7 +54,7 @@ void draw() { // is being executed on every frame
 	am.loop();	// application manager
 	rm.draw();	// room manager
 	ov.draw();	// overlay
-	/*
+	/*	bluring
 	loadPixels();
 	int ww=300;
 	int hh=300;

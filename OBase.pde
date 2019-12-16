@@ -80,6 +80,8 @@ boolean mousePresseditem(Object item) {
 		return ((GetVisible)item).mousePressed();
 	} else if (item instanceof EventDetector) {
 		((EventDetector)item).mousePressed();
+	} else if (item instanceof Slider) {
+		((Slider)item).mousePressed();
 	}
 	return false;
 }
