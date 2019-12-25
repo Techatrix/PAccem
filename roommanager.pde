@@ -17,9 +17,10 @@ class RoomManager {
 	ArrayList<int[]> dragtiles = new ArrayList<int[]>();	// list of all tiles that have already been draged over
 	boolean dragstate;										// state to switch over when draging
 
-	int newfurnitureid = 0;				// id of the currently selected furniture
-	int newroomtilegroup = 0;			// id of the current roomtilegroup you are drawing
+	int newfurnitureid = 0;				// id of the currently selected furniture/prefab
+	int newroomgroup = 0;			// id of the current roomtilegroup you are drawing
 	boolean isprefab = false;			// whether or not you are placing a furniture or a prefab
+	color furnituretint = color(255,255,255);	// tint setting for the furnitures
 
 	RoomManager() {
 		if(deb) {
@@ -75,7 +76,7 @@ class RoomManager {
 						if(!dragtiles.contains(newgridtile)) {
 							dragtiles.add(newgridtile);
 							roomgrid.settilestate(dragstate, x,y);
-							roomgrid.gettile(x,y).roomgroup = newroomtilegroup;
+							roomgrid.gettile(x,y).roomgroup = newroomgroup;
 						}
 					}
 				}
@@ -97,7 +98,7 @@ class RoomManager {
 	void settilestate(int xpos, int ypos) {
 		if(!isfurniture(xpos,ypos)){
 			roomgrid.settilestate(!roomgrid.gettilestate(xpos,ypos), xpos,ypos);
-			roomgrid.gettile(xpos,ypos).roomgroup = newroomtilegroup;
+			roomgrid.gettile(xpos,ypos).roomgroup = newroomgroup;
 		}
 	}
 	void filltool(int xpos, int ypos) {
@@ -112,7 +113,7 @@ class RoomManager {
 				int y = floor(getypos());
 				if(!isfurniture(x,y)){
 					roomgrid.settilestate(!roomgrid.gettilestate(x,y), x,y);
-					roomgrid.gettile(x,y).roomgroup = newroomtilegroup;
+					roomgrid.gettile(x,y).roomgroup = newroomgroup;
 				}
 				//im.settilestate(floor(getxpos()), floor(getypos()));
 			} else if(tool == 2) { // place a new furniture or prefab
@@ -136,7 +137,7 @@ class RoomManager {
 									if(!roomgrid.isingrid(xpos+x,ypos+y)) {
 										message += "Out of Room ";
 									}
-									ov.printmessage(message);
+									toovmessages.add(message);
 
 									block = true;
 									break;
@@ -147,7 +148,7 @@ class RoomManager {
 					if(!block) {
 						for (int i=0;i<pdata.furnitures.length;i++) {
 							PrefabFurnitureData pfd = pdata.furnitures[i];
-							furnitures.add(new Furniture(dm.getfurnituredata(pfd.id), xpos+pfd.xpos, ypos+pfd.ypos));
+							furnitures.add(new Furniture(dm.getfurnituredata(pfd.id), xpos+pfd.xpos, ypos+pfd.ypos, furnituretint));
 						}
 					}
 
@@ -168,14 +169,14 @@ class RoomManager {
 								if(!roomgrid.isingrid(xpos+x,ypos+y)) {
 									message += "Out of Room ";
 								}
-								ov.printmessage(message);
+								toovmessages.add(message);
 								block = true;
 								break;
 							}
 						}
 					}
 					if(!block) {
-						furnitures.add(new Furniture(fdata, xpos, ypos));
+						furnitures.add(new Furniture(fdata, xpos, ypos, furnituretint));
 					}
 				}
 			} else if(tool == 3) { // select furniture
@@ -234,9 +235,6 @@ class RoomManager {
 						break;
 					}
 				}
-			} else if(key == 't') { // t
-				// TODO: add Confirm
-				roomgrid.cgol();
 			} else if(key == 'h') { // h
 				if(key == 'h') {
 					ov.visible = !ov.visible;
@@ -249,7 +247,7 @@ class RoomManager {
 					//im.undo();
 				}
 			} else if(keyCode < 54 && keyCode > 48) { // 1-5
-				newroomtilegroup = keyCode - 49;
+				newroomgroup = keyCode - 49;
 			} else if(keyCode == UP || keyCode == DOWN || keyCode == LEFT || keyCode == RIGHT) { // arrow keys
 				if(selectionid != -1) {
 					Furniture f = new Furniture();
@@ -292,7 +290,7 @@ class RoomManager {
 							}
 							if(!roomgrid.gettilestate(x,y) || isfurniture(x,y) || !roomgrid.isingrid(x,y)) {
 								a = false;
-								ov.printmessage("Can't move Furniture");
+								toovmessages.add("Can't move Furniture");
 								break;
 							}
 						}
@@ -361,9 +359,6 @@ class RoomManager {
 		return rooms;
 	}
 	void save(String name) { // saves the current room to data/rooms/
-		if(deb) {
-			println("Save: " + name);
-		}
 		String path = "data/rooms/" + name;
 		JSONObject json = new JSONObject();
 
@@ -373,13 +368,23 @@ class RoomManager {
 		json.setInt("xgridsize", getxgridsize());
 		json.setInt("ygridsize", getygridsize());
 		json.setInt("gridtilesize", gridtilesize);
-		for (int i=0;i<5;i++ ) {
-			color c = roomgrid.roomgroups[i];
-			json.setFloat("roomgroupcolor" + str(i) + "red", red(c));
-			json.setFloat("roomgroupcolor" + str(i) + "green", green(c));
-			json.setFloat("roomgroupcolor" + str(i) + "blue", blue(c));
 
+		JSONArray jsonroomgroups = new JSONArray();
+
+		for (int i=0;i<roomgrid.roomgroups.size();i++ ) {
+			RoomGroup rg = roomgrid.roomgroups.get(i);
+			JSONObject jsonroomgroup = new JSONObject();
+
+			jsonroomgroup.setInt("red", (int)red(rg.c));
+			jsonroomgroup.setInt("green", (int)green(rg.c));
+			jsonroomgroup.setInt("blue", (int)blue(rg.c));
+
+			jsonroomgroup.setString("name", rg.name);
+
+			jsonroomgroups.setJSONObject(i,jsonroomgroup);
 		}
+		json.setJSONArray("roomgroups", jsonroomgroups);
+
 
 		saveJSONObject(json, path + "/data.json");
 		//-------------------------------------------------------------------------------
@@ -387,13 +392,22 @@ class RoomManager {
 
 		for (int j = 0; j < furnitures.size(); j++) {
 
-		  JSONObject f = new JSONObject();
+			JSONObject jsonf = new JSONObject();
 
-		  f.setInt("id", furnitures.get(j).id);
-		  f.setInt("xpos", furnitures.get(j).xpos);
-		  f.setInt("ypos", furnitures.get(j).ypos);
+			Furniture f = furnitures.get(j);
+			jsonf.setInt("id", f.id);
+			jsonf.setInt("xpos", f.xpos);
+			jsonf.setInt("ypos", f.ypos);
 
-		  furnituresarray.setJSONObject(j, f);
+			if(f.tint != color(255,255,255)) {
+				JSONObject jsonfc = new JSONObject();
+				jsonfc.setInt("red", (int)red(f.tint));
+				jsonfc.setInt("green", (int)green(f.tint));
+				jsonfc.setInt("blue", (int)blue(f.tint));
+				jsonf.setJSONObject("color", jsonfc);
+			}
+
+			furnituresarray.setJSONObject(j, jsonf);
 		}
 
 		saveJSONArray(furnituresarray, path + "/furnitures.json");
@@ -431,74 +445,129 @@ class RoomManager {
 		saveJSONArray(roomarray, path + "/room.json");
 
 		//-------------------------------------------------------------------------------
+		toovmessages.add("Saved " + name);
 		am.settitle(name);
 		this.name = name;
 	}
 	void load(String name) { // loads the choosen room from data/rooms/
-		if(deb) {
-			println("Load Roommanager: " + name);
-		}
+		toovmessages.add("Loading " + name);
 		String path = "data/rooms/" + name;
 		File f1 = new File(sketchPath(path + "/data.json"));
 		File f2 = new File(sketchPath(path + "/furnitures.json"));
 		File f3 = new File(sketchPath(path + "/room.json"));
 
-		JSONObject json1;
-		if (f1.exists())
-		{
-			json1 = loadJSONObject(path + "/data.json");
+		if(!f1.exists() && !f2.exists() && !f3.exists()) {
+			xoff = 0;
+			yoff = 0;
+			scale = 1;
+			gridtilesize = 50;
+			furnitures = new ArrayList<Furniture>();
+
+			roomgrid = new Grid(15, 15);
 		} else {
-			json1 = new JSONObject();
-		}
-		xoff = json1.getFloat("xoff", 0);
-		yoff = json1.getFloat("yoff", 0);
-		scale = json1.getFloat("scale", 1);
-		gridtilesize = json1.getInt("gridtilesize", 50);
-
-		roomgrid = new Grid(json1.getInt("xgridsize", 15), json1.getInt("ygridsize", 15));
-		// TODO: auto detect gridsize if file not available
-		for (int i=0;i<5;i++) {
-			float red = json1.getFloat("roomgroupcolor" + str(i) + "red", 50);
-			float green = json1.getFloat("roomgroupcolor" + str(i) + "green", 50);
-			float blue = json1.getFloat("roomgroupcolor" + str(i) + "blue", 50);
-			roomgrid.roomgroups[i] = color(red, green, blue);
-		}
-		//-------------------------------------------------------------------------------
-
-		furnitures = new ArrayList<Furniture>();
-		if (f2.exists() && f1.exists())
-		{
-			JSONArray json = loadJSONArray(path + "/furnitures.json");
-			for (int j = 0; j < json.size(); j++) {
-				JSONObject f = json.getJSONObject(j);
-				furnitures.add(new Furniture(f.getInt("id"), f.getInt("xpos", 0), f.getInt("ypos", 0)));
+			JSONObject json1;
+			int xg = 15;
+			int yg = 15;
+			if (f1.exists())
+			{
+				json1 = loadJSONObject(path + "/data.json");
+				xg = json1.getInt("xgridsize", 15);
+				yg = json1.getInt("ygridsize", 15);
+			} else {
+				toovmessages.add("data.json does not exist");
+				json1 = new JSONObject();
+				if(f3.exists()) {
+					JSONArray json = loadJSONArray(path + "/room.json");
+					xg = json.size();
+					yg = json.getJSONArray(0).size();
+					toovmessages.add("gridsize has been evaluated from room.json");
+				}
 			}
-		}
-		//-------------------------------------------------------------------------------
+			xoff = json1.getFloat("xoff", 0);
+			yoff = json1.getFloat("yoff", 0);
+			scale = json1.getFloat("scale", 1);
+			gridtilesize = json1.getInt("gridtilesize", 50);
 
-		if (f3.exists())
-		{
-			JSONArray json = loadJSONArray(path + "/room.json");
+			roomgrid = new Grid(xg, yg);
 
-			for (int x = 0; x < getxgridsize(); x++) {
-				JSONArray row = json.getJSONArray(x);
-				for (int y = 0; y < getygridsize(); y++) {
-					JSONObject tile = row.getJSONObject(y);
-					if(tile.getBoolean("g", false)) {
-						JSONArray window = tile.getJSONArray("w");
-						if(window == null) {
-							roomgrid.tiles[x][y] = new GridTile(true, tile.getInt("r", 0));
-						} else {
-							roomgrid.tiles[x][y].state = true;
-							roomgrid.tiles[x][y].roomgroup = tile.getInt("r", 0);
-							for (int i=0;i<4;i++) {
-								roomgrid.tiles[x][y].window[i] = window.getBoolean(i, false);
-							}
-						}
+			roomgrid.roomgroups = new ArrayList<RoomGroup>();
+			JSONArray jsonroomgroups = json1.getJSONArray("roomgroups");
+
+			if(jsonroomgroups != null) {
+				for (int i=0;i<jsonroomgroups.size();i++ ) {
+					JSONObject jsonroomgroup = jsonroomgroups.getJSONObject(i);
+
+					int r = jsonroomgroup.getInt("red", 50);
+					int g = jsonroomgroup.getInt("green", 50);
+					int b = jsonroomgroup.getInt("blue", 50);
+
+					String roomgroupname = jsonroomgroup.getString("name", "No Name");
+
+					roomgrid.roomgroups.add(new RoomGroup(roomgroupname, color(r,g,b)));
+				}
+			} else {
+				roomgrid.roomgroups.add(new RoomGroup("Main", color(50)));
+			}
+			//-------------------------------------------------------------------------------
+
+			furnitures = new ArrayList<Furniture>();
+			if (f2.exists())
+			{
+				JSONArray json = loadJSONArray(path + "/furnitures.json");
+				for (int j = 0; j < json.size(); j++) {
+					JSONObject f = json.getJSONObject(j);
+
+					color c = color(255,255,255);
+					JSONObject fc = f.getJSONObject("color");
+					if(fc != null) {
+						c = color(fc.getInt("red", 255), fc.getInt("green", 255), fc.getInt("blue", 255));
+					}
+					int id = f.getInt("id",-1);
+					if(!dm.validateid(id)) {
+						toovmessages.add("Furniture ID is invalid");
+						continue;
+					}
+					int xpos = f.getInt("xpos", 0);
+					int ypos = f.getInt("ypos", 0);
+					FurnitureData fd = dm.getfurnituredata(id);
+
+					if(xpos+fd._width > xg || ypos+fd._height > yg) {
+						toovmessages.add("Furniture position is invalid");
 					} else {
-						roomgrid.tiles[x][y] = new GridTile(false);
+						furnitures.add(new Furniture(fd, xpos, ypos, c));
 					}
 				}
+			} else {
+				toovmessages.add("furnitures.json does not exist");
+			}
+			//-------------------------------------------------------------------------------
+
+			if (f3.exists())
+			{
+				JSONArray json = loadJSONArray(path + "/room.json");
+
+				for (int x = 0; x < getxgridsize(); x++) {
+					JSONArray row = json.getJSONArray(x);
+					for (int y = 0; y < getygridsize(); y++) {
+						JSONObject tile = row.getJSONObject(y);
+						if(tile.getBoolean("g", false)) {
+							JSONArray window = tile.getJSONArray("w");
+							if(window == null) {
+								roomgrid.tiles[x][y] = new GridTile(true, tile.getInt("r", 0));
+							} else {
+								roomgrid.tiles[x][y].state = true;
+								roomgrid.tiles[x][y].roomgroup = tile.getInt("r", 0);
+								for (int i=0;i<4;i++) {
+									roomgrid.tiles[x][y].window[i] = window.getBoolean(i, false);
+								}
+							}
+						} else {
+							roomgrid.tiles[x][y] = new GridTile(false);
+						}
+					}
+				}
+			} else {
+				toovmessages.add("room.json does not exist");
 			}
 		}
 		/*
@@ -556,6 +625,9 @@ class RoomManager {
 		}
 		*/
 		//-------------------------------------------------------------------------------
+		if(ov != null) {
+			ov.build();
+		}
 		am.settitle(name);
 		this.name = name;
 	}
@@ -581,7 +653,7 @@ class RoomManager {
 	}
 	void newroom(int xsize, int ysize) { // create a new room with the choosen size
 		roomgrid = new Grid(xsize, ysize);
-		ov.printmessage("New Room " + xsize + "x" + ysize);
+		toovmessages.add("New Room " + xsize + "x" + ysize);
 	}
 
 	void switchviewmode() {	// well... switch the viewmode (2D -> 3D, 3D -> 2D)
@@ -709,7 +781,9 @@ class RoomManager {
 							}
 						}
 						if(block) {
-							tint(255,128);
+							tint(furnituretint,128);
+						} else {
+							tint(furnituretint);
 						}
 						for (int i=0;i<pdata.furnitures.length;i++) {
 							PrefabFurnitureData pfd = pdata.furnitures[i];
@@ -729,7 +803,9 @@ class RoomManager {
 							}
 						}
 						if(block) {
-							tint(255,128);
+							tint(furnituretint,128);
+						} else {
+							tint(furnituretint);
 						}
 						image(fdata.image, xpos, ypos, fdata._width, fdata._height);
 						noTint();

@@ -10,6 +10,9 @@ class ListView extends PWH implements IOverlay {
 	ListView(Object[] items, int _width, int _height) {
 		this(items, _width, _height, 30);
 	}
+	ListView(Object[] items, int _width, int _height, Dir dir) {
+		this(items, _width, _height, 0, dir);
+	}
 	ListView(Object[] items, int _width, int _height, int itemheight) {
 		this(items, _width, _height, itemheight, Dir.DOWN);
 	}

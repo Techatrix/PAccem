@@ -13,6 +13,9 @@ Overlay ov;				// draws & manages the user interface
 PGraphics pg;			// used for 3D-graphics
 PFont font;				// the current font
 boolean usegl;			// opengl setting when the application has started
+boolean allowcgol;// ?
+ArrayList<String> toovmessages;// messages which are send to the overlay
+PShader blurshader;
 
 int[] c = new int[9];	// easily accessible color values (0-8 => 0 - 255 or 255 - 0)
 boolean isKeyUp, isKeyRight, isKeyLeft, isKeyDown, isKeyT;	// stores whether or not a arrow key is down
@@ -20,13 +23,22 @@ boolean isKeyUp, isKeyRight, isKeyLeft, isKeyDown, isKeyT;	// stores whether or 
 /* --------------- Experimental Version! WIP --------------- */
 /* 
  * InstructionManager (Strg+Z, undo feature)		abandoned
- * message box/console								console abandoned
- * improved datastorage								delayed
- * furniture color
- * Slider, Checkbox									Slider complete
+ * message box/console								Complete
+ * console											abandoned
+ * improved datastorage/serialization				delayed
+ * furniture color									Complete
+ * OSlider											Complete
+ * OCheckbox
  * debugmode setting
+ * input validation									WIP
+ * bluring											WIP	needs optimization
+ 													cache blured background image
+ 													remove from container
+ * OPopup Class										combine with blur
+ * OBlur Class
+ * more key inputs
+ * extend translation
 */
-
 
 /* --------------- main --------------- */
 void settings() { // is being executed once before the window is created	(pre-main())
@@ -54,69 +66,9 @@ void draw() { // is being executed on every frame
 	am.loop();	// application manager
 	rm.draw();	// room manager
 	ov.draw();	// overlay
-	/*	bluring
-	loadPixels();
-	int ww=300;
-	int hh=300;
 
-	int[] weights = {1, 2, 1, 2, 4, 2, 1, 2, 1};
-	int weightWidth = 3;
-
-
-
-    for (int h = hh - weights.length / weightWidth + 1, w = ww - weightWidth + 1, y = 0; y < h; y++) {
-        for (int x = 0; x < w; x++) {
-            int r = 0;
-            int g = 0;
-            int b = 0;
-            for (int filterIndex = 0, pixelIndex = y * width + x;filterIndex < weights.length;pixelIndex ++) {
-                for (int fx = 0; fx < weightWidth; fx++, pixelIndex++, filterIndex++) {
-                    color col = pixels[pixelIndex];
-                    int factor = weights[filterIndex];
-
-                    // sum up color channels seperately
-                    r += red(col) * factor;
-                    g += green(col) * factor;
-                    b += blue(col) * factor;
-                }
-            }
-            r /= 16;
-            g /= 16;
-            b /= 16;
-            // combine channels with full opacity
-            pixels[y * width + x] = color(r,g,b);
-        }
-    }
-    
-	/*
-	for (int x=0;x<100;x++) {
-		for (int y=0;y<100;y++) {
-			int i=0;
-			int r=0;
-			int g=0;
-			int b=0;
-			for (int dx=-5;dx<5;dx++) {
-				for (int dy=-5;dy<5;dy++) {
-					if(x+dx > -1 && y+dy> -1) {
-						color c = pixels[(y+dy)*width+x+dx];
-						r += red(c);
-						g += green(c);
-						b += blue(c);
-						i++;
-					}
-				}
-			}
-			r /= i;
-			g /= i;
-			b /= i;
-			pixels[y*width+x] = color(r,g,b);
-		}
-	}
-	*/
-	/*
-	updatePixels();
-	*/
 }
+
 /* --------------- mouse input --------------- */
 void mouseWheel(MouseEvent e) {
 	ov.mouseWheel(e);
@@ -137,8 +89,7 @@ void mouseReleased() {
 	rm.mouseReleased();
 }
 void mousePressed() {
-	ov.mousePressed();
-	if(ov.ishit()) {
+	if(ov.mousePressed() || ov.ishit()) {
 		return;
 	}
 	rm.mousePressed();

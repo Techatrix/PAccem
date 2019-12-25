@@ -22,7 +22,7 @@ class InstructionManager {
 	}
 
 	void undo() {
-		println("Undo");
+		toovmessages.add("Undo");
 		if(instructions.size() > 0) {
 			HashMap<String,Object> dt = instructions.get(instructions.size() - 1).data;
 			int id = (int)dt.get("id");

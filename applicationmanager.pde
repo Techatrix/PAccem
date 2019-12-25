@@ -8,7 +8,9 @@ class ApplicationManager {
 	}
 
 	void initsettings() { // is being executed once before the window is created
+		toovmessages = new ArrayList<String>();
 		st = new Settings();
+		allowcgol=false;
 		usegl = st.booleans[3].value;
 		if(st.booleans[2].value) { // fullscreen
 			fullScreen(usegl ? P2D : JAVA2D);  // creates the window and chooses a renderer according to the opengl setting
@@ -25,6 +27,9 @@ class ApplicationManager {
 		if(usegl) { // creates graphics according to the opengl setting
 			pg = createGraphics(width,height, P3D);
 			pg.smooth(st.ints[2].value);				// anti-aliasing
+			blurshader = loadShader("blur.glsl");
+			blurshader.set("blurSize", 29);
+			blurshader.set("sigma", 10.0);
 		}
 		lg = new LanguageManager(st.strings[1].value);	// initialise language manager
 		dm = new DataManager();							// initialise data manager
@@ -32,7 +37,10 @@ class ApplicationManager {
 		ov = new Overlay();								// initialise overlay
 		//im = new InstructionManager();				// initialise instruction manager
 
-		//println(dm.validate());
+		int[] v = dm.validate();
+		for (int i=0;i<v.length;i++) {
+			toovmessages.add(dm.prefabs[v[i]].name + " is invalid!");
+		}
 
 		if(!usegl) {
 	  		surface.setIcon(dm.icons[0]); // sets the window icon on not opengl renderer

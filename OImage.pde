@@ -1,6 +1,7 @@
 class Image extends PWH implements IOverlay {
 	PImage image;
 	Fit fit;
+	color tint;
 
 	Image(PImage image) {
 		this(image, -1, -1);
@@ -12,12 +13,19 @@ class Image extends PWH implements IOverlay {
 		this(image, _width, _height, Fit.EXPAND);
 	}
 	Image(PImage image, int _width, int _height, Fit fit) {
+		this(image, _width, _height, fit, color(255,255,255));
+	}
+	Image(PImage image, int _width, int _height, Fit fit, color tint) {
 		this.image = image;
 		this.fit = fit;
+		this.tint = tint;
 		setwh(_width, _height);
 	}
 
 	void draw(boolean hit) {
+		if(tint != color(255,255,255)) {
+			tint(tint);
+		}
 		if(_width == -1 || _height == -1) {
 			image(image, xpos, ypos);
 		} else {
@@ -30,6 +38,7 @@ class Image extends PWH implements IOverlay {
 				image(image, xpos, ypos, _width, _height);
 			}
 		}
+		noTint();
 	}
 
 	Box getbound() {
