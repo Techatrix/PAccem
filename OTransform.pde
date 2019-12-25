@@ -2,9 +2,8 @@ class Transform implements IOverlay {
 	Object item;
 	int xoff = 0;
 	int yoff = 0;
-	Align ali = null;
+	Align ali;
 
-	// TODO: Allow Align and Transform at the same time
 	Transform(Object item, int xoff, int yoff) {
 		this.item = item;
 		this.xoff = xoff;
@@ -12,6 +11,12 @@ class Transform implements IOverlay {
 	}
 	Transform(Object item, Align ali) {
 		this.item = item;
+		this.ali = ali;
+	}
+	Transform(Object item, int xoff, int yoff, Align ali) {
+		this.item = item;
+		this.xoff = xoff;
+		this.yoff = yoff;
 		this.ali = ali;
 	}
 	void mouseWheel(MouseEvent e) {

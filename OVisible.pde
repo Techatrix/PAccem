@@ -1,6 +1,8 @@
 abstract class GetVisible implements IOverlay {
 	Object item;
-
+	
+	GetVisible() {
+	}
 	GetVisible(Object item) {
 		this.item = item;
 	}

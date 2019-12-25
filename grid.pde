@@ -1,15 +1,10 @@
 class Grid {
 	GridTile[][] tiles; // 2 dimensionales array of tiles
-	color[] roomgroups = new color[5];	// color values of all roomgroups
+	ArrayList<RoomGroup> roomgroups;
 
 	Grid(int xsize, int ysize) {
-		color c = color(50,50,50);
-		roomgroups[0] = c;
-		roomgroups[1] = c;
-		roomgroups[2] = c;
-		roomgroups[3] = c;
-		roomgroups[4] = c;
-
+		roomgroups = new ArrayList<RoomGroup>();
+		roomgroups.add(new RoomGroup("Main", color(50,50,50)));
 		tiles = new GridTile[xsize][ysize];
 		for (int x=0; x<xsize; x++) {
 			for (int y=0; y<ysize; y++) {
@@ -20,7 +15,14 @@ class Grid {
 	
 	void draw(boolean viewmode, float gts) { // draw the roomgrid
 		if(isKeyT) { // TODO: add confirm
-			cgol(); // thats a secret (but youve got the source code so its not hard to find out what it does)
+			if(allowcgol) {
+				cgol(); // thats a secret (but youve got the source code so its not hard to find out what it does)
+				// and i dont even really try to hide it
+			} else {
+				if(!ov.drawpopup) {
+					ov.drawpopup(12);
+				}
+			}
 		}
 		if(!viewmode) { // setup 2D view
 			scale(gts);
@@ -67,7 +69,7 @@ class Grid {
 				if(gettilestate(x,y)) {
 					if(!viewmode) { // 2D
 						noStroke();
-						fill(roomgroups[gettile(x,y).roomgroup]);
+						fill(roomgroups.get(gettile(x,y).roomgroup).c);
 						rect(x,y,1,1);
 
 						stroke(c[0]);
@@ -101,7 +103,7 @@ class Grid {
 						}
 					} else { // 3D
 						pg.noStroke();
-						pg.fill(roomgroups[gettile(x,y).roomgroup]);
+						pg.fill(roomgroups.get(gettile(x,y).roomgroup).c);
 
 						pg.beginShape(QUADS);
 						pg.vertex(x, 0, y);
@@ -224,7 +226,31 @@ class Grid {
 		return (x > -1 && x < tiles.length && y > -1 && y < tiles[0].length);
 	}
 
-	void cgol() {
+	boolean isroomgroupinuse(int id) { // returns whether or not a roomgroup is in use
+		for (int x=0; x<tiles.length; x++) {
+			for (int y=0; y<tiles[0].length; y++) {
+				if(tiles[x][y].state && tiles[x][y].roomgroup == id) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	void removeroomgroup(int id) { // removes a roomgroup and sets all refrences in the grid to the main roomgroup
+		for (int x=0; x<tiles.length; x++) {
+			for (int y=0; y<tiles[0].length; y++) {
+				if(tiles[x][y].roomgroup == id) {
+					tiles[x][y].roomgroup = 0;
+				}
+			}
+		}
+		roomgroups.remove(id);
+	}
+	void addroomgroup(String name, color value) {
+		roomgroups.add(new RoomGroup(name, value));
+	}
+
+	void cgol() {	//hmmmm?
 		GridTile[][] newtiles = new GridTile[tiles.length][tiles[0].length];
 		for (int x=0; x<tiles.length; x++) {
 			for (int y=0; y<tiles[0].length; y++) {
@@ -265,6 +291,16 @@ class Grid {
 			}
 		}
 		return price;
+	}
+}
+
+class RoomGroup {
+	String name;
+	color c;
+
+	RoomGroup(String name, color c) {
+		this.name = name;
+		this.c = c;
 	}
 }
 

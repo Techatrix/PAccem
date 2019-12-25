@@ -3,6 +3,7 @@ class DataManager {
 	final FurnitureData[] furnitures;	// list of all furnitures that can be used
 	final PrefabData[] prefabs;			// list of all prefabs that can be used
 
+	// TODO: Validation
 	DataManager() {
 		if(deb) {
 			println("Loading DataManager");
@@ -73,15 +74,29 @@ class DataManager {
 		}
 	}
 
-	// TODO: return list of invalid prefabs
-	int validate() { // checks if in every prefabs the used furnitures are in the given boundry box (can only be executed of class construction)
+	int[] validate() { // checks if in every prefabs the used furnitures are in the given boundry box (can only be executed after class construction)
+		ArrayList<Integer> r1 = new ArrayList<Integer>();
 		for (int i=0;i<prefabs.length;i++) {
 			if(!prefabs[i].validate()) {
-				return i;
+				r1.add(i);
 			}
 		}
-		return -1;
+        int[] r2 = new int[r1.size()];
+        for (int i=0;i<r2.length;i++) {
+         	r2[i] = r1.get(i);
+        }
+		return r2;
 	}
+
+	boolean validateid(int id) {
+		for (int i=0;i<furnitures.length;i++) {
+			if(furnitures[i].id == id) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 
 	FurnitureData getfurnituredata(int id) { // return the furniture data with the corresponding id
 		for (FurnitureData fdata : furnitures) {
@@ -191,3 +206,10 @@ class PrefabData {
 		return result;
 	}
 }
+
+//TODO: implement DataValidationException
+/*
+class DataValidationException {
+
+}
+*/

@@ -3,7 +3,10 @@ class Container extends PWH implements IOverlay {
 	boolean autocolor = true;
 	color _color;
 	boolean selectable = true;
+	boolean blur = false;
 
+	Container() {
+	}
 	Container(Object item) {
 		this.item = item;
 	}
@@ -21,6 +24,10 @@ class Container extends PWH implements IOverlay {
 		this(item, _width, _height, _color);
 		this.selectable = selectable;
 	}
+	Container(Object item, int _width, int _height, color _color, boolean selectable, boolean blur) {
+		this(item, _width, _height, _color, selectable);
+		this.blur = blur;
+	}
 
 	void mouseWheel(MouseEvent e) {
 		mouseWheelitem(item, e);
@@ -37,6 +44,11 @@ class Container extends PWH implements IOverlay {
 	}
 
 	void draw(boolean hit) {
+		if(blur) {
+			clip(xpos,ypos,_width,_height);
+			filter(blurshader);
+			noClip();
+		}
 		fill(autocolor ? c[5] : _color);
 		noStroke();
 		rect(xpos, ypos, _width, _height);

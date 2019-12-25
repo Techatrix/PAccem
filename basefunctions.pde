@@ -32,3 +32,21 @@ boolean checkraw(int xpos, int ypos, int _width, int _height) { // checks if the
 	}
 	return false;
 }
+void printcolor(int c) {
+	println("Red: " + (int)red(c) + ", Green: " + (int)green(c) + ", Blue: " + (int)blue(c));
+}
+void printcolorhex(int c) {
+	String red = Integer.toHexString((int)red(c));
+	String green = Integer.toHexString((int)green(c));
+	String blue = Integer.toHexString((int)blue(c));
+	if(red.length() < 2) {
+		red = '0' + red;
+	}
+	if(green.length() < 2) {
+		green = '0' + green;
+	}
+	if(blue.length() < 2) {
+		blue = '0' + blue;
+	}
+	println(red + green + blue);
+}

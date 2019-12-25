@@ -1,7 +1,7 @@
 class Furniture extends RPWH {
 	int id;
 	int price;
-	color tint;
+	color tint = color(255,255,255);
 
 	Furniture() {}
 	Furniture(int id) {
@@ -12,21 +12,24 @@ class Furniture extends RPWH {
 		this.xpos = xpos;
 		this.ypos = ypos;
 	}
-	Furniture(int id, int xpos, int ypos, float rot) {
+	Furniture(int id, int xpos, int ypos, color tint) {
 		this(id, xpos, ypos);
-		this.rot = rot;
+		this.tint = tint;
 	}
 	Furniture(FurnitureData fdata) {
 		this.id = fdata.id;
 		this._width = fdata._width;
 		this._height = fdata._height;
 		this.price = fdata.price;
-		this.tint = color(floor(random(255)),floor(random(255)),floor(random(255)));
 	}
 	Furniture(FurnitureData fdata, int xpos, int ypos) {
 		this(fdata);
 		this.xpos = xpos;
 		this.ypos = ypos;
+	}
+	Furniture(FurnitureData fdata, int xpos, int ypos, color tint) {
+		this(fdata, xpos, ypos);
+		this.tint = tint;
 	}
 
 	void draw(boolean viewmode, boolean selected) {
