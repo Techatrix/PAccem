@@ -27,4 +27,13 @@
 	"programmedwith": "Programmed with",
 	"madeby": "Made by",
 	"tutorial": "Tutorial",
+	"selectcolor": "Select color",
+	"red": "Red",
+	"green": "Green",
+	"blue": "Blue",
+	"furnlist": "Furniture List",
+	"prefablist": "Prefab List",
+	"addrg": "Add Roomgroup",
+	"crlrg": "Can't remove last roomgroup",
+	"room": "Room",
 }

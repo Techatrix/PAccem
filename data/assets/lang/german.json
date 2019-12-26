@@ -27,4 +27,13 @@
 	"programmedwith": "Programmier mit",
 	"madeby": "Gemacht von",
 	"tutorial": "Anleitung",
+	"selectcolor": "Wähle Farbe",
+	"red": "Rot",
+	"green": "Grün",
+	"blue": "Blau",
+	"furnlist": "Möbel Liste",
+	"prefablist": "Fertigteil Liste",
+	"addrg": "Raumgruppe hinzufügen",
+	"crlrg": "Letzte Raumgruppe kann nicht entfernt werden",
+	"room": "Raum",
 }

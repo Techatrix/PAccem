@@ -59,6 +59,8 @@ void mouseWheelitem(Object item, MouseEvent e) {
 		((GetVisible)item).mouseWheel(e);
 	} else if (item instanceof EventDetector) {
 		((EventDetector)item).mouseWheel(e);
+	} else if (item instanceof Popup) {
+		((Popup)item).mouseWheel(e);
 	}
 }
 boolean mousePresseditem(Object item) {
@@ -80,6 +82,8 @@ boolean mousePresseditem(Object item) {
 		return ((GetVisible)item).mousePressed();
 	} else if (item instanceof EventDetector) {
 		((EventDetector)item).mousePressed();
+	} else if (item instanceof Popup) {
+		((Popup)item).mousePressed();
 	} else if (item instanceof Slider) {
 		((Slider)item).mousePressed();
 	}
@@ -102,6 +106,8 @@ boolean mouseDraggeditem(Object item) {
 		return ((GetVisible)item).mouseDragged();
 	} else if (item instanceof EventDetector) {
 		((EventDetector)item).mouseDragged();
+	} else if (item instanceof Popup) {
+		((Popup)item).mouseDragged();
 	} else if (item instanceof Slider) {
 		((Slider)item).mouseDragged();
 	}
@@ -126,6 +132,8 @@ void keyPresseditem(Object item) {
 		((GetVisible)item).keyPressed();
 	} else if (item instanceof EventDetector) {
 		((EventDetector)item).keyPressed();
+	} else if (item instanceof Popup) {
+		((Popup)item).keyPressed();
 	}
 }
 int getlistindex(Object item) {
@@ -157,6 +165,8 @@ boolean getisitemhit(Object item) {
 		return ((GetVisible)item).ishit();
 	} else if(item instanceof EventDetector) {
 		return ((EventDetector)item).ishit();
+	} else if(item instanceof Popup) {
+		return ((Popup)item).ishit();
 	} else if(item instanceof Slider) {
 		return ((Slider)item).ishit();
 	}
@@ -187,8 +197,12 @@ void drawitem(Object item, boolean hit) {
 		((GetVisible)item).draw(hit);
 	} else if(item instanceof EventDetector) {
 		((EventDetector)item).draw(hit);
+	} else if(item instanceof Popup) {
+		((Popup)item).draw(hit);
 	} else if(item instanceof Slider) {
 		((Slider)item).draw(hit);
+	} else if(item instanceof SizedBox) {} else {
+		println("drawitem(): " + item + " unhandeled");
 	}
 }
 void setitemwh(Object item, int _width, int _height) {
@@ -218,8 +232,12 @@ void setitemwh(Object item, int _width, int _height) {
 		((GetVisible)item).setwh(_width, _height);
 	} else if(item instanceof EventDetector) {
 		((EventDetector)item).setwh(_width, _height);
+	} else if(item instanceof Popup) {
+		((Popup)item).setwh(_width, _height);
 	} else if(item instanceof Slider) {
 		((Slider)item).setwh(_width, _height);
+	} else {
+		println("setitemwh(): " + item + " unhandeled");
 	}
 }
 void setitemxy(Object item, int xpos, int ypos) {
@@ -249,8 +267,12 @@ void setitemxy(Object item, int xpos, int ypos) {
 		((GetVisible)item).setxy(xpos, ypos);
 	} else if(item instanceof EventDetector) {
 		((EventDetector)item).setxy(xpos, ypos);
+	} else if(item instanceof Popup) {
+		((Popup)item).setxy(xpos, ypos);
 	} else if(item instanceof Slider) {
 		((Slider)item).setxy(xpos, ypos);
+	} else {
+		println("setitemxy(): " + item + " unhandeled");
 	}
 }
 Box getboundry(Object item) {
@@ -280,6 +302,12 @@ Box getboundry(Object item) {
 		return ((GetVisible)item).getbound();
 	} else if(item instanceof EventDetector) {
 		return ((EventDetector)item).getbound();
+	} else if(item instanceof Popup) {
+		return ((Popup)item).getbound();
+	} else if(item instanceof Slider) {
+		return ((Slider)item).getbound();
+	} else {
+		println("getboundry(): " + item + " unhandeled");
 	}
 	return null;
 }

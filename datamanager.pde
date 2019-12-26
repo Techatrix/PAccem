@@ -9,7 +9,7 @@ class DataManager {
 			println("Loading DataManager");
 		}
 		/* --------------- load icon data --------------- */
-		icons = new PImage[8];
+		icons = new PImage[9];
 		for (int i=0;i<icons.length;i++) {
 			icons[i] = loadImage("data/assets/icon/"+i+".png");
 		}
@@ -88,7 +88,7 @@ class DataManager {
 		return r2;
 	}
 
-	boolean validateid(int id) {
+	boolean validateid(int id) { // checks if a furniture with the given id exists
 		for (int i=0;i<furnitures.length;i++) {
 			if(furnitures[i].id == id) {
 				return true;
