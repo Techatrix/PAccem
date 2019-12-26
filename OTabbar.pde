@@ -24,8 +24,8 @@ abstract class Tabbar implements IOverlay {
 		boolean hit = false;
 		if(mousePresseditem(list)) {
 			hit = true;
+			ontab(getlistindex(list));
 		}
-		ontab(getlistindex(list));
 		if(isvalidtab()) {
 			if(mousePresseditem(tabs[getid()])) {
 				hit = true;

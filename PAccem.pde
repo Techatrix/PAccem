@@ -28,16 +28,16 @@ boolean isKeyUp, isKeyRight, isKeyLeft, isKeyDown, isKeyT;	// stores whether or 
  * improved datastorage/serialization				delayed
  * furniture color									Complete
  * OSlider											Complete
- * OCheckbox
+ * OCheckbox										delayed
  * debugmode setting
  * input validation									WIP
  * bluring											WIP	needs optimization
- 													cache blured background image
- 													remove from container
- * OPopup Class										combine with blur
- * OBlur Class
+ *													cache blured background image
+ *													remove from container
+ * OPopup Class										Complete
+ * OBlur Class										delayed
  * more key inputs
- * extend translation
+ * extend translation								Complete
 */
 
 /* --------------- main --------------- */
@@ -66,7 +66,6 @@ void draw() { // is being executed on every frame
 	am.loop();	// application manager
 	rm.draw();	// room manager
 	ov.draw();	// overlay
-
 }
 
 /* --------------- mouse input --------------- */
@@ -89,14 +88,14 @@ void mouseReleased() {
 	rm.mouseReleased();
 }
 void mousePressed() {
-	if(ov.mousePressed() || ov.ishit()) {
+	if(ov.ishit() | ov.mousePressed()) {
 		return;
 	}
 	rm.mousePressed();
 }
 /* --------------- keyboard input --------------- */
 void keyPressed(KeyEvent e) {
-	ov.keyPressed();
+	ov.keyPressed(e);
 	if(ov.ishit()) {
 		return;
 	}

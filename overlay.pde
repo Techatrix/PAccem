@@ -16,24 +16,28 @@ class Overlay {
 	ArrayList<String> messages = new ArrayList<String>(); // messages on the console
 	int consoleoff = 0;							// offset of the console messages (scrolling)
 	boolean drawconsole = false;				// visiblity state of console
-	final int messageboxheight = 200;			// const. height of the message box
+	final int messageboxheight = 180;			// const. height of the message box
 
 
 	Overlay() {
 		if(deb) {
-			PApplet.println("Loading Overlay");
+			println("Loading Overlay");
 		}
 		visible = !st.booleans[1].value;
 		newroomname = st.strings[0].value;
 		build();
-
 	}
 
 	void build() { // build/create the overlay
 		final String[] tabs = {"newroom", "viewmode", "loadroom", "saveroom", "settings", "debug", "roomgroups", "about", "reset"};
 		items = new Object[4];
 		items[0] = 
-		new GetVisible() {@Override public boolean getvisible() {return drawpopup;}};
+		//new GetVisible() {@Override public boolean getvisible() {return drawpopup;}};
+		new Popup() {
+			@Override public void ontrue() {}
+			@Override public void onfalse() {}
+			@Override public boolean getvisible() {return drawpopup;}
+		};
 		// Tab bar 
 		items[1] = 
 		new Tabbar(
@@ -58,7 +62,7 @@ class Overlay {
 						new Builder() {
 							@Override public Object i(int i) {
 								final Temp temp = new Temp(i);
-								return new EventDetector(new Container(new Text("Room: " + rm.loadrooms()[i]))) {
+								return new EventDetector(new Container(new Text(lg.get("room") + ": " + rm.loadrooms()[i]))) {
 									@Override public void onevent(EventType et, MouseEvent e) {
 										if(et == EventType.MOUSEPRESSED) {
 											rm.load(rm.loadrooms()[temp.i]);
@@ -206,7 +210,7 @@ class Overlay {
 					new ListViewBuilder() {
 						@Override public Object i(int i) {
 							if(i==0) {
-								return new EventDetector(new Container(new Text("Add Roomgroup"))) {
+								return new EventDetector(new Container(new Text(lg.get("addrg")))) {
 									@Override public void onevent(EventType et, MouseEvent e) {
 										if(et == EventType.MOUSEPRESSED) {
 											drawpopup(10);
@@ -214,13 +218,13 @@ class Overlay {
 									}
 								};
 							} else {
-								color c = rm.roomgrid.roomgroups.get(i-1).c;
-								String cc = int(red(c)) + " " + int(green(c)) + " " + int(blue(c));
+								color rgc = rm.roomgrid.roomgroups.get(i-1).c;
+								String cstring = int(red(rgc)) + " " + int(green(rgc)) + " " + int(blue(rgc));
 								final Temp temp = new Temp(i-1);
 								final Temp temp2 = new Temp(rm.roomgrid.roomgroups.size());
 								return new ListView(
 									new Object[] {
-										new Container(new SetValueText(rm.roomgrid.roomgroups.get(i-1).name, cc) {
+										new Container(new SetValueText(rm.roomgrid.roomgroups.get(i-1).name, cstring) {
 											@Override public void onchange() {
 												String[] strings = split(newvalue, " ");
 												int[] ints = new int[strings.length];
@@ -236,24 +240,24 @@ class Overlay {
 													ints[i] = newint;
 												}
 												if(a && ints.length == 3) {
-													color c = color(ints[0], ints[1], ints[2]);
+													color col = color(ints[0], ints[1], ints[2]);
 													value = ints[0]+" "+ints[1]+" "+ints[2];
-													rm.roomgrid.roomgroups.get(temp.i).c = c;
+													rm.roomgrid.roomgroups.get(temp.i).c = col;
 												}
 											}
 										},200,30),
 										// select roomgroup
 										// TODO: Icon
-										new EventDetector(new Container(new Text("S"),70,30)) {
+										new EventDetector(new Container(new Text("S"),70,30, (rm.newroomgroup == temp.i) ? color(c[3]) : color(c[5]))) {
 											@Override public void onevent(EventType et, MouseEvent e) {
 												if(et == EventType.MOUSEPRESSED) {
 													rm.newroomgroup = temp.i;
+													ov.build();
 												}
 											}
 										},
 										// delete roomgroup
-										// TODO: Icon
-										new EventDetector(new Container(new Text("D"),30,30)) {
+										new EventDetector(new Container(new Image(dm.icons[8]),30,30)) {
 											@Override public void onevent(EventType et, MouseEvent e) {
 												if(et == EventType.MOUSEPRESSED) {
 													if(temp2.i > 1) {
@@ -265,7 +269,7 @@ class Overlay {
 															ov.build();
 														}
 													} else {
-														toovmessages.add("Can't remove last roomgroup");
+														toovmessages.add(lg.get("crlrg"));
 													}
 												}
 											}
@@ -304,14 +308,14 @@ class Overlay {
 									}
 								}.build(dm.furnitures.length),300, height-yoff-60,2
 							),
-							new EventDetector(new Container(new Text("Select Color"), 300, 30)) {
+							new EventDetector(new Container(new Text(lg.get("selectcolor")), 300, 30)) {
 								@Override public void onevent(EventType et, MouseEvent e) {
 									if(et == EventType.MOUSEPRESSED) {
 										drawpopup(11);
 									}
 								}
 							},
-							new EventDetector(new Container(new Text("Prefab List"), 300, 30)) {
+							new EventDetector(new Container(new Text(lg.get("prefablist")), 300, 30)) {
 								@Override public void onevent(EventType et, MouseEvent e) {
 									if(et == EventType.MOUSEPRESSED) {
 										tabid = 6;
@@ -349,7 +353,7 @@ class Overlay {
 									}
 								}.build(dm.prefabs.length),300, height-yoff-30,2
 							),
-							new EventDetector(new Container(new Text("Furniture List"), 300, 30)) {
+							new EventDetector(new Container(new Text(lg.get("furnlist")), 300, 30)) {
 								@Override public void onevent(EventType et, MouseEvent e) {
 									if(et == EventType.MOUSEPRESSED) {
 										tabid = 5;
@@ -444,7 +448,6 @@ class Overlay {
 				},xoff, height-messageboxheight
 			)
 		) {@Override public boolean getvisible() {return drawconsole;}};
-
 		for (Object item : items) {
 			setitemxy(item, 0,0); // position all items at the origin
 		}
@@ -515,11 +518,12 @@ class Overlay {
 					return true;
 				}
 			}
+		println(hit);
 		}
 		return hit;
 	}
 	/* --------------- keyboard input --------------- */
-	void keyPressed() {
+	void keyPressed(KeyEvent e) {
 		if(visible) {
 			for (Object item : items) {
 				keyPresseditem(item);
@@ -529,244 +533,169 @@ class Overlay {
 	void keyReleased() {
 	}
 
-	void requirerestart() { // draws the requiresrestart popup
-		items[0] = new GetVisible(new Container(
-			new Transform(
-				new ListView(
-					new Object[] {
-						new SizedBox(true),
-						new Text(lg.get("ratste"), 3),
-						new SizedBox(true),
-						new EventDetector(new Container(new Text(lg.get("ok")))) {
-							@Override public void onevent(EventType et, MouseEvent e) {
-								if(et == EventType.MOUSEPRESSED) {drawpopup = false;}
-							}
-						},
-					}, width/4, height/4
-				), Align.CENTERCENTER
-			), width, height, color(0,150)
-		)) {@Override public boolean getvisible() {return drawpopup;}};
+	void requirerestart() { // Opens the requiresrestart popup
+		items[0] =
+		new Popup(
+			new ListView(
+				new Object[] {
+					new SizedBox(true),
+					new Text(lg.get("ratste"), 3),
+					new SizedBox(true),
+					new EventDetector(new Container(new Text(lg.get("ok")))) {
+						@Override public void onevent(EventType et, MouseEvent e) {
+							if(et == EventType.MOUSEPRESSED) {drawpopup = false;}
+						}
+					},
+				}, width/4, height/4
+			)) {
+			@Override public void ontrue() {drawpopup = false;}
+			@Override public void onfalse() {drawpopup = false;}
+			@Override public boolean getvisible() {return drawpopup;}
+		};
 		drawpopup = true;
 	}
 
-	void checkmessages() {
+	void checkmessages() { // print out all messages in the to overlay messages variable
 		for (int i=0;i<toovmessages.size();i++) {
-			println(toovmessages.get(i));
+			printmessage(toovmessages.get(i));
 		}
 		toovmessages.clear();
 	}
-	void println(String text) { // add a message to the console
+	void printmessage(String text) { // add a message to the console
 		messages.add(fixlength(str(hour()), 2, '0') + ":" + fixlength(str(minute()), 2, '0') +": " + text);
-		if(messages.size() > 5) {
+		if(messages.size() > messageboxheight/30) {
 			consoleoff -= 30;
 		}
+		drawconsole = true;
 	}
 
-	void drawpopup(int id) {
-		Object o = new Object();
+	void drawpopup(int id) { // opens a Popup
 		switch(id) { // popups
 			case 0: // new Room
-				o =
-				new Container(
-					new Transform(
-						new ListView(
-							new Object[] {
-								new Text(lg.get("newroom")),
-								new SizedBox(true),
-								new Container(new Slider(lg.get("newwidth"), (float)newroomxsize/100) {
-									@Override public void onchange(float newvalue) {
-										value = constrain(newvalue, 0.01, 1);
-										int v = constrain(int(value*100), 1,100);
-										newroomxsize = v;
-									}
-									@Override public String gettext() {
-										return str(constrain(round(value*100), 1, 100));
-									}
-								}),
-								new Container(new Slider(lg.get("newheight"), (float)newroomysize/100) {
-									@Override public void onchange(float newvalue) {
-										value = constrain(newvalue, 0.01, 1);
-										int v = constrain(int(value*100), 1,100);
-										newroomysize = v;
-									}
-									@Override public String gettext() {
-										return str(constrain(round(value*100), 1, 100));
-									}
-								}),
-								new ListView(
-									new Object[] {
-										new EventDetector(new Container(new Text(lg.get("ok")))) {
-											@Override public void onevent(EventType et, MouseEvent e) {
-												if(et == EventType.MOUSEPRESSED) {
-													drawpopup = false;
-													rm.newroom(newroomxsize, newroomysize);
-												}}
-										},
-										new EventDetector(new Container(new Text(lg.get("cancel")))) {
-											@Override public void onevent(EventType et, MouseEvent e) {
-												if(et == EventType.MOUSEPRESSED) {
-													drawpopup = false;
-												}}
-										},
-									}, width/4, 30, width/8, Dir.RIGHT
-								)		
-							}, width/4, height/4
-						), Align.CENTERCENTER
-					), width, height, color(0,150),true, true
-				);
+				items[0] =
+				new Popup(
+					new Object[] {
+						new SizedBox(true),
+						new Text(lg.get("newroom")),
+						new SizedBox(true),
+						new Container(new Slider(lg.get("newwidth"), (float)newroomxsize/100) {
+							@Override public void onchange(float newvalue) {
+								value = constrain(newvalue, 0.01, 1);
+								int v = constrain(int(value*100), 1,100);
+								newroomxsize = v;
+							}
+							@Override public String gettext() {
+								return str(constrain(round(value*100), 1, 100));
+							}
+						}),
+						new Container(new Slider(lg.get("newheight"), (float)newroomysize/100) {
+							@Override public void onchange(float newvalue) {
+								value = constrain(newvalue, 0.01, 1);
+								int v = constrain(int(value*100), 1,100);
+								newroomysize = v;
+							}
+							@Override public String gettext() {
+								return str(constrain(round(value*100), 1, 100));
+							}
+						}
+					),},lg.get("ok"), lg.get("cancel")) {
+					@Override public void ontrue() {drawpopup = false;}
+					@Override public void onfalse() {drawpopup = false;}
+					@Override public boolean getvisible() {return drawpopup;}
+				};
 			break;
 			case 7: // about
-				o =
-				new Container(
-					new Transform(
-						new ListView(
-							new Object[] {
-								new Text(getabout(), 5),
-								new SizedBox(true),
-								new EventDetector(new Container(new Text("Github"))) {
-									@Override public void onevent(EventType et, MouseEvent e) {
-										if(et == EventType.MOUSEPRESSED) {link(githublink);}
-									}
-								},
-								new EventDetector(new Container(new Text(lg.get("ok")))) {
-									@Override public void onevent(EventType et, MouseEvent e) {
-										if(et == EventType.MOUSEPRESSED) {drawpopup = false;}
-									}
-								},
-							}, width/4, height/4
-						), Align.CENTERCENTER
-					), width, height, color(0,150),true, true
-				);
+				items[0] =
+				new Popup(
+					new ListView(
+						new Object[] {
+							new Text(getabout(), 5),
+							new SizedBox(true),
+							new EventDetector(new Container(new Text("Github"))) {
+								@Override public void onevent(EventType et, MouseEvent e) {
+									if(et == EventType.MOUSEPRESSED) {link(githublink);}
+								}
+							},
+							new EventDetector(new Container(new Text(lg.get("ok")))) {
+								@Override public void onevent(EventType et, MouseEvent e) {
+									if(et == EventType.MOUSEPRESSED) {drawpopup = false;}
+								}
+							},
+						}, width/4, height/4
+					)) {
+					@Override public void ontrue() {drawpopup = false;}
+					@Override public void onfalse() {drawpopup = false;}
+					@Override public boolean getvisible() {return drawpopup;}
+				};
 			break;
 			case 8: // reset
-				o =
-				new Container(
-					new Transform(
-						new ListView(
-							new Object[] {
-								new SizedBox(true),
-								new Text(lg.get("areyousure")),
-								new SizedBox(true),
-								new ListView(
-									new Object[] {
-										new EventDetector(new Container(new Text(lg.get("ok")))) {
-											@Override public void onevent(EventType et, MouseEvent e) {
-												if(et == EventType.MOUSEPRESSED) {
-													drawpopup = false;
-													rm.reset();
-												}
-											}
-										},
-										new EventDetector(new Container(new Text(lg.get("cancel")))) {
-											@Override public void onevent(EventType et, MouseEvent e) {
-												if(et == EventType.MOUSEPRESSED) {drawpopup = false;}
-											}
-										},
-									}, width/4, 30, width/8, Dir.RIGHT
-								)
-							}, width/4, height/4
-						), Align.CENTERCENTER
-					), width, height, color(0,150),true, true
-				);
+				items[0] =
+				new Popup(
+					new Object[] {
+						new SizedBox(true),
+						new Text(lg.get("areyousure")),
+						new SizedBox(true),
+					},lg.get("ok"), lg.get("cancel")) {
+					@Override public void ontrue() {drawpopup = false;rm.reset();}
+					@Override public void onfalse() {drawpopup = false;}
+					@Override public boolean getvisible() {return drawpopup;}
+				};
 			break;
 			case 9: // remove roomgroup
-				o =
-				new Container(
-					new Transform(
-						new ListView(
-							new Object[] {
-								new SizedBox(true),
-								new Text(lg.get("areyousure")),
-								new SizedBox(true),
-								new ListView(
-									new Object[] {
-										new EventDetector(new Container(new Text(lg.get("ok")))) {
-											@Override public void onevent(EventType et, MouseEvent e) {
-												if(et == EventType.MOUSEPRESSED) {
-													drawpopup = false;
-													rm.roomgrid.removeroomgroup((int)tempdata);
-													ov.build();
-												}
-											}
-										},
-										new EventDetector(new Container(new Text(lg.get("cancel")))) {
-											@Override public void onevent(EventType et, MouseEvent e) {
-												if(et == EventType.MOUSEPRESSED) {drawpopup = false;}
-											}
-										},
-									}, width/4, 30, width/8, Dir.RIGHT
-								)
-							}, width/4, height/4
-						), Align.CENTERCENTER
-					), width, height, color(0,150),true, true
-				);
+				items[0] =
+				new Popup(
+					new Object[] {
+						new SizedBox(true),
+						new Text(lg.get("areyousure")),
+						new SizedBox(true),
+					},lg.get("ok"), lg.get("cancel")) {
+					@Override public void ontrue() {
+						drawpopup = false;
+						rm.roomgrid.removeroomgroup((int)tempdata);
+						ov.build();
+					}
+					@Override public void onfalse() {drawpopup = false;}
+					@Override public boolean getvisible() {return drawpopup;}
+				};
 			break;
 			case 10: // new roomgroup
 				tempdata = "";
-				o =
-				new Container(
-					new Transform(
-						new ListView(
-							new Object[] {
-								new SizedBox(true),
-								new Text("Name?"),
-								new SizedBox(true),
-								/* TODO: Color Slider / Color Picker
-								new Container(new Slider("red", (float)50/255) {
-									@Override public void onchange(float newvalue) {
-										value = constrain(newvalue, 0, 1);
-										int v = constrain(int(value*255), 0,255);
-										//newroomysize = v;
-									}
-									@Override public String gettext() {
-										return str(constrain(round(value*255), 0, 255));
-									}
-								}),
-								*/
-								new Container(new SetValueText("Name") {
-									@Override public void onchange() {
-										value = newvalue;
-										tempdata = value;
-									}
-								}),
-								new ListView(
-									new Object[] {
-										new EventDetector(new Container(new Text(lg.get("ok")))) {
-											@Override public void onevent(EventType et, MouseEvent e) {
-												if(et == EventType.MOUSEPRESSED) {
-													if(tempdata != "") {
-														rm.roomgrid.addroomgroup((String)tempdata, color(50,50,50));
-														ov.build();
-														drawpopup = false;
-													} else {
-														// TODO: Message
-													}
-												}
-											}
-										},
-										new EventDetector(new Container(new Text(lg.get("cancel")))) {
-											@Override public void onevent(EventType et, MouseEvent e) {
-												if(et == EventType.MOUSEPRESSED) {drawpopup = false;}
-											}
-										},
-									}, width/4, 30, width/8, Dir.RIGHT
-								)
-							}, width/4, height/4
-						), Align.CENTERCENTER
-					), width, height, color(0,150),true, true
-				);
+				items[0] =
+				new Popup(
+					new Object[] {
+						new SizedBox(true),
+						new Text(lg.get("name") + "?"),
+						new SizedBox(true),
+						new Container(new SetValueText(lg.get("name")) {
+							@Override public void onchange() {
+								value = newvalue;
+								tempdata = value;
+							}
+						}),
+
+					},lg.get("ok"), lg.get("cancel")) {
+					@Override public void ontrue() {
+						if(tempdata != "") {
+							rm.roomgrid.addroomgroup((String)tempdata, color(50,50,50));
+							ov.build();
+							drawpopup = false;
+						} else {
+							// TODO: Message
+						}
+					}
+					@Override public void onfalse() {drawpopup = false;}
+					@Override public boolean getvisible() {return drawpopup;}
+				};
 			break;
 			case 11: // select color
-				o =
-				new Container(
-					new Transform(
-						new ListView(
-							new Object[] {
-								new SizedBox(true),
-								new Text("Color?"),
-								new SizedBox(true),
+				items[0] =
+				new Popup(
+					new Object[] {
+					new SizedBox(true),
+					new Text(lg.get("selectcolor")),
+					new SizedBox(true),
 
-								new Container(new Slider("red", red(rm.furnituretint)/255) {
+					new Container(new Slider(lg.get("red"), red(rm.furnituretint)/255) {
 									@Override public void onchange(float newvalue) {
 										value = constrain(newvalue, 0, 1);
 										int v = constrain(int(value*255), 0,255);
@@ -775,8 +704,8 @@ class Overlay {
 									@Override public String gettext() {
 										return str(constrain(round(value*255), 0, 255));
 									}
-								}),
-								new Container(new Slider("green", green(rm.furnituretint)/255) {
+					}),
+					new Container(new Slider(lg.get("green"), green(rm.furnituretint)/255) {
 									@Override public void onchange(float newvalue) {
 										value = constrain(newvalue, 0, 1);
 										int v = constrain(int(value*255), 0,255);
@@ -785,8 +714,8 @@ class Overlay {
 									@Override public String gettext() {
 										return str(constrain(round(value*255), 0, 255));
 									}
-								}),
-								new Container(new Slider("blue", blue(rm.furnituretint)/255) {
+					}),
+					new Container(new Slider(lg.get("blue"), blue(rm.furnituretint)/255) {
 									@Override public void onchange(float newvalue) {
 										value = constrain(newvalue, 0, 1);
 										int v = constrain(int(value*255), 0,255);
@@ -795,68 +724,27 @@ class Overlay {
 									@Override public String gettext() {
 										return str(constrain(round(value*255), 0, 255));
 									}
-								}),
-								new ListView(
-									new Object[] {
-										new EventDetector(new Container(new Text(lg.get("ok")))) {
-											@Override public void onevent(EventType et, MouseEvent e) {
-												if(et == EventType.MOUSEPRESSED) {
-													if(tempdata != "") {
-														drawpopup = false;
-														printcolor(rm.furnituretint);
-														build();
-													} else {
-														// TODO: Message
-													}
-												}
-											}
-										},
-										new EventDetector(new Container(new Text(lg.get("cancel")))) {
-											@Override public void onevent(EventType et, MouseEvent e) {
-												if(et == EventType.MOUSEPRESSED) {drawpopup = false;}
-											}
-										},
-									}, width/4, 30, width/8, Dir.RIGHT
-								)
-							}, width/4, height/4
-						), Align.CENTERCENTER
-					), width, height, color(0,150),true, true
-				);
+					}),
+					},lg.get("ok"), lg.get("cancel")) {
+					@Override public void ontrue() {drawpopup = false;printcolor(rm.furnituretint);build();}
+					@Override public void onfalse() {drawpopup = false;}
+					@Override public boolean getvisible() {return drawpopup;}
+				};
 			break;
-			case 12: // select color
-				o =
-				new Container(
-					new Transform(
-						new ListView(
-							new Object[] {
-								new SizedBox(true),
-								new Text("Activate CGOL?"),
-								new SizedBox(true),
-								new ListView(
-									new Object[] {
-										new EventDetector(new Container(new Text(lg.get("ok")))) {
-											@Override public void onevent(EventType et, MouseEvent e) {
-												if(et == EventType.MOUSEPRESSED) {
-													drawpopup = false;
-													allowcgol = true;
-													rm.furnitures = new ArrayList<Furniture>();
-												}
-											}
-										},
-										new EventDetector(new Container(new Text(lg.get("cancel")))) {
-											@Override public void onevent(EventType et, MouseEvent e) {
-												if(et == EventType.MOUSEPRESSED) {drawpopup = false;}
-											}
-										},
-									}, width/4, 30, width/8, Dir.RIGHT
-								)
-							}, width/4, height/4
-						), Align.CENTERCENTER
-					), width, height, color(0,150),true, true
-				);
+			case 12: // activate cgol
+				items[0] =
+				new Popup(
+					new Object[] {
+						new SizedBox(true),
+						new Text("Activate CGOL?"),
+						new SizedBox(true),
+					},lg.get("ok"), lg.get("cancel")) {
+					@Override public void ontrue() {drawpopup = false;allowcgol = true;rm.furnitures = new ArrayList<Furniture>();}
+					@Override public void onfalse() {drawpopup = false;}
+					@Override public boolean getvisible() {return drawpopup;}
+				};
 			break;
 		}
 		drawpopup = true;
-		items[0] = new GetVisible(o) {@Override public boolean getvisible() {return drawpopup;}};
 	}
 }

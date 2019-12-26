@@ -176,7 +176,7 @@ class Grid {
 		strokeCap(ROUND);
 	}
 
-	void filltool(boolean value, int x, int y) {
+	void filltool(boolean value, int x, int y) { // apply the fill tool
 		if(gettilestate(x,y) != value) {
 			if(!rm.isfurniture(x,y) || value) {
 				settilestate(value, x,y);

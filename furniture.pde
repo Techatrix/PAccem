@@ -1,7 +1,7 @@
 class Furniture extends RPWH {
-	int id;
-	int price;
-	color tint = color(255,255,255);
+	int id;								// id of the furniture
+	int price;							// price of the furniture
+	color tint = color(255,255,255);	// tintcolor of the furniture
 
 	Furniture() {}
 	Furniture(int id) {
@@ -32,7 +32,7 @@ class Furniture extends RPWH {
 		this.tint = tint;
 	}
 
-	void draw(boolean viewmode, boolean selected) {
+	void draw(boolean viewmode, boolean selected) { // draws the furniture
 		if(!viewmode) { // 2D
 			translate(xpos, ypos);
 			tint(tint);

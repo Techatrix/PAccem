@@ -18,16 +18,12 @@ class RoomManager {
 	boolean dragstate;										// state to switch over when draging
 
 	int newfurnitureid = 0;				// id of the currently selected furniture/prefab
-	int newroomgroup = 0;			// id of the current roomtilegroup you are drawing
+	int newroomgroup = 0;				// id of the current roomtilegroup you are drawing
 	boolean isprefab = false;			// whether or not you are placing a furniture or a prefab
 	color furnituretint = color(255,255,255);	// tint setting for the furnitures
 
 	RoomManager() {
-		if(deb) {
-			println("Loading RoomManager");
-		}
-		resetcam(true);
-		load(st.strings[0].value);
+		this(st.strings[0].value);
 	}
 	RoomManager(String loadname) {
 		if(deb) {
