@@ -7,8 +7,7 @@ Settings st;			// loads and stores the current settings
 LanguageManager lg;		// loads the current language file
 RoomManager rm;			// manages the room(grid, furniture & user input)
 DataManager dm;			// stores data (3D-models, images, etc.)
-Overlay ov;				// draws & manages the user interface
-//InstructionManager im;// manages all previously executed instructions to allow Strg+Z, undo feature	abandoned
+OverlayManager ov;		// creates and manages the GUI
 
 PGraphics pg;			// used for 3D-graphics
 PFont font;				// the current font
@@ -21,24 +20,6 @@ int[] c = new int[9];	// easily accessible color values (0-8 => 0 - 255 or 255 -
 boolean isKeyUp, isKeyRight, isKeyLeft, isKeyDown, isKeyT;	// stores whether or not a arrow key is down
 
 /* --------------- Experimental Version! WIP --------------- */
-/* 
- * InstructionManager (Strg+Z, undo feature)		abandoned
- * message box/console								Complete
- * console											abandoned
- * improved datastorage/serialization				delayed
- * furniture color									Complete
- * OSlider											Complete
- * OCheckbox										delayed
- * debugmode setting
- * input validation									WIP
- * bluring											WIP	needs optimization
- *													cache blured background image
- *													remove from container
- * OPopup Class										Complete
- * OBlur Class										delayed
- * more key inputs
- * extend translation								Complete
-*/
 
 /* --------------- main --------------- */
 void settings() { // is being executed once before the window is created	(pre-main())
@@ -95,6 +76,7 @@ void mousePressed() {
 }
 /* --------------- keyboard input --------------- */
 void keyPressed(KeyEvent e) {
+	rm.getpricereport();
 	ov.keyPressed(e);
 	if(ov.ishit()) {
 		return;

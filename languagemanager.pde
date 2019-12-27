@@ -19,8 +19,13 @@ class LanguageManager {
 		return false;
 	}
 
-	String get(String key) { // get a string value in the current language
-		return data.getString(key, "Not Found");
+	String get(String key) { // get a translation in the current language
+		String result = data.getString(key);
+		if(result == null) {
+			toovmessages.add("Translation for " + key + " doesnt exist");
+			return "Not Found";
+		}
+		return result;
 	}
 
 }

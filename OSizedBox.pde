@@ -1,5 +1,5 @@
 class SizedBox extends PWH implements IOverlay {
-	boolean expand; // to be implemented
+	boolean expand;
 
 	SizedBox() {
 		this(false);

@@ -10,6 +10,18 @@ class Box {
 		this.h = round(h);
 	}
 }
+class TabData {
+	String name;
+	int id;
+	boolean type;
+	
+	TabData(String name, int id, boolean type) {
+		this.name = name;
+		this.id = id;
+		this.type = type;
+	}
+}
+
 abstract class Builder{
 
 	Object[] build(int length) {
@@ -22,16 +34,35 @@ abstract class Builder{
 
 	abstract Object i(int i);
 }
-enum Dir { // used by listview
+abstract class ListViewBuilder{
+	ListView build(int length, int _width, int _height) {
+		return build(length, _width, _height, 30, Dir.DOWN);
+	}
+	ListView build(int length, int _width, int _height, int itemheight) {
+		return build(length, _width, _height, itemheight, Dir.DOWN);
+	}
+	ListView build(int length, int _width, int _height, int itemheight, Dir dir) {
+		Object[] items = new Object[length];
+		for (int i=0;i<length;i++) {
+			items[i] = i(i);
+		}
+		return new ListView(items, _width, _height, itemheight, dir);
+	}
+
+	abstract Object i(int i);
+}
+
+enum Dir { // used by Listview
     UP, RIGHT, DOWN, LEFT;
 }
-enum Align { // used by transform
+enum Align { // used by Transform
     TOPLEFT, TOPRIGHT, BOTTOMLEFT, BOTTOMRIGHT, CENTERCENTER;
 }
-enum Fit { // used by image
+enum Fit { // used by Image
 	EXPAND, RATIO
 }
-interface IOverlay{
+
+interface IOverlay {
 
 	void draw(boolean hit);
 	Box getbound();
@@ -202,7 +233,9 @@ void drawitem(Object item, boolean hit) {
 	} else if(item instanceof Slider) {
 		((Slider)item).draw(hit);
 	} else if(item instanceof SizedBox) {} else {
-		println("drawitem(): " + item + " unhandeled");
+		if(deb) {
+			println("drawitem(): " + item + " unhandeled");
+		}
 	}
 }
 void setitemwh(Object item, int _width, int _height) {
@@ -237,7 +270,9 @@ void setitemwh(Object item, int _width, int _height) {
 	} else if(item instanceof Slider) {
 		((Slider)item).setwh(_width, _height);
 	} else {
-		println("setitemwh(): " + item + " unhandeled");
+		if(deb && item != null) {
+			println("setitemwh(): " + item + " unhandeled");
+		}
 	}
 }
 void setitemxy(Object item, int xpos, int ypos) {
@@ -272,7 +307,9 @@ void setitemxy(Object item, int xpos, int ypos) {
 	} else if(item instanceof Slider) {
 		((Slider)item).setxy(xpos, ypos);
 	} else {
-		println("setitemxy(): " + item + " unhandeled");
+		if(deb && item != null) {
+			println("setitemxy(): " + item + " unhandeled");
+		}
 	}
 }
 Box getboundry(Object item) {
@@ -307,7 +344,9 @@ Box getboundry(Object item) {
 	} else if(item instanceof Slider) {
 		return ((Slider)item).getbound();
 	} else {
-		println("getboundry(): " + item + " unhandeled");
+		if(deb) {
+			println("getboundry(): " + item + " unhandeled");
+		}
 	}
 	return null;
 }

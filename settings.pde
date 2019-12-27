@@ -26,21 +26,20 @@ class Settings {
 		strings[2] = new SettingStringValue("font", "Roboto");
 
 		booleans[0] = new SettingBooleanValue("darkmode", true);
-		booleans[1] = new SettingBooleanValue("hide overlay", false);
+		booleans[1] = new SettingBooleanValue("hideoverlay", false);
 		booleans[2] = new SettingBooleanValue("fullscreen", false);
-		booleans[3] = new SettingBooleanValue("Use OpenGl Renderer", false);	// shoud be disabled on 32-bit and on old devices
+		booleans[3] = new SettingBooleanValue("useglrenderer", false);	// shoud be disabled on 32-bit and older devices
 
 		ints[0] = new SettingIntValue("width", 1200, 600, displayWidth);
 		ints[1] = new SettingIntValue("height", 800, 600, displayHeight);
-		ints[2] = new SettingIntValue("Anti-aliasing", 4, 0, 8);
+		ints[2] = new SettingIntValue("antialiasing", 4, 0, 8);
 
 		floats[0] = new SettingFloatValue("gridlineweight", 1);
-		//floats[1] = new SettingFloatValue("overlayscale", 1, 0.7, 1.5); (used in old ui)
 
 		load();
 	}
 	
-	int getsize() {
+	int getsize() {	// get length of all settings
 		return /*colors.length +*/ strings.length + booleans.length + ints.length + floats.length;
 	}
 	String set(int id, String value) { // sets choosen setting value to the given value (automatic data type conversion)
@@ -120,22 +119,22 @@ class Settings {
 			*/
 			for (int i=0;i<strings.length;i++) {
 				SettingStringValue s = strings[i];
-				s.setvalue(j.getString(s.name));
+				s.setvalue(j.getString(s.name, s.defaultvalue));
 				strings[i] = s;
 			}
 			for (int i=0;i<booleans.length;i++) {
 				SettingBooleanValue b = booleans[i];
-				b.setvalue(j.getBoolean(b.name));
+				b.setvalue(j.getBoolean(b.name, b.defaultvalue));
 				booleans[i] = b;
 			}
 			for (int k=0;k<ints.length;k++) {
 				SettingIntValue i = ints[k];
-				i.setvalue(j.getInt(i.name));
+				i.setvalue(j.getInt(i.name, i.defaultvalue));
 				ints[k] = i;
 			}
 			for (int i=0;i<floats.length;i++) {
 				SettingFloatValue f = floats[i];
-				f.setvalue(j.getFloat(f.name));
+				f.setvalue(j.getFloat(f.name, f.defaultvalue));
 				floats[i] = f;
 			}
 		}
@@ -199,17 +198,16 @@ class SettingColorValue {
 */
 class SettingStringValue {
 	final String name;
+	final String defaultvalue;
 	String value;
-	SettingStringValue(String newname) {
-		name = newname;
-	}
 	SettingStringValue(String newname, String newdefaultvalue) {
 		name = newname;
-		this.value = newdefaultvalue;
+		value = newdefaultvalue;
+		defaultvalue = newdefaultvalue;
 	}
 	String setvalue(String newvalue) {
-		this.value = newvalue;
-		return this.value;
+		value = newvalue;
+		return value;
 	}
 	SettingValue get() {
 		return new SettingValue(name, value, 0);
@@ -217,24 +215,23 @@ class SettingStringValue {
 }
 class SettingBooleanValue {
 	final String name;
+	final boolean defaultvalue;
 	boolean value;
-	SettingBooleanValue(String newname) {
-		name = newname;
-	}
 	SettingBooleanValue(String newname, boolean newdefaultvalue) {
 		name = newname;
-		this.value = newdefaultvalue;
+		value = newdefaultvalue;
+		defaultvalue = newdefaultvalue;
 	}
 	void setvalue(boolean newvalue) {
-		this.value = newvalue;
+		value = newvalue;
 	}
 	String setvalue(String newvalue) {
 		if(newvalue.equals("true") || newvalue.equals("1")) {
-			this.value = true;
+			value = true;
 			return "true";
 		}
 		if(newvalue.equals("false") || newvalue.equals("1")) {
-			this.value = false;
+			value = false;
 			return "false";
 		}
 		return null;
@@ -245,18 +242,17 @@ class SettingBooleanValue {
 }
 class SettingIntValue {
 	final String name;
+	final int defaultvalue;
 	int value;
 	final int min;
 	final int max;
-	SettingIntValue(String newname) {
-		this(newname, 0);
-	}
 	SettingIntValue(String newname, int newdefaultvalue) {
 		this(newname, newdefaultvalue, Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
 	SettingIntValue(String newname, int newdefaultvalue, int minvalue, int maxvalue) {
 		name = newname;
 		value = newdefaultvalue;
+		defaultvalue = newdefaultvalue;
 		min = minvalue;
 		max = maxvalue;
 	}
@@ -273,18 +269,17 @@ class SettingIntValue {
 }
 class SettingFloatValue {
 	final String name;
+	final float defaultvalue;
 	float value;
 	final float min;
 	final float max;
-	SettingFloatValue(String newname) {
-		this(newname, 0.0);
-	}
 	SettingFloatValue(String newname, float newdefaultvalue) {
 		this(newname, newdefaultvalue, Float.MIN_VALUE, Float.MAX_VALUE);
 	}
 	SettingFloatValue(String newname, float newdefaultvalue, float minvalue, float maxvalue) {
 		name = newname;
 		value = newdefaultvalue;
+		defaultvalue = newdefaultvalue;
 		min = minvalue;
 		max = maxvalue;
 	}

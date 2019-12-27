@@ -6,7 +6,7 @@ String getabout() { // return the about text
 	return text;
 }
 
-void setKey(int k, boolean bool) {	// sets the state of the arrow keys
+void setKey(int k, boolean bool) {	// sets the state of some keys(Arrowkeys, T)
   if      (k == UP    | k == 'W')   isKeyUp    = bool;
   else if (k == DOWN  | k == 'S')   isKeyDown  = bool;
   else if (k == LEFT  | k == 'A')   isKeyLeft  = bool;
@@ -22,15 +22,6 @@ String fixlength(String str, int length, char c) {
 		str += c;
 	}
 	return str;
-}
-
-boolean checkraw(int xpos, int ypos, int _width, int _height) { // checks if the mouse is inside a rectangle
-	float scale = st.floats[1].value;
-	if (mouseX >= xpos*scale && mouseX <= (xpos+_width)*scale && 
-	    mouseY >= ypos*scale && mouseY <= (ypos+_height)*scale) {
-	  	return true;
-	}
-	return false;
 }
 void printcolor(int c) {
 	println("Red: " + (int)red(c) + ", Green: " + (int)green(c) + ", Blue: " + (int)blue(c));
