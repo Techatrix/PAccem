@@ -91,16 +91,6 @@ class RoomManager {
 		}
 	}
 
-	void settilestate(int xpos, int ypos) {
-		if(!isfurniture(xpos,ypos)){
-			roomgrid.settilestate(!roomgrid.gettilestate(xpos,ypos), xpos,ypos);
-			roomgrid.gettile(xpos,ypos).roomgroup = newroomgroup;
-		}
-	}
-	void filltool(int xpos, int ypos) {
-		roomgrid.filltool(!roomgrid.gettilestate(xpos,ypos), xpos,ypos);
-	}
-
 	void mousePressed() {
 		if(mouseButton == LEFT && !viewmode) {
 			selectionid = -1;
@@ -111,7 +101,6 @@ class RoomManager {
 					roomgrid.settilestate(!roomgrid.gettilestate(x,y), x,y);
 					roomgrid.gettile(x,y).roomgroup = newroomgroup;
 				}
-				//im.settilestate(floor(getxpos()), floor(getypos()));
 			} else if(tool == 2) { // place a new furniture or prefab
 				int xpos = floor(getxpos());
 				int ypos = floor(getypos());
@@ -188,7 +177,6 @@ class RoomManager {
 			} else if(tool == 4) { // fill
 				int x = floor(getxpos());
 				int y = floor(getypos());
-				//im.setmultitilestate(x,y);
 				roomgrid.filltool(!roomgrid.gettilestate(x,y), x,y);
 			} else if(tool == 5) { // place window
 				float fx = getxpos();
@@ -233,17 +221,16 @@ class RoomManager {
 				}
 			} else if(key == 'h') { // h
 				if(key == 'h') {
-					ov.visible = !ov.visible;
+					ov.setvisible(!ov.getvisible());
 					st.booleans[1].setvalue(!st.booleans[1].value);
 					st.save();
-					ov.build();
-				}
-			} else if(e.isControlDown()) {
-				if(e.getKeyCode() == 89) {
-					//im.undo();
 				}
 			} else if(keyCode < 54 && keyCode > 48) { // 1-5
-				newroomgroup = keyCode - 49;
+				int i = keyCode - 49;
+				if(i < roomgrid.roomgroups.size()) {
+					newroomgroup = i;
+					ov.build();
+				}
 			} else if(keyCode == UP || keyCode == DOWN || keyCode == LEFT || keyCode == RIGHT) { // arrow keys
 				if(selectionid != -1) {
 					Furniture f = new Furniture();
@@ -628,13 +615,33 @@ class RoomManager {
 		this.name = name;
 	}
 
-	int getprice() { // calculate the complete price of the room
-		int price = 0;
+	PriceReport getpricereport() { // calculate the complete pricereport of the room
+		ArrayList<Integer> ids = new ArrayList<Integer>();
+		ArrayList<Integer> counts = new ArrayList<Integer>();
+
 		for (Furniture f : furnitures) {
-			price += f.price;
+			int exists = -1;
+			for (int i=0;i<ids.size();i++) {
+				if(f.id == ids.get(i)) {
+					exists = i;
+					break;
+				}
+			}
+			if(exists == -1) {
+				ids.add(f.id);
+				counts.add(1);
+			} else {
+				counts.set(exists, counts.get(exists)+1);
+			}
 		}
-		price += roomgrid.getprice();
-		return price;
+		int[] furnitureids = new int[ids.size()];
+		int[] furniturecounts = new int[ids.size()];
+		for (int i=0;i<furnitureids.length;i++) {
+			furnitureids[i] = ids.get(i);
+			furniturecounts[i] = counts.get(i);
+		}
+
+		return new PriceReport(roomgrid.getactivetiles(), 1, furnitureids, furniturecounts);
 	}
 
 	void reset() { // reset everything (mostly everything)
@@ -655,6 +662,7 @@ class RoomManager {
 	void switchviewmode() {	// well... switch the viewmode (2D -> 3D, 3D -> 2D)
 		viewmode = !viewmode;
 	}
+
 	void resetcam(boolean viewmode) { // reset the choosen camera to the default view
 		if(viewmode) { // 3D
 			angle1 = PI*5/4;
@@ -739,7 +747,7 @@ class RoomManager {
 		// draw roomgrid
 		roomgrid.draw(viewmode, gridtilesize);
 
-		// draw urnitures
+		// draw furnitures
 		for (int i=0; i<furnitures.size(); i++) {
 			furnitures.get(i).draw(viewmode, selectionid == i);
 		}

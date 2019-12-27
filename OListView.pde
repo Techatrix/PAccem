@@ -187,22 +187,3 @@ class ListView extends PWH implements IOverlay {
 		return -1;
 	}
 }
-
-
-abstract class ListViewBuilder{
-	ListView build(int length, int _width, int _height) {
-		return build(length, _width, _height, 30, Dir.DOWN);
-	}
-	ListView build(int length, int _width, int _height, int itemheight) {
-		return build(length, _width, _height, itemheight, Dir.DOWN);
-	}
-	ListView build(int length, int _width, int _height, int itemheight, Dir dir) {
-		Object[] items = new Object[length];
-		for (int i=0;i<length;i++) {
-			items[i] = i(i);
-		}
-		return new ListView(items, _width, _height, itemheight, dir);
-	}
-
-	abstract Object i(int i);
-}

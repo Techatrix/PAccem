@@ -1,5 +1,6 @@
 class DataManager {
 	final PImage[] icons;				// list of all icons
+	final PImage[] extras;				// list of all extra images(data/assets/img/)
 	final FurnitureData[] furnitures;	// list of all furnitures that can be used
 	final PrefabData[] prefabs;			// list of all prefabs that can be used
 
@@ -13,6 +14,9 @@ class DataManager {
 		for (int i=0;i<icons.length;i++) {
 			icons[i] = loadImage("data/assets/icon/"+i+".png");
 		}
+		/* --------------- load extras data --------------- */
+		extras = new PImage[1];
+		extras[0] = loadImage("data/assets/img/error.png");
 
 		/* --------------- load furniture data --------------- */
 		JSONArray furnituredata;
@@ -59,7 +63,6 @@ class DataManager {
 
 			JSONArray prefabfurnsdata = pref.getJSONArray("furnitures");
 			PrefabFurnitureData[] prefabfurns = new PrefabFurnitureData[prefabfurnsdata.size()];
-			// TODO: Check null
 
 			for (int j=0;j<prefabfurnsdata.size();j++) {
 				JSONObject preffurn = prefabfurnsdata.getJSONObject(j);
@@ -104,7 +107,8 @@ class DataManager {
 				return fdata;
 			}
 		}
-		return null;
+		toovmessages.add("Furniture ID " + id + " not found");
+		return new FurnitureData();
 	}
 	PrefabData getprefabdata(int id) { // return the prefab data with the corresponding id
 		return prefabs[id];
@@ -121,6 +125,15 @@ class FurnitureData {
 	final String name;
 	final int price;
 
+	FurnitureData() { // not found furniture
+		this.id = -1;
+		this._width = 1;
+		this._height = 1;
+		this.image = dm.extras[0];
+		this.shape = new PShape();
+		this.name = "Not Found";
+		this.price = 0;
+	}
 	FurnitureData(int id, int _width, int _height, PImage image, PShape shape, String name, int price) {
 		this.id = id;
 		this._width = _width;

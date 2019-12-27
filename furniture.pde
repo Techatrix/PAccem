@@ -36,7 +36,11 @@ class Furniture extends RPWH {
 		if(!viewmode) { // 2D
 			translate(xpos, ypos);
 			tint(tint);
-			image(dm.furnitures[id].image, 0, 0, _width, _height); // draw furniture
+			if(id == -1) {
+				image(dm.extras[0], 0, 0, _width, _height); // draw not found icon
+			} else {
+				image(dm.furnitures[id].image, 0, 0, _width, _height); // draw furniture
+			}
 			noTint();
 			if (selected == true) { // draw red selection box if selected
 				noStroke();
@@ -45,12 +49,14 @@ class Furniture extends RPWH {
 			}
 			translate(-xpos, -ypos);
 		} else { // 3D
-			pg.translate(xpos, 0, ypos);
-			PShape s = dm.furnitures[id].shape;
-			s.setFill(tint);
-			pg.shape(s); // draw furniture
-			s.setFill(255);
-			pg.translate(-xpos, 0, -ypos);
+			if(id != -1) {
+				pg.translate(xpos, 0, ypos);
+				PShape s = dm.furnitures[id].shape;
+				s.setFill(tint);
+				pg.shape(s); // draw furniture
+				s.setFill(255);
+				pg.translate(-xpos, 0, -ypos);
+			}
 		}
 	}
 	void drawframe(boolean selected) { // draw boundry frame on the furniture

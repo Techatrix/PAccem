@@ -1,5 +1,5 @@
 class Grid {
-	GridTile[][] tiles; // 2 dimensionales array of tiles
+	GridTile[][] tiles; // 2 dimensional array of tiles
 	ArrayList<RoomGroup> roomgroups;
 
 	Grid(int xsize, int ysize) {
@@ -14,10 +14,10 @@ class Grid {
 	}
 	
 	void draw(boolean viewmode, float gts) { // draw the roomgrid
-		if(isKeyT) { // TODO: add confirm
+		if(isKeyT) {
 			if(allowcgol) {
 				cgol(); // thats a secret (but youve got the source code so its not hard to find out what it does)
-				// and i dont even really try to hide it
+				// and its not even well hidden
 			} else {
 				if(!ov.drawpopup) {
 					ov.drawpopup(12);
@@ -281,16 +281,16 @@ class Grid {
 		tiles = newtiles;
 	}
 
-	int getprice() { // calculate the price of the roomgrid
-		int price = 0;
+	int getactivetiles() { //returns the amount of active tiles
+		int count = 0;
 		for (int x=0; x<tiles.length; x++) {
 			for (int y=0; y<tiles[0].length; y++) {
 				if(tiles[x][y].state) {
-					price += 1;
+					count++;
 				}
 			}
 		}
-		return price;
+		return count;
 	}
 }
 

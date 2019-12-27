@@ -28,15 +28,14 @@ class ApplicationManager {
 			pg = createGraphics(width,height, P3D);
 			pg.smooth(st.ints[2].value);				// anti-aliasing
 			blurshader = loadShader("data/assets/shader/blur.glsl");
-			blurshader.set("blurSize", 9);
-			blurshader.set("sigma", 3.0);
-			blurshader.set("samplesize", 1);
+			//blurshader.set("blurSize", 9);
+			//blurshader.set("sigma", 3.0);
+			//blurshader.set("samplesize", 1);
 		}
 		lg = new LanguageManager(st.strings[1].value);	// initialise language manager
 		dm = new DataManager();							// initialise data manager
 		rm = new RoomManager();							// initialise room manager
-		ov = new Overlay();								// initialise overlay
-		//im = new InstructionManager();				// initialise instruction manager
+		ov = new OverlayManager();						// initialise overlay manager
 
 		int[] v = dm.validate();
 		for (int i=0;i<v.length;i++) {
