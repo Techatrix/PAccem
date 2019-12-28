@@ -50,8 +50,8 @@ abstract class Tabbar implements IOverlay {
 		return -1 < getid() && getid() < tabs.length;
 	}
 
-	Box getbound() {
-		return getboundry(list);
+	Box getboundary() {
+		return getitemboundary(list);
 	}
 	
 	boolean ishit() {

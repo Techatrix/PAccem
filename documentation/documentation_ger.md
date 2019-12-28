@@ -4,36 +4,41 @@ PAccem
 Einleitung
 ----------
 
+### Tab-Leiste
+
 ![](media/tabbar_ger.png)
 
 | Nummer | Aktion                                                                    |
 |--------|---------------------------------------------------------------------------|
-| 0      | Öffnet ein Popup, um einen neuen Raum mit auswählbarer Größe zu erstellen |
-| 1      | Ändert die Ansicht zwischen 2D und 3D                                     |
-| 2      | Öffnet die Raumliste mit allen Räumen in data/rooms                       |
-| 3      | Öffnet das Speicher Menu um den aktuellen Raum abzuspeichern              |
+| 1      | Öffnet ein Popup, um einen neuen Raum mit auswählbarer Größe zu erstellen |
+| 2      | Ändert die Ansicht zwischen 2D und 3D                                     |
+| 3      | Öffnet die Raumliste mit allen Räumen in data/rooms                       |
+| 4      | Öffnet das Speicher Menu um den aktuellen Raum abzuspeichern              |
 | 5      | Öffnet die Raumgruppenliste                                               |
 | 6      | Öffnet das Preis Menu, welches die Kosten für den aktuellen Raum nennt.   |
 | 7      | Öffnet das Einstellungmenu                                                |
 | 8      | Öffnet das Zurücksetzen Popup, um den aktuellen raum zurückzusetzen.      |
 | 9      | Öffnet das Info Popup. (Version, Autor, Githublink)                       |
 
+### Werkzeug-Leiste
+
 ![](media/toolbar.png)
 
-| Nummer | Werkzeug, Aktion                                                                  |
+| Nummer | Werkzeug, Verwendung                                                              |
 |--------|-----------------------------------------------------------------------------------|
-| 0      | Bewegen Werkzeug, Zum umzusehen in der 2D Ansicht                                 |
-| 1      | Zeichnen Werkzeug, Zum Raumgrundriss erstellen                                    |
-| 2      | Möbel Werkzeug, Zum Platzieren von neuen Möbeln                                   |
-| 3      | Auswahl Werkzeug, Zum auszuwählen von Möbel,um sie zu verschieben oder zu löschen |
-| 4      | Füll Werkzeug                                                                     |
-| 5      | Öffnet die Raumgruppenliste                                                       |
-| 6      | Öffnet das Info Popup. (Version, Author, Githublink)                              |
+| 1      | Bewegen Werkzeug, Zum umzusehen in der 2D Ansicht                                 |
+| 2      | Zeichnen Werkzeug, Zum Raumgrundriss erstellen                                    |
+| 3      | Möbel Werkzeug, Zum Platzieren von neuen Möbeln                                   |
+| 4      | Auswahl Werkzeug, Zum auszuwählen von Möbel,um sie zu verschieben oder zu löschen |
+| 5      | Füll Werkzeug, Zum ausfüllen eines Bereiches im Raumgitter                        |
+| 6      | Fenster Werkzeug, Zum platzieren von Fenstern                                     |
 
 Vererbung
 ---------
 
 ![](media/inheritance.png)
+
+![](media/overlay.png)
 
 Komposition
 -----------
@@ -47,8 +52,7 @@ Klassenübersicht
 
 PApplet ist eine Klasse in welcher sowohl eine main (setup), als auch eine loop(draw) Funktion enthalten ist.
 Sie repräsentiert die höchste Klasse für den Programmierer und definiert den Startpunkt.
-Jegliche Maus und Tastatur Events
-werden in dieser Klasse übergegeben und ggf. verarbeitet.
+Jegliche Maus und Tastatur Events werden in dieser Klasse übergegeben und ggf. verarbeitet.
 
 Weitere Information über PApplet und das Processingkonstrukt: siehe Anhang.
 
@@ -60,13 +64,11 @@ Settings st: Lädt und speichert alle im Programm enthaltenen Einstellungen ab.
 
 LanguageManager lg: Lädt die aktuelle Sprachdatei und gibt deren Daten wieder. (siehe: data/assets/lang/)
 
-RoomManager rm:
+RoomManager rm: Verwaltet den gesamten Raum(Gitter, Möbel, Nutzereingaben)
 
 DataManager dm: Verwaltet alle daten, wie 3D Modelle, Bilder, usw.
 
-Overlay ov: Enthält das GUI
-
-InstructionManager im: Stillgelegt
+OverlayManager ov: Enthält das GUI
 
 PGraphics pg: Grafikoberfläche für 3D-Grafik
 
@@ -80,7 +82,7 @@ boolean allowcgol: ?
 
 ArrayList toovmessages: enthält alle Nachrichten die an die Konsole gesendet werden sollen. (siehe: Overlay)
 
-int[] c: Ein Array aus Farbwerten welche sich nach dem Dunkelmodus ausrichten.
+int[] c: Ein Array aus Farbwerten welche sich nach dem Dunkelmodus ausrichten. (0-8 => 0 - 255 oder 255 - 0)
 
 boolean isKeyUp, isKeyRight, isKeyLeft, isKeyDown, isKeyT: Status der einzelnen Tasten
 
@@ -94,11 +96,11 @@ void settings(): Wird ausgeführt bevor das Programmfenster erstellt wird.
 
 void setup(): Wird ausgeführt nachdem das Programmfenster erstellt wurde.
 
-void draw(): Wird für jedes Bild ausgeführt. (60hz)
+void draw(): Wird für jedes Bild ausgeführt.
 
 void mouseWheel(MouseEvent e): Wird ausgeführt, wenn der Nutzer sein Mausrad dreht.
 
-void mouseDragged(): Wird ausgeführt, wenn der Nutzer seine Maus bewegt.
+void mouseDragged(): Wird ausgeführt, wenn der Nutzer seine Maus bewegt, wenn eine Maustaste gedrückt ist.
 
 void mouseReleased(): Wird ausgeführt, wenn der Nutzer eine Maustaste loslässt.
 
@@ -115,32 +117,31 @@ Ebenso werden Aktionen wie Argumente, Farbmanagement, Schriftart, Programmtitel 
 
 #### Variablen
 
-String setfontrawinput: Wird vom Thread in setfontraw() als Parameter genutzt
+String setfontrawinput: Wird vom Thread in setFontRaw() als Parameter genutzt
 
 #### Funktionen
 
-void initsettings(): Wird ausgeführt bevor das Programmfenster erstellt wird
+void initSettings(): Wird ausgeführt bevor das Programmfenster erstellt wird
 
-void initsetup(): Wird ausgeführt nachdem das Programmfenster erstellt wurde
+void initSetup(): Wird ausgeführt nachdem das Programmfenster erstellt wurde
 
-void settitle(String name): Legt den Programmfenstertitel fest
+void setTitle(String name): Legt den Programmfenstertitel fest
 
-void setfont(String newfontname): Legt die aktuelle Schriftart fest.
-Es wird ermittelt ob es sich bei der gewählten Schriftart um eine aus der Roboto Schriftfamilie handelt und wenn dies nicht der Fall ist, wird setfontraw() als Thread ausgeführt, um die Schriftart zu ermitteln.
+void setFont(String newfontname): Legt die aktuelle Schriftart fest.
+Es wird ermittelt ob es sich bei der gewählten Schriftart um eine aus der Roboto Schriftfamilie handelt und wenn dies nicht der Fall ist, wird setFontRaw() als Thread ausgeführt, um die Schriftart zu ermitteln.
 
-void setfontraw(): Wird von setfont(String newfontname) als Thread ausgeführt.
+void setFontRaw(): Wird von setfont(String newfontname) als Thread ausgeführt.
 
-void recalculatecolor(): Legt die Farbwerte in PAccem/PApplet gegeben nach dem Dunkelmodus fest
+void recalculateColor(): Legt die Farbwerte in PAccem/PApplet gegeben nach dem Dunkelmodus fest
 
-void manageargs(): Verarbeitet alle Argumente welche an das Programm übergeben wurden.
+void manageArgs(): Verarbeitet alle Argumente welche an das Programm übergeben wurden.
 
 | Name     | Aktion                    |
 |----------|---------------------------|
 | \-debug  | Aktiviert den Debugmode   |
 | \-noblur | Deaktiviert Weichzeichnen |
 
-void loop(): Wird für jedes Bild ausgeführt. (60hz)
-Es wird nachgesehen ob sich die Programmfenstergröße geändert hat und daraufhin die Fenstergrößeneinstellungen angepasst und ggf. die Größe der 3D-Grafikoberfläche(pg) angepasst.
+void loop(): Es wird nachgesehen ob sich die Programmfenstergröße geändert hat und daraufhin die Fenstergrößeneinstellungen angepasst und ggf. die Größe der 3D-Grafikoberfläche(pg) angepasst.
 
 ### DataManager
 
@@ -158,11 +159,11 @@ final PrefabData[] prefabs: Liste aller Fertigteile welcher der Nutzer verwenden
 
 int[] validate(): Sieht nach, ob alle Möbel in ihren Fertigteile ins Fertigteil hineinpassen.
 
-boolean validateid(int id): Sieht nach, ob ein Möbelstück mit der gegebenen id existiert.
+boolean validateId(int id): Sieht nach, ob ein Möbelstück mit der gegebenen id existiert.
 
-FurnitureData getfurnituredata(int id): gibt die Möbelinformationen mit der gegebenen id.
+FurnitureData getFurnitureData(int id): gibt die Möbelinformationen mit der gegebenen id.
 
-PrefabData getprefabdata(int id): gibt die Fertigteilinformationen mit der gegebenen id.
+PrefabData getPrefabData(int id): gibt die Fertigteilinformationen mit der gegebenen id.
 
 #### Extra
 
@@ -202,15 +203,15 @@ color tint: Färbung des Möbelstücks
 
 void draw(boolean viewmode, boolean selected): Zeichnet/Rendert das Möbelstück
 
-void drawframe(boolean selected) { Zeichnet/Rendert die Box auf dem Möbelstücks
+void drawFrame(boolean selected): Zeichnet/Rendert die Box auf dem Möbelstücks
 
 boolean checkover(): Ermittelt ob die Maus auf das Möbelstück zeigt
 
 boolean checkover(int xpos, int ypos): Ermittelt ob das Möbelstück in der gegebenen Gitterposition liegt
 
-boolean setxpos(int value): Legt die x Position des Möbelstücks fest
+boolean setXPos(int value): Legt die x Position des Möbelstücks fest
 
-boolean setypos(int value): Legt die y Position des Möbelstücks fest
+boolean setYPos(int value): Legt die y Position des Möbelstücks fest
 
 void move(int dx, int dy): Bewegt das Möbestückt
 
@@ -228,25 +229,25 @@ ArrayList roomgroups: Liste aller Raumgruppen
 
 void draw(boolean viewmode, float gts): Zeichnet/Rendert das Gitter
 
-void filltool(boolean value, int x, int y): Wendet das Füll Werkzeug an
+void fillTool(boolean value, int x, int y): Wendet das Füll Werkzeug an
 
-boolean settilestate(boolean value, int x, int y): Legt den Status des gegebenen
+boolean setTileState(boolean value, int x, int y): Legt den Status des gegebenen
 
-Kachels fest boolean gettilestate(int x, int y): Gibt den Status des gegebenen Kachels zurück
+Kachels fest boolean getTileState(int x, int y): Gibt den Status des gegebenen Kachels zurück
 
-boolean settile(GridTile value, int x, int y) { Legt die Variablen des gegebenen Kachels fest
+boolean setTile(GridTile value, int x, int y): Legt die Variablen des gegebenen Kachels fest
 
-GridTile gettile(int x, int y): Gibt die Variablen des gegebenen Kachels zurück
+GridTile getTile(int x, int y): Gibt die Variablen des gegebenen Kachels zurück
 
-boolean isingrid(int x, int y): Ermittelt ob die gegebene Position im Gitter liegt
+boolean isinGrid(int x, int y): Ermittelt ob die gegebene Position im Gitter liegt
 
-boolean isroomgroupinuse(int id): Ermittelt ob eine gegebene Raumgruppe im Gitter verwendet wird
+boolean isRoomGroupinuse(int id): Ermittelt ob eine gegebene Raumgruppe im Gitter verwendet wird
 
-void removeroomgroup(int id): Entfernt eine gegebene Raumgruppe aus der Liste
+void removeRoomGroup(int id): Entfernt eine gegebene Raumgruppe aus der Liste
 
 void cgol(): hmmmm?
 
-int getprice(): Gibt den Preis des Gitters wieder
+int getActiveTiles(): Gibt die Anzahl an Kacheln an, welche teil des Raums sind.
 
 #### Extra
 
@@ -268,9 +269,9 @@ JSONObject data: Aktuelle Sprachdaten
 
 #### Funktionen
 
-boolean setlang(String newlang): Legt die aktuelle Sprache fest
+boolean setLang(String newlang): Legt die aktuelle Sprache fest
 
-String get(String key) { Gibt die Übersetzung mit dem gegebenen Schlüsselwort zurück
+String get(String key): Gibt die Übersetzung mit dem gegebenen Schlüsselwort zurück
 
 ### OverlayManager
 
@@ -304,22 +305,23 @@ final int messageboxheight: Höhe der Nachrichten Box
 
 void build(): Erstellt das Overlay
 
-void checkmessages(): Fügt alle Nachrichten in toovmessages (siehe: PAccem/PApplet) der Nachrichten Box hinzu
+void checkMessages(): Fügt alle Nachrichten in toovmessages (siehe: PAccem/PApplet) der Nachrichten Box hinzu
 
-void printmessage(String text): Fügt eine Nachricht der Nachrichten Box hinzu
+void printMessage(String text): Fügt eine Nachricht der Nachrichten Box hinzu
 
-void drawpopup(int id): Öffnet ein Popup (unterschiedlich je nach id)
+void drawPopup(int id): Öffnet ein Popup (unterschiedlich je nach id)
 
-| ID | Popup               |
-|----|---------------------|
-| 0  | Benötig Neustart    |
-| 1  | Neuer Raum          |
-| 2  | Infos               |
-| 3  | Zurücksetzen        |
-| 4  | Entferne Raumgruppe |
-| 5  | Neue Raumgruppe     |
-| 6  | Wähle Farbe         |
-| 7  | Aktiviere CGOL      |
+| ID | Popup                       |
+|----|-----------------------------|
+| 0  | Benötig Neustart            |
+| 1  | Neuer Raum                  |
+| 2  | Infos                       |
+| 3  | Zurücksetzen                |
+| 4  | Entferne Raumgruppe         |
+| 5  | Neue Raumgruppe             |
+| 6  | Wähle Farbe                 |
+| 7  | Aktiviere CGOL              |
+| 8  | Standartraum überschreiben? |
 
 ### Overlay
 
@@ -335,15 +337,13 @@ boolean visible: Sichtbarkeitsstatus des Overlays
 
 #### Funktionen
 
-void setitems(Object[] items): Nimmt alle OverlayElemente an sich und
-positioniert sie am Nullpunk.
+void setitems(Object[] items): Nimmt alle OverlayElemente an sich und positioniert sie am Nullpunk.
 
 void draw(): Zeichnet/Rendert das Overlay
 
 boolean ishit(): Ermittelt ob die Maus auf dem Overlay liegt
 
-void mouseWheel(MouseEvent e): Wird ausgeführt, wenn der Nutzer sein Mausrad
-dreht
+void mouseWheel(MouseEvent e): Wird ausgeführt, wenn der Nutzer sein Mausrad dreht
 
 boolean mousePressed(): Wird ausgeführt, wenn der Nutzer eine Maustaste drückt und gibt zurück, ob der Click etwas im Overlay ausgelöst hat
 
@@ -416,39 +416,43 @@ void keyPressed(KeyEvent e): Wird ausgeführt, wenn der Nutzer eine Tastaturtast
 
 void keyReleased(): Wird ausgeführt, wenn der Nutzer eine Tastaturtaste loslässt.
 
-float getxpos(): Verwandelt die Maus X Position in eine Raumgitter X Position.
+float getXPos(): Verwandelt die Maus X Position in eine Raumgitter X Position.
 
-float getypos(): Verwandelt die Maus Y Position in eine Raumgitter Y Position.
+float getYPos(): Verwandelt die Maus Y Position in eine Raumgitter Y Position.
 
-int getxgridsize(): Gibt die X Größe/Breite des Raumgitter.
+boolean isFurniture(int xpos, int ypos): Gibt an, ob sich ein Möbelstück an der gegebenen Position gibt
 
-int getygridsize(): Gibt die Y Größe/Höhe des Raumgitter.
+int getXGridSize(): Gibt die X Größe/Breite des Raumgitter.
 
-String[] loadrooms(): Gibt eine Liste aller Räume im Ordner: data/rooms/
+int getYGridSize(): Gibt die Y Größe/Höhe des Raumgitter.
+
+String[] loadRooms(): Gibt eine Liste aller Räume im Ordner: data/rooms/
 
 void save(String name): Speichert den aktuellen Raum in data/rooms/ mit dem gegebenen Namen.
 
 void load(String name): Lädt den gegebenen Raum in data/rooms/.
 
-int getprice(): Errechnet den gesamten Preis des Raumes
+int getPriceReport(): Gibt einen Preisbericht zurück, welche Informationen über die Raumkosten enthält.
 
 void reset(): Setzt den Raummanager zurück
 
-void newroom(int xsize, int ysize): Erstellt einen neuen Raum mit der gegebenen Größe
+void newRoom(int xsize, int ysize): Erstellt einen neuen Raum mit der gegebenen Größe
 
-void switchviewmode(): änder die Ansicht (2D -\> 3D, 3D -\> 2D)
+void switchViewmode(): änder die Ansicht (2D -\> 3D, 3D -\> 2D)
 
-void resetcam(boolean viewmode): setzt die gegebene Kameraansicht zurück
+void resetCamera(boolean viewmode): setzt die gegebene Kameraansicht zurück
 
 void draw(): Zeichnet/Rendert den Raum
 
 #### Extra
 
-TODO
-
 ##### PriceReport
 
+Enthält einen gesamten Kostenbericht über den aktuellen Raum.
+
 ##### FurniturePriceReport
+
+Enthält einen Kostenbericht alle Möbel des aktuellen Raums.
 
 ### Settings
 
@@ -466,10 +470,9 @@ final SettingFloatValue[] floats: Einstellung vom Typ Float/Kommazahl
 
 #### Funktionen
 
-int getsize(): Ermittelt die gesamte Anzahl an Einstellungen
+int getSize(): Ermittelt die gesamte Anzahl an Einstellungen
 
-String set(int id, String value): Setzt die gegebene Einstellung zum gegebenen
-Wert. (automatische Datentyp Umwandlung)
+String set(int id, String value): Setzt die gegebene Einstellung zum gegebenen Wert. (automatische Datentyp Umwandlung)
 
 SettingValue get(int id): Gibt die Einstellung mit der gegebenen id
 
@@ -525,17 +528,17 @@ class STemp: Speichert einen String/Text
 
 In basefunctions.pde werden vielseitige Funktionen definiert.
 
-String getabout(): Gibt den Info Text
+String getAbout(): Gibt den Info Text
 
 void setKey(int k, boolean bool): Legt den Status von manchen Tasten fest. (Pfeiltasten, T)
 
 String cap(String str): Verwandelt den ersten Buchstaben eines Strings/Text in Großschrift
 
-String fixlength(String str, int length, char c): Füllt einen String/Text mit einem gegebenen Zeichen bis der String/Text eine gegebene Länge erreicht hat.
+String fixLength(String str, int length, char c): Füllt einen String/Text mit einem gegebenen Zeichen bis der String/Text eine gegebene Länge erreicht hat.
 
-void printcolor(int c): Schreibt eine Farbe in die Konsole.
+void printColor(int c): Schreibt eine Farbe in die Konsole.
 
-void printcolorhex(int c):Schreibt eine Farbe in Hexadecimal in die Konsole.
+void printColorhex(int c): Schreibt eine Farbe in Hexadecimal in die Konsole.
 
 #### Constants
 
@@ -583,7 +586,6 @@ Eine einfache Liste aus Elementen/Kindern.
 #### Popup
 
 Zeigt ein Kind/Element im Bildschirmmittelpunkt an.
-
 Der Hintergrund wird verdunkelt und weichgezeichnet.
 
 Weichzeichner: siehe data/assets/shader/blur.glsl
@@ -661,8 +663,12 @@ dynamic casting: Da Java keine dynamische Variable besitzt, wird hier mithilfe d
 Anhang
 ------
 
-PApplet:
-[Link](https://processing.github.io/processing-javadocs/core/processing/core/PApplet.html)
+PAccem Github Repository: [Link](https://github.com/Techatrix/PAccem)
 
-PConstants:
-[Link](https://processing.github.io/processing-javadocs/core/processing/core/PConstants.html)
+Processing Internetseite: [Link](https://processing.org/)
+
+Processing Github Repository: [Link](https://github.com/processing/processing)
+
+PApplet Dokumentation: [Link](https://processing.github.io/processing-javadocs/core/processing/core/PApplet.html)
+
+PConstants Dokumentation: [Link](https://processing.github.io/processing-javadocs/core/processing/core/PConstants.html)

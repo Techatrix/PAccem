@@ -27,7 +27,7 @@ class Text extends PWH implements IOverlay {
 		}
 	}
 
-	Box getbound() {
+	Box getboundary() {
 		return new Box(max(_width, textWidth(text)), max(_height, lines*(16 + textDescent())));
 	}
 	
@@ -129,7 +129,7 @@ abstract class SetValueText extends PWH implements IOverlay {
 		}
 	}
 
-	Box getbound() {
+	Box getboundary() {
 		textSize(16);
 		return new Box(max(_width, textWidth(text)*1), max(_height, 16 + textDescent()));
 	}
@@ -170,7 +170,7 @@ abstract class GetValueText extends PWH implements IOverlay {
 		}
 	}
 
-	Box getbound() {
+	Box getboundary() {
 		textSize(16);
 		return new Box(max(_width, textWidth(text)*1), max(_height, 16 + textDescent()));
 	}

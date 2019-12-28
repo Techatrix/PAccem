@@ -35,7 +35,7 @@ class ListView extends PWH implements IOverlay {
 					}
 				}
 				if(!e) {
-					Box b = getboundry(item);
+					Box b = getitemboundary(item);
 					length += max(itemheight, (dir == Dir.DOWN || dir == Dir.UP) ? b.h : b.w);
 				}
 			}
@@ -93,7 +93,7 @@ class ListView extends PWH implements IOverlay {
     	noClip();
 	}
 
-	Box getbound() {
+	Box getboundary() {
 		return new Box(_width, _height);
 	}
 	
@@ -125,7 +125,7 @@ class ListView extends PWH implements IOverlay {
 				}
 			}
 			if(!e) {
-				Box b = getboundry(item);
+				Box b = getitemboundary(item);
 				sizelength += max(itemheight, (dir == Dir.DOWN || dir == Dir.UP) ? b.h : b.w);
 			}
 		}
@@ -145,7 +145,7 @@ class ListView extends PWH implements IOverlay {
 					e = true;
 				}
 			}
-			Box b = getboundry(item);
+			Box b = getitemboundary(item);
 			if(dir == Dir.DOWN || dir == Dir.UP) {
 				if(dir == Dir.DOWN) {
 					setitemxy(item, xpos, ypos+off+off2);

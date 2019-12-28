@@ -2,7 +2,7 @@
 //import java.io.*;
 //import java.util.stream.IntStream;
 
-ApplicationManager am;	// manages the overal application (title, size, initialization)
+ApplicationManager am;	// manages the overall application (title, size, initialization)
 Settings st;			// loads and stores the current settings
 LanguageManager lg;		// loads the current language file
 RoomManager rm;			// manages the room(grid, furniture & user input)
@@ -17,8 +17,8 @@ boolean allowcgol;		// ?
 ArrayList<String> toovmessages;// messages which are send to the overlay
 
 int[] c = new int[9];	// easily accessible color values (0-8 => 0 - 255 or 255 - 0)
-boolean isKeyUp, isKeyRight, isKeyLeft, isKeyDown, isKeyT;	// stores whether or not a arrow key is down
-boolean deb = false;	// debugmode
+boolean isKeyUp, isKeyRight, isKeyLeft, isKeyDown, isKeyT;	// state of these keys
+boolean deb = false;	// debug mode
 boolean disableblur = false;	// whether or not blur is disabled
 
 /* --------------- Experimental Version! WIP --------------- */
@@ -26,44 +26,30 @@ boolean disableblur = false;	// whether or not blur is disabled
 /* --------------- main --------------- */
 void settings() { // is being executed once before the window is created	(pre-main())
 	am = new ApplicationManager();
-	am.initsettings();
+	am.initSettings();
 }
 void setup() { // is being executed once after the window is being created 	(main())
-	am.initsetup();
-
-	/*	serialization
-	try {
-		SETemp t = new SETemp(1);
-		FileOutputStream fout= new FileOutputStream(sketchPath("f.txt"));  
-		ObjectOutputStream out=new ObjectOutputStream(fout);  
-		out.writeObject(t);  
-		out.flush();   
-		out.close();  
-		println("success");  
-	} catch (IOException i) {
-		i.printStackTrace();
-	}
-	*/
+	am.initSetup();
 }
 
 void draw() { // is being executed on every frame
 	am.loop();	// application manager
 	rm.draw();	// room manager
 	ov.draw();	// overlay
-	ov.checkmessages();	// check toovmessages for any messages
+	ov.checkMessages();	// check toovmessages for any messages
 }
 
 /* --------------- mouse input --------------- */
 void mouseWheel(MouseEvent e) {
 	ov.mouseWheel(e);
-	if(ov.ishit()) {
+	if(ov.isHit()) {
 		return;
 	}
 	rm.mouseWheel(e);
 }
 void mouseDragged() {
 	ov.mouseDragged();
-	if(ov.ishit()) {
+	if(ov.isHit()) {
 		return;
 	}
 	rm.mouseDragged();
@@ -73,16 +59,15 @@ void mouseReleased() {
 	rm.mouseReleased();
 }
 void mousePressed() {
-	if(ov.ishit() | ov.mousePressed()) {
+	if(ov.isHit() | ov.mousePressed()) {
 		return;
 	}
 	rm.mousePressed();
 }
 /* --------------- keyboard input --------------- */
 void keyPressed(KeyEvent e) {
-	rm.getpricereport();
 	ov.keyPressed(e);
-	if(ov.ishit()) {
+	if(ov.isHit()) {
 		return;
 	}
 	rm.keyPressed(e);

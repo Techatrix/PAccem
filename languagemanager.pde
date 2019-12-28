@@ -1,13 +1,13 @@
 class LanguageManager {
-	JSONObject data; // languagedata
+	JSONObject data; // current language data
 
 	LanguageManager(String newlang) {
 		if(deb) {
 			toovmessages.add("Loading LanguageManager");
 		}
-		setlang(newlang);
+		setLang(newlang);
 	}
-	boolean setlang(String newlang) { // sets the current language if available
+	boolean setLang(String newlang) { // sets the current language if available
 		newlang = newlang.toLowerCase();
 		File f = new File(sketchPath("data/assets/lang/" + newlang + ".json"));
 		if (f.exists()) {

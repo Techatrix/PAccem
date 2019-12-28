@@ -1,11 +1,11 @@
-String getabout() { // return the about text
+String getAbout() { // return the about text
 	String text = appname + "\n";
 	text += lg.get("version") + ": " + appversion + "\n";
 	text += lg.get("madeby") + ": " + appmaker + "\n";
 	return text;
 }
 
-void setKey(int k, boolean bool) {	// sets the state of some keys(Arrowkeys, T)
+void setKey(int k, boolean bool) {	// sets the state of some keys(Arrow keys, T)
   if      (k == UP    | k == 'W')   isKeyUp    = bool;
   else if (k == DOWN  | k == 'S')   isKeyDown  = bool;
   else if (k == LEFT  | k == 'A')   isKeyLeft  = bool;
@@ -16,16 +16,16 @@ void setKey(int k, boolean bool) {	// sets the state of some keys(Arrowkeys, T)
 String cap(String str) { // converts the first letter of a string to upper case
 	return str.substring(0, 1).toUpperCase() + str.substring(1);
 }
-String fixlength(String str, int length, char c) {
+String fixLength(String str, int length, char c) {
 	while(str.length() < length) {
 		str += c;
 	}
 	return str;
 }
-void printcolor(int c) {
+void printColor(int c) {
 	println("Red: " + (int)red(c) + ", Green: " + (int)green(c) + ", Blue: " + (int)blue(c));
 }
-void printcolorhex(int c) {
+void printColorhex(int c) {
 	String red = Integer.toHexString((int)red(c));
 	String green = Integer.toHexString((int)green(c));
 	String blue = Integer.toHexString((int)blue(c));

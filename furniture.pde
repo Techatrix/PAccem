@@ -1,11 +1,11 @@
 class Furniture extends RPWH {
 	int id;								// id of the furniture
 	int price;							// price of the furniture
-	color tint = color(255,255,255);	// tintcolor of the furniture
+	color tint = color(255,255,255);	// tint color of the furniture
 
 	Furniture() {}
 	Furniture(int id) {
-		this(dm.getfurnituredata(id));
+		this(dm.getFurnitureData(id));
 	}
 	Furniture(int id, int xpos, int ypos) {
 		this(id);
@@ -59,7 +59,7 @@ class Furniture extends RPWH {
 			}
 		}
 	}
-	void drawframe(boolean selected) { // draw boundry frame on the furniture
+	void drawFrame(boolean selected) { // draws boundary frame on the furniture
 		noStroke();
 		if(selected) {
 			fill(c[8], 100);
@@ -97,14 +97,14 @@ class Furniture extends RPWH {
 		return false;
 	}
 
-	boolean setxpos(int value) { // sets the X-Position to the given one
+	boolean setXPos(int value) { // sets the X-Position to the given one
 		if(value > -1 && value <= rm.roomgrid.tiles.length-_width) {
 			xpos = value;
 			return true;
 		}
 		return false;
 	}
-	boolean setypos(int value) { // sets the Y-Position to the given one
+	boolean setYPos(int value) { // sets the Y-Position to the given one
 		if(value > -1 && value <= rm.roomgrid.tiles[0].length-_height) {
 			ypos = value;
 			return true;
@@ -112,7 +112,7 @@ class Furniture extends RPWH {
 		return false;
 	}
 	void move(int dx, int dy) { // moves the furniture in the given direction
-		setxpos(xpos+dx);
-		setypos(ypos+dy);
+		setXPos(xpos+dx);
+		setYPos(ypos+dy);
 	}
 }

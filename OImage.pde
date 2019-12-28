@@ -41,7 +41,7 @@ class Image extends PWH implements IOverlay {
 		noTint();
 	}
 
-	Box getbound() {
+	Box getboundary() {
 		return new Box(_width, _height);
 	}
 	

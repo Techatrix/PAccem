@@ -11,7 +11,7 @@ class Container extends PWH implements IOverlay {
 	}
 	Container(Object item, int _width, int _height) {
 		this.item = item;
-		Box b = getboundry(item);
+		Box b = getitemboundary(item);
 		setwh(max(round(b.w), _width), max(round(b.h), _height));
 	}
 	Container(Object item, int _width, int _height, color _color) {
@@ -50,7 +50,7 @@ class Container extends PWH implements IOverlay {
 		}
 	}
 
-	Box getbound() {
+	Box getboundary() {
 		return new Box(_width, _height);
 	}
 
