@@ -1,7 +1,6 @@
 String getabout() { // return the about text
 	String text = appname + "\n";
 	text += lg.get("version") + ": " + appversion + "\n";
-	text += lg.get("programmedwith") + ": " + "Processing" + "\n";
 	text += lg.get("madeby") + ": " + appmaker + "\n";
 	return text;
 }

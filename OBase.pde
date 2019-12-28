@@ -234,7 +234,7 @@ void drawitem(Object item, boolean hit) {
 		((Slider)item).draw(hit);
 	} else if(item instanceof SizedBox) {} else {
 		if(deb) {
-			println("drawitem(): " + item + " unhandeled");
+			toovmessages.add("drawitem(): " + item + " unhandeled");
 		}
 	}
 }
@@ -271,7 +271,7 @@ void setitemwh(Object item, int _width, int _height) {
 		((Slider)item).setwh(_width, _height);
 	} else {
 		if(deb && item != null) {
-			println("setitemwh(): " + item + " unhandeled");
+			toovmessages.add("setitemwh(): " + item + " unhandeled");
 		}
 	}
 }
@@ -308,7 +308,7 @@ void setitemxy(Object item, int xpos, int ypos) {
 		((Slider)item).setxy(xpos, ypos);
 	} else {
 		if(deb && item != null) {
-			println("setitemxy(): " + item + " unhandeled");
+			toovmessages.add("setitemxy(): " + item + " unhandeled");
 		}
 	}
 }
@@ -345,7 +345,7 @@ Box getboundry(Object item) {
 		return ((Slider)item).getbound();
 	} else {
 		if(deb) {
-			println("getboundry(): " + item + " unhandeled");
+			toovmessages.add("getboundry(): " + item + " unhandeled");
 		}
 	}
 	return null;

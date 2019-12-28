@@ -3,7 +3,7 @@ class LanguageManager {
 
 	LanguageManager(String newlang) {
 		if(deb) {
-			println("Loading LanguageManager");
+			toovmessages.add("Loading LanguageManager");
 		}
 		setlang(newlang);
 	}

@@ -1,9 +1,6 @@
-class OverlayManager {
-	Overlay overlay = new Overlay();			// manages the rendering and event handling of the overlay
-
+class OverlayManager extends Overlay {
 	final int xoff = 50;						// used for aligning the roomgrid with the overlay
 	final int yoff = 30;						// used for aligning the roomgrid with the overlay
-	final color cc = color(255,0);
 
 	boolean drawpopup = false;					// visiblity state of current popup
 	int tabid = -1;								// used by Tabbar (in OTabbar.pde)
@@ -17,13 +14,21 @@ class OverlayManager {
 	boolean drawconsole = false;				// visiblity state of console
 	final int messageboxheight = 180;			// const. height of the message box
 
-	final TabData[] tabs = new TabData[] {new TabData("newroom",1,true),new TabData("viewmode",-1,false),new TabData("loadroom",0,false),new TabData("saveroom",1,false),
-	new TabData("settings",2,false),new TabData("debug",3,false),new TabData("roomgroups",4,false),new TabData("about",2,true),new TabData("reset", 3,true),new TabData("price",5,false)};
+	final TabData[] tabs;
 
 	OverlayManager() {
-		build();
+		if(deb) {
+			tabs = new TabData[] {new TabData("newroom",1,true),new TabData("viewmode",-1,false),new TabData("loadroom",0,false),
+			new TabData("saveroom",1,false),new TabData("debug",3,false),new TabData("roomgroups",4,false), new TabData("price",5,false),
+			new TabData("settings",2,false),new TabData("reset", 3,true),new TabData("about",2,true)};
+		} else {
+			tabs = new TabData[] {new TabData("newroom",1,true),new TabData("viewmode",-1,false),new TabData("loadroom",0,false),
+			new TabData("saveroom",1,false),new TabData("roomgroups",4,false), new TabData("price",5,false),
+			new TabData("settings",2,false),new TabData("reset", 3,true),new TabData("about",2,true)};
+		}
 		newroomname = st.strings[0].value;
-		overlay.visible = !st.booleans[1].value;
+		visible = !st.booleans[1].value;
+		build();
 	}
 	void build() {
 		Object[] items = new Object[4];
@@ -73,46 +78,15 @@ class OverlayManager {
 				new Transform(
 					new ListView(
 						new Object[] {
-							new Container(new SetValueText("Name", newroomname) {
+							new Container(new SetValueText(lg.get("name"), newroomname) {
 								@Override public void onchange() {ov.newroomname = newvalue;value = newvalue;}
 							}),
 							new SizedBox(),
-							new EventDetector(new Container(new Text("Save"))) {
+							new EventDetector(new Container(new Text(lg.get("save")))) {
 								@Override public void onevent(EventType et, MouseEvent e) {
 									if(et == EventType.MOUSEPRESSED) {
 										if(st.strings[0].value == ov.newroomname) {
-											Object o =
-											new Container(
-												new Transform(
-													new ListView(
-														new Object[] {
-															new SizedBox(true),
-															new Text(lg.get("overwritedefaultroom")),
-															new SizedBox(true),
-															new ListView(
-																new Object[] {
-																	new EventDetector(new Container(new Text(lg.get("yes")))) {
-																		@Override public void onevent(EventType et, MouseEvent e) {
-																			if(et == EventType.MOUSEPRESSED) {
-																				drawpopup = false;
-																				rm.save(rm.name);
-																				ov.build();
-																			}}
-																	},
-																	new EventDetector(new Container(new Text(lg.get("no")))) {
-																		@Override public void onevent(EventType et, MouseEvent e) {
-																			if(et == EventType.MOUSEPRESSED) {
-																				drawpopup = false;
-																			}}
-																	},
-																}, width/4, 30, width/8, Dir.RIGHT
-															)		
-														}, width/4, height/4
-													), Align.CENTERCENTER
-												), width, height, color(0,150)
-											);
-											drawpopup = true;
-											overlay.items[0] = new GetVisible(o) {@Override public boolean getvisible() {return drawpopup;}};
+											drawpopup(8);
 										} else {
 											rm.save(rm.name);
 											ov.build();
@@ -145,7 +119,10 @@ class OverlayManager {
 											am.recalculatecolor();
 											break;
 											case 4: // Hide Overlay
-											setvisible(!st.booleans[1].value);
+											if(visible != !st.booleans[1].value) {
+												visible = !st.booleans[1].value;
+												ov.build();
+											}
 											break;
 											case 5: // Fullscreen
 											drawpopup(0);
@@ -381,9 +358,6 @@ class OverlayManager {
 			) {
 			@Override public void ontab(int i) {
 				TabData td = ov.tabs[i];
-				//println(td.name);
-				//println(td.id);
-				//println(td.type);
 				if(td.type) {
 					drawpopup(td.id);
 				} else {
@@ -445,7 +419,7 @@ class OverlayManager {
 							new ListViewBuilder() {
 								@Override public Object i(int i) {
 									final Temp temp = new Temp(i);
-									return new Container(new Text(messages.get(temp.i)), round(textWidth(messages.get(temp.i)))+10, 30, cc, false);
+									return new Text(messages.get(temp.i), LEFT);
 								}
 							}.build(messages.size(),width-xoff,messageboxheight, 30, Dir.DOWN)
 						) {
@@ -465,27 +439,14 @@ class OverlayManager {
 				},xoff, height-messageboxheight
 			)
 		) {@Override public boolean getvisible() {return drawconsole;}};
-		overlay.setitems(items);
-	}
-
-	void draw() {
-		overlay.draw();
-		checkmessages();
-	}
-	boolean getvisible() {
-		return overlay.visible;
-	}
-	void setvisible(boolean visible) {
-		if(overlay.visible != visible) {
-			overlay.visible = visible;
-			ov.build();
-		}
+		setitems(items);
 	}
 
 	void checkmessages() { // print out all messages in the to overlay messages variable
 		if(toovmessages.size() > 0) {
 			for (int i=0;i<toovmessages.size();i++) {
 				printmessage(toovmessages.get(i));
+				println(toovmessages.get(i));
 			}
 			toovmessages.clear();
 		}
@@ -501,12 +462,12 @@ class OverlayManager {
 	void drawpopup(int id) { // opens a Popup
 		switch(id) { // popups
 			case 0: // Opens the requiresrestart popup
-				overlay.items[0] =
+				items[0] =
 				new Popup(
 					new ListView(
 						new Object[] {
 							new SizedBox(true),
-							new Text(lg.get("ratste"), 3),
+							new Text(lg.get("ratste"), CENTER, 3),
 							new SizedBox(true),
 							new EventDetector(new Container(new Text(lg.get("ok")))) {
 								@Override public void onevent(EventType et, MouseEvent e) {
@@ -521,7 +482,7 @@ class OverlayManager {
 				};
 			break;
 			case 1: // new Room
-				overlay.items[0] =
+				items[0] =
 				new Popup(
 					new Object[] {
 						new SizedBox(true),
@@ -554,11 +515,11 @@ class OverlayManager {
 				};
 			break;
 			case 2: // about
-				overlay.items[0] =
+				items[0] =
 				new Popup(
 					new ListView(
 						new Object[] {
-							new Text(getabout(), 5),
+							new Text(getabout(), CENTER, 4),
 							new SizedBox(true),
 							new EventDetector(new Container(new Text("Github"))) {
 								@Override public void onevent(EventType et, MouseEvent e) {
@@ -578,7 +539,7 @@ class OverlayManager {
 				};
 			break;
 			case 3: // reset
-				overlay.items[0] =
+				items[0] =
 				new Popup(
 					new Object[] {
 						new SizedBox(true),
@@ -591,7 +552,7 @@ class OverlayManager {
 				};
 			break;
 			case 4: // remove roomgroup
-				overlay.items[0] =
+				items[0] =
 				new Popup(
 					new Object[] {
 						new SizedBox(true),
@@ -609,7 +570,7 @@ class OverlayManager {
 			break;
 			case 5: // new roomgroup
 				tempdata = "";
-				overlay.items[0] =
+				items[0] =
 				new Popup(
 					new Object[] {
 						new SizedBox(true),
@@ -637,7 +598,7 @@ class OverlayManager {
 				};
 			break;
 			case 6: // select color
-				overlay.items[0] =
+				items[0] =
 				new Popup(
 					new Object[] {
 					new SizedBox(true),
@@ -681,7 +642,7 @@ class OverlayManager {
 				};
 			break;
 			case 7: // activate cgol
-				overlay.items[0] =
+				items[0] =
 				new Popup(
 					new Object[] {
 						new SizedBox(true),
@@ -693,30 +654,20 @@ class OverlayManager {
 					@Override public boolean getvisible() {return drawpopup;}
 				};
 			break;
+			case 8:
+				items[0] =
+				new Popup(
+					new Object[] {
+						new SizedBox(true),
+						new Text(lg.get("overwritedefaultroom")),
+						new SizedBox(true),
+					},lg.get("yes"), lg.get("no")) {
+					@Override public void ontrue() {drawpopup = false;rm.save(rm.name);ov.build();}
+					@Override public void onfalse() {drawpopup = false;}
+					@Override public boolean getvisible() {return drawpopup;}
+				};
+			break;
 		}
 		drawpopup = true;
-	}
-	boolean ishit() { // return whether or not your mouse is on the overlay
-		return overlay.ishit();
-	}
-	/* --------------- mouse input --------------- */
-	void mouseWheel(MouseEvent e) {
-		overlay.mouseWheel(e);
-	}
-	boolean mousePressed() {
-		return overlay.mousePressed();
-	}
-	void mouseReleased() {
-		overlay.mouseReleased();
-	}
-	boolean mouseDragged() {
-		return overlay.mouseDragged();
-	}
-	/* --------------- keyboard input --------------- */
-	void keyPressed(KeyEvent e) {
-		overlay.keyPressed(e);
-	}
-	void keyReleased() {
-		overlay.keyReleased();
 	}
 }

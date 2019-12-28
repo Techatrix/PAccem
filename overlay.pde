@@ -4,7 +4,7 @@ class Overlay {
 
 	Overlay() {
 		if(deb) {
-			println("Loading Overlay");
+			toovmessages.add("Loading Overlay");
 		}
 	}
 	void setitems(Object[] items) {
