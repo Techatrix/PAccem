@@ -80,7 +80,7 @@ abstract class Popup extends PWH implements IOverlay {
 
 	void draw(boolean hit) {
 		if(getvisible()) {
-			if(blur && usegl) {
+			if(blur && usegl && !disableblur) {
 				filter(blurshader);
 			}
 			drawitem(item, hit);

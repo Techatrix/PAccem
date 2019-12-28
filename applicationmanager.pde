@@ -2,20 +2,21 @@ class ApplicationManager {
 	String setfontrawinput = "";
 
 	ApplicationManager() {
+		toovmessages = new ArrayList<String>();
 		if(deb) {
-			println("Loading ApplicationManager");
+			toovmessages.add("Loading ApplicationManager");
 		}
 	}
 
 	void initsettings() { // is being executed once before the window is created
-		toovmessages = new ArrayList<String>();
+		manageargs();
 		st = new Settings();
 		allowcgol=false;
 		usegl = st.booleans[3].value;
 		if(st.booleans[2].value) { // fullscreen
 			fullScreen(usegl ? P2D : JAVA2D);  // creates the window and chooses a renderer according to the opengl setting
 		} else { // not fullscreen
-			size(max(st.ints[0].value, 600),max(st.ints[1].value,600), usegl ? P2D : JAVA2D); // MIN: 500 x 500
+			size(max(st.ints[0].value, 600),max(st.ints[1].value,600), usegl ? P2D : JAVA2D); // MIN: 600 x 600
 		}
 		if(usegl) {
 			PJOGL.setIcon("data/assets/icon/0.png"); // sets the window icon on opengl renderer
@@ -23,23 +24,35 @@ class ApplicationManager {
 		smooth(st.ints[2].value);	// anti-aliasing
 		recalculatecolor();
 	}
+
 	void initsetup() { // is being executed once after the window is being created
 		if(usegl) { // creates graphics according to the opengl setting
 			pg = createGraphics(width,height, P3D);
 			pg.smooth(st.ints[2].value);				// anti-aliasing
-			blurshader = loadShader("data/assets/shader/blur.glsl");
-			//blurshader.set("blurSize", 9);
-			//blurshader.set("sigma", 3.0);
-			//blurshader.set("samplesize", 1);
-		}
-		lg = new LanguageManager(st.strings[1].value);	// initialise language manager
-		dm = new DataManager();							// initialise data manager
-		rm = new RoomManager();							// initialise room manager
-		ov = new OverlayManager();						// initialise overlay manager
 
-		int[] v = dm.validate();
-		for (int i=0;i<v.length;i++) {
-			toovmessages.add(dm.prefabs[v[i]].name + " is invalid!");
+			if(!disableblur) {
+				try {
+					blurshader = loadShader("data/assets/shader/blur.glsl");	// Load blur shader
+					blurshader.init();
+					// pass uniforms on to the shader
+					//blurshader.set("blurSize", 9);
+					//blurshader.set("sigma", 3.0);
+					//blurshader.set("samplesize", 1);
+				} catch(RuntimeException e) {
+					disableblur = true;
+					toovmessages.add("Shader RuntimeException: " + e);
+					toovmessages.add("Disabled blur");
+				}
+			}
+		}
+		lg = new LanguageManager(st.strings[1].value);	// initialise languagemanager
+		dm = new DataManager();							// initialise datamanager
+		rm = new RoomManager();							// initialise roommanager
+		ov = new OverlayManager();						// initialise overlaymanager
+
+		int[] invalidids = dm.validate();
+		for (int id : invalidids) {
+			toovmessages.add(dm.prefabs[id].name + " is invalid!");
 		}
 
 		if(!usegl) {
@@ -139,6 +152,20 @@ class ApplicationManager {
 			c[i] = constrain(c[i], 0, 255);
 		}
 	}
+
+	void manageargs() {
+		if(args != null) {
+			for (String arg : args) {
+				if(arg.equals("-debug")) {
+					deb = true;
+					toovmessages.add("Debugmode activated");
+				} else if(arg.equals("-noblur")) {
+					disableblur = true;
+				}
+			}
+		}
+	}
+
 	void loop() { // set window size according to the width & height setting
 		int sw = st.ints[0].value;
 		int sh = st.ints[1].value;
@@ -148,6 +175,7 @@ class ApplicationManager {
 			if(usegl) {
 				pg.setSize(width,height);
 			}
+			ov.build();
 		}
 	}
 

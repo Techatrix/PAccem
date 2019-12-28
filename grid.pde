@@ -20,7 +20,7 @@ class Grid {
 				// and its not even well hidden
 			} else {
 				if(!ov.drawpopup) {
-					ov.drawpopup(12);
+					ov.drawpopup(7);
 				}
 			}
 		}

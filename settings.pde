@@ -7,7 +7,7 @@ class Settings {
 
 	Settings() {
 		if(deb) {
-			println("Loading Settings Class");
+			toovmessages.add("Loading Settings Class");
 		}
 		strings = new SettingStringValue[3];
 		booleans = new SettingBooleanValue[4];
@@ -98,12 +98,12 @@ class Settings {
 			}
 			index++;
 		}
-		println("Setting not found: " + id);
+		toovmessages.add("Setting not found: " + id);
 		return null;
 	}
 	void load() { // loads the settings from data/settings.json if possible
 		if(deb) {
-			println("Loading Settings");
+			toovmessages.add("Loading Settings");
 		}
 		File f1 = new File(sketchPath("data/settings.json"));
 
@@ -142,7 +142,7 @@ class Settings {
 
 	void save() { // saves the settings to data/settings.json
 		if(deb) {
-			println("Saved Settings");
+			toovmessages.add("Saved Settings");
 		}
 
 		File f1 = new File(sketchPath("data/settings.json"));

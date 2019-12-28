@@ -27,7 +27,7 @@ class RoomManager {
 	}
 	RoomManager(String loadname) {
 		if(deb) {
-			println("Loading RoomManager");
+			toovmessages.add("Loading RoomManager");
 		}
 		resetcam(true);
 		load(loadname);
@@ -219,14 +219,23 @@ class RoomManager {
 						break;
 					}
 				}
-			} else if(key == 'h') { // h
-				if(key == 'h') {
-					ov.setvisible(!ov.getvisible());
+			} else if(96 < key && key < 123) { // key input
+				switch(key) {
+					case 'h':
+					ov.visible = !ov.visible;
 					st.booleans[1].setvalue(!st.booleans[1].value);
 					st.save();
+					ov.build();
+					break;
+					case 'c':
+					ov.drawpopup(3);
+					break;
+					case 'n':
+					ov.drawpopup(1);
+					break;
 				}
-			} else if(keyCode < 54 && keyCode > 48) { // 1-5
-				int i = keyCode - 49;
+			} else if(48 < key && key < 58) { // 1-5
+				int i = key - 49;
 				if(i < roomgrid.roomgroups.size()) {
 					newroomgroup = i;
 					ov.build();
@@ -649,12 +658,13 @@ class RoomManager {
 		resetcam(false); // 2D Camera
 		viewmode = false;
 		roomgrid = new Grid(getxgridsize(), getygridsize());
-		furnitures = new ArrayList<Furniture>();
+		furnitures.clear();
 		name = st.strings[0].value;
 		st.load();
 		am.settitle(name);
 	}
 	void newroom(int xsize, int ysize) { // create a new room with the choosen size
+		furnitures.clear();
 		roomgrid = new Grid(xsize, ysize);
 		toovmessages.add("New Room " + xsize + "x" + ysize);
 	}

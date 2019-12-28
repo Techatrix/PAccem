@@ -1,14 +1,19 @@
 class Text extends PWH implements IOverlay {
 	String text;
-	int lines = 1;
+	int lines;
+	int align;
 
 	Text(String text) {
-		this.text = text;
-		setwh(-1, -1);
+		this(text, CENTER, 1);
 	}
-	Text(String text, int lines) {
-		this(text);
+	Text(String text, int align) {
+		this(text, align, 1);
+	}
+	Text(String text, int align, int lines) {
+		this.text = text;
+		this.align = align;
 		this.lines = lines;
+		setwh(-1, -1);
 	}
 
 	void draw(boolean hit) {
@@ -17,7 +22,7 @@ class Text extends PWH implements IOverlay {
 			textAlign(LEFT, TOP);
 			text(text, xpos,ypos);
 		} else {
-			textAlign(CENTER, CENTER);
+			textAlign(align, CENTER);
 			text(text, xpos,ypos, _width, _height);
 		}
 	}
@@ -87,18 +92,19 @@ abstract class SetValueText extends PWH implements IOverlay {
 				key = 0;
 				selected = false;
 			} else if(newvalue.toString().length() < valuestyle.maxlength) {
+				boolean isvalidchar = (64 < key && key < 91) || (96 < key && key < 123) || (47 < key && key < 58);
 				switch(valuestyle.type) {
 					case 0:// 0 = string
-						if (keyCode > 47 && keyCode < 91  || keyCode == 32) {newvalue = newvalue + key;}
+						if (isvalidchar  || key == 32) {newvalue = newvalue + key;}
 					break;
 					case 1:// 1 = boolean
-						if (keyCode > 47 && keyCode < 91  || keyCode == 32) {newvalue = newvalue + key;}
+						if (isvalidchar  || key == 32) {newvalue = newvalue + key;}
 					break;
 					case 2:// 2 = int
-						if (keyCode > 47 && keyCode < 58) {newvalue = newvalue + key;}
+						if (47 < key && key < 58) {newvalue = newvalue + key;}
 					break;
 					case 3:// 3 = float
-						if (((keyCode > 47 && keyCode < 58) || keyCode == 46)) {newvalue = newvalue + key;}
+						if ((47 < key && key < 58) || key == 46) {newvalue = newvalue + key;}
 					break;
 				}
 			}

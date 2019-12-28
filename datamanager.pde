@@ -7,7 +7,7 @@ class DataManager {
 	// TODO: Validation
 	DataManager() {
 		if(deb) {
-			println("Loading DataManager");
+			toovmessages.add("Loading DataManager");
 		}
 		/* --------------- load icon data --------------- */
 		icons = new PImage[9];

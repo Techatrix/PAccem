@@ -10,14 +10,16 @@ DataManager dm;			// stores data (3D-models, images, etc.)
 OverlayManager ov;		// creates and manages the GUI
 
 PGraphics pg;			// used for 3D-graphics
+PShader blurshader;		// blur shader
 PFont font;				// the current font
 boolean usegl;			// opengl setting when the application has started
-boolean allowcgol;// ?
+boolean allowcgol;		// ?
 ArrayList<String> toovmessages;// messages which are send to the overlay
-PShader blurshader;
 
 int[] c = new int[9];	// easily accessible color values (0-8 => 0 - 255 or 255 - 0)
 boolean isKeyUp, isKeyRight, isKeyLeft, isKeyDown, isKeyT;	// stores whether or not a arrow key is down
+boolean deb = false;	// debugmode
+boolean disableblur = false;	// whether or not blur is disabled
 
 /* --------------- Experimental Version! WIP --------------- */
 
@@ -28,6 +30,7 @@ void settings() { // is being executed once before the window is created	(pre-ma
 }
 void setup() { // is being executed once after the window is being created 	(main())
 	am.initsetup();
+
 	/*	serialization
 	try {
 		SETemp t = new SETemp(1);
@@ -47,6 +50,7 @@ void draw() { // is being executed on every frame
 	am.loop();	// application manager
 	rm.draw();	// room manager
 	ov.draw();	// overlay
+	ov.checkmessages();	// check toovmessages for any messages
 }
 
 /* --------------- mouse input --------------- */
