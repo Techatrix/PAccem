@@ -34,8 +34,8 @@ abstract class EventDetector implements IOverlay {
 		drawitem(item, hit);
 	}
 
-	Box getbound() {
-		return getboundry(item);
+	Box getboundary() {
+		return getitemboundary(item);
 	}
 	
 	boolean ishit() {

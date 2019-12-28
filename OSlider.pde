@@ -49,7 +49,7 @@ abstract class Slider extends PWH implements IOverlay {
 		}
 	}
 
-	Box getbound() {
+	Box getboundary() {
 		return new Box(_width, _height);
 	}
 	

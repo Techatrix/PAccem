@@ -38,8 +38,8 @@ abstract class GetVisible implements IOverlay {
 		}
 	}
 
-	Box getbound() {
-		return getboundry(item);
+	Box getboundary() {
+		return getitemboundary(item);
 	}
 	
 	boolean ishit() {

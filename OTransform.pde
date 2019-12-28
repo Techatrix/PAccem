@@ -36,8 +36,8 @@ class Transform implements IOverlay {
 		drawitem(item, hit);
 	}
 
-	Box getbound() {
-		return getboundry(item);
+	Box getboundary() {
+		return getitemboundary(item);
 	}
 	
 	boolean ishit() {
@@ -53,7 +53,7 @@ class Transform implements IOverlay {
 		recalculatealign();
 	}
 	void recalculatealign() {
-		Box b = getbound();
+		Box b = getboundary();
 		if(ali == Align.TOPRIGHT) {
 			this.xoff = width-b.w;
 		} else if(ali == Align.BOTTOMLEFT) {

@@ -28,7 +28,7 @@ class Settings {
 		booleans[0] = new SettingBooleanValue("darkmode", true);
 		booleans[1] = new SettingBooleanValue("hideoverlay", false);
 		booleans[2] = new SettingBooleanValue("fullscreen", false);
-		booleans[3] = new SettingBooleanValue("useglrenderer", false);	// shoud be disabled on 32-bit and older devices
+		booleans[3] = new SettingBooleanValue("useglrenderer", false);	// should be disabled on 32-bit and older devices
 
 		ints[0] = new SettingIntValue("width", 1200, 600, displayWidth);
 		ints[1] = new SettingIntValue("height", 800, 600, displayHeight);
@@ -39,33 +39,33 @@ class Settings {
 		load();
 	}
 	
-	int getsize() {	// get length of all settings
+	int getSize() {	// get length of all settings
 		return /*colors.length +*/ strings.length + booleans.length + ints.length + floats.length;
 	}
-	String set(int id, String value) { // sets choosen setting value to the given value (automatic data type conversion)
+	String set(int id, String value) { // sets chosen setting value to the given value (automatic data type conversion)
 		String result = null;
 		int index = 0;
 		for (int i=0;i<strings.length;i++) {
 			if(index == id) {
-				result = strings[i].setvalue(value);
+				result = strings[i].setValue(value);
 			}
 			index++;
 		}
 		for (int i=0;i<booleans.length;i++) {
 			if(index == id) {
-				result = booleans[i].setvalue(value);
+				result = booleans[i].setValue(value);
 			}
 			index++;
 		}
 		for (int i=0;i<ints.length;i++) {
 			if(index == id) {
-				result = ints[i].setvalue(value);
+				result = ints[i].setValue(value);
 			}
 			index++;
 		}
 		for (int i=0;i<floats.length;i++) {
 			if(index == id) {
-				result = floats[i].setvalue(value);
+				result = floats[i].setValue(value);
 			}
 			index++;
 		}
@@ -113,28 +113,28 @@ class Settings {
 			/*
 			for (int i=0;i<colors.length;i++) {
 				SettingColorValue c = colors[i];
-				c.setvalue(color(j.getFloat(c.name + "red"), j.getFloat(c.name + "green"), j.getFloat(c.name + "blue")));
+				c.setValue(color(j.getFloat(c.name + "red"), j.getFloat(c.name + "green"), j.getFloat(c.name + "blue")));
 				colors[i] = c;
 			}
 			*/
 			for (int i=0;i<strings.length;i++) {
 				SettingStringValue s = strings[i];
-				s.setvalue(j.getString(s.name, s.defaultvalue));
+				s.setValue(j.getString(s.name, s.defaultvalue));
 				strings[i] = s;
 			}
 			for (int i=0;i<booleans.length;i++) {
 				SettingBooleanValue b = booleans[i];
-				b.setvalue(j.getBoolean(b.name, b.defaultvalue));
+				b.setValue(j.getBoolean(b.name, b.defaultvalue));
 				booleans[i] = b;
 			}
 			for (int k=0;k<ints.length;k++) {
 				SettingIntValue i = ints[k];
-				i.setvalue(j.getInt(i.name, i.defaultvalue));
+				i.setValue(j.getInt(i.name, i.defaultvalue));
 				ints[k] = i;
 			}
 			for (int i=0;i<floats.length;i++) {
 				SettingFloatValue f = floats[i];
-				f.setvalue(j.getFloat(f.name, f.defaultvalue));
+				f.setValue(j.getFloat(f.name, f.defaultvalue));
 				floats[i] = f;
 			}
 		}
@@ -154,9 +154,9 @@ class Settings {
 		/*
 		for (int i=0;i<colors.length;i++) {
 			SettingColorValue c = colors[i];
-			j.setFloat(c.name + "red", red(c.getvalue()));
-			j.setFloat(c.name + "green", green(c.getvalue()));
-			j.setFloat(c.name + "blue", blue(c.getvalue()));
+			j.setInt(c.name + "red", red(c.getValue()));
+			j.setInt(c.name + "green", green(c.getValue()));
+			j.setInt(c.name + "blue", blue(c.getValue()));
 		}
 		*/
 		for (int i=0;i<strings.length;i++) {
@@ -191,7 +191,7 @@ class SettingColorValue {
 		name = newname;
 		value = newdefaultvalue;
 	}
-	void setvalue(color newvalue) {
+	void setValue(color newvalue) {
 		value = newvalue;
 	}
 }
@@ -200,12 +200,13 @@ class SettingStringValue {
 	final String name;
 	final String defaultvalue;
 	String value;
+
 	SettingStringValue(String newname, String newdefaultvalue) {
 		name = newname;
 		value = newdefaultvalue;
 		defaultvalue = newdefaultvalue;
 	}
-	String setvalue(String newvalue) {
+	String setValue(String newvalue) {
 		value = newvalue;
 		return value;
 	}
@@ -217,15 +218,16 @@ class SettingBooleanValue {
 	final String name;
 	final boolean defaultvalue;
 	boolean value;
+
 	SettingBooleanValue(String newname, boolean newdefaultvalue) {
 		name = newname;
 		value = newdefaultvalue;
 		defaultvalue = newdefaultvalue;
 	}
-	void setvalue(boolean newvalue) {
+	void setValue(boolean newvalue) {
 		value = newvalue;
 	}
-	String setvalue(String newvalue) {
+	String setValue(String newvalue) {
 		if(newvalue.equals("true") || newvalue.equals("1")) {
 			value = true;
 			return "true";
@@ -246,6 +248,7 @@ class SettingIntValue {
 	int value;
 	final int min;
 	final int max;
+
 	SettingIntValue(String newname, int newdefaultvalue) {
 		this(newname, newdefaultvalue, Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
@@ -256,11 +259,11 @@ class SettingIntValue {
 		min = minvalue;
 		max = maxvalue;
 	}
-	void setvalue(int newvalue) {
+	void setValue(int newvalue) {
 		value = constrain(newvalue, min, max);
 	}
-	String setvalue(String newvalue) {
-		setvalue(int(newvalue));
+	String setValue(String newvalue) {
+		setValue(int(newvalue));
 		return str(value);
 	}
 	SettingValue get() {
@@ -273,6 +276,7 @@ class SettingFloatValue {
 	float value;
 	final float min;
 	final float max;
+	
 	SettingFloatValue(String newname, float newdefaultvalue) {
 		this(newname, newdefaultvalue, Float.MIN_VALUE, Float.MAX_VALUE);
 	}
@@ -283,14 +287,14 @@ class SettingFloatValue {
 		min = minvalue;
 		max = maxvalue;
 	}
-	void setvalue(float newvalue) {
+	void setValue(float newvalue) {
 		value = constrain(newvalue, min, max);
 		if(Float.isNaN(this.value)) {
 			value = 0;
 		}
 	}
-	String setvalue(String newvalue) {
-		setvalue(float(newvalue));
+	String setValue(String newvalue) {
+		setValue(float(newvalue));
 		return str(value);
 	}
 	SettingValue get() {

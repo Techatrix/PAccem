@@ -20,7 +20,7 @@ class SizedBox extends PWH implements IOverlay {
 	void draw(boolean hit) {
 	}
 
-	Box getbound() {
+	Box getboundary() {
 		return new Box(_width, _height);
 	}
 	

@@ -87,8 +87,8 @@ abstract class Popup extends PWH implements IOverlay {
 		}
 	}
 
-	Box getbound() {
-		return getboundry(item);
+	Box getboundary() {
+		return getitemboundary(item);
 	}
 
 	void setxy(int xpos, int ypos) {

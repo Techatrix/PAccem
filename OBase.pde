@@ -52,7 +52,7 @@ abstract class ListViewBuilder{
 	abstract Object i(int i);
 }
 
-enum Dir { // used by Listview
+enum Dir { // used by ListView
     UP, RIGHT, DOWN, LEFT;
 }
 enum Align { // used by Transform
@@ -65,7 +65,7 @@ enum Fit { // used by Image
 interface IOverlay {
 
 	void draw(boolean hit);
-	Box getbound();
+	Box getboundary();
 	boolean ishit();
 
 	void setxy(int ypos, int xpos);
@@ -312,40 +312,40 @@ void setitemxy(Object item, int xpos, int ypos) {
 		}
 	}
 }
-Box getboundry(Object item) {
+Box getitemboundary(Object item) {
 	if (item instanceof Tabbar) {
-		return ((Tabbar)item).getbound();
+		return ((Tabbar)item).getboundary();
 	} else if (item instanceof ListView) {
-		return ((ListView)item).getbound();
+		return ((ListView)item).getboundary();
 	} else if(item instanceof GridView) {
-		return ((GridView)item).getbound();
+		return ((GridView)item).getboundary();
 	} else if(item instanceof Container) {
-		return ((Container)item).getbound();
+		return ((Container)item).getboundary();
 	} else if(item instanceof SizedBox) {
-		return ((SizedBox)item).getbound();
+		return ((SizedBox)item).getboundary();
 	} else if(item instanceof Text) {
-		return ((Text)item).getbound();
+		return ((Text)item).getboundary();
 	} else if(item instanceof SetValueText) {
-		return ((SetValueText)item).getbound();
+		return ((SetValueText)item).getboundary();
 	} else if(item instanceof GetValueText) {
-		return ((GetValueText)item).getbound();
+		return ((GetValueText)item).getboundary();
 	} else if(item instanceof Image) {
-		return ((Image)item).getbound();
+		return ((Image)item).getboundary();
 	} else if(item instanceof Transform) {
-		return ((Transform)item).getbound();
+		return ((Transform)item).getboundary();
 	} else if(item instanceof Dynamic) {
-		return ((Dynamic)item).getbound();
+		return ((Dynamic)item).getboundary();
 	} else if(item instanceof GetVisible) {
-		return ((GetVisible)item).getbound();
+		return ((GetVisible)item).getboundary();
 	} else if(item instanceof EventDetector) {
-		return ((EventDetector)item).getbound();
+		return ((EventDetector)item).getboundary();
 	} else if(item instanceof Popup) {
-		return ((Popup)item).getbound();
+		return ((Popup)item).getboundary();
 	} else if(item instanceof Slider) {
-		return ((Slider)item).getbound();
+		return ((Slider)item).getboundary();
 	} else {
 		if(deb) {
-			toovmessages.add("getboundry(): " + item + " unhandeled");
+			toovmessages.add("getboundary(): " + item + " unhandeled");
 		}
 	}
 	return null;

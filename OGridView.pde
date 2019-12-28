@@ -62,7 +62,7 @@ class GridView extends PWH implements IOverlay {
     	noClip();
 	}
 
-	Box getbound() {
+	Box getboundary() {
 		return new Box(_width, _height);
 	}
 
