@@ -19,7 +19,7 @@ class Image extends PWH implements IOverlay {
 		this.image = image;
 		this.fit = fit;
 		this.tint = tint;
-		setwh(_width, _height);
+		setWH(_width, _height);
 	}
 
 	void draw(boolean hit) {
@@ -41,19 +41,19 @@ class Image extends PWH implements IOverlay {
 		noTint();
 	}
 
-	Box getboundary() {
+	Box getBoundary() {
 		return new Box(_width, _height);
 	}
 	
-	boolean ishit() {
+	boolean isHit() {
 	  	return mouseX >= xpos && mouseX < xpos+_width && mouseY >= ypos && mouseY < ypos+_height;
 	}
 
-	void setxy(int xpos, int ypos) {
+	void setXY(int xpos, int ypos) {
 		this.xpos = xpos;
 		this.ypos = ypos;
 	}
-	void setwh(int _width, int _height) {
+	void setWH(int _width, int _height) {
 		this._width = _width;
 		this._height = _height;
 	}

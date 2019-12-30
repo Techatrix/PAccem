@@ -50,30 +50,30 @@ abstract class Tabbar implements IOverlay {
 		return -1 < getid() && getid() < tabs.length;
 	}
 
-	Box getboundary() {
-		return getitemboundary(list);
+	Box getBoundary() {
+		return getItemBoundary(list);
 	}
 	
-	boolean ishit() {
+	boolean isHit() {
 		boolean hit = false;
-		if(getisitemhit(list)) {
+		if(getisItemHit(list)) {
 			hit = true;
 		}
 		if(isvalidtab()) {
-			if(getisitemhit(tabs[getid()])) {
+			if(getisItemHit(tabs[getid()])) {
 				hit = true;
 			}
 		}
 		return hit;
 	}
 
-	void setxy(int xpos, int ypos) {
+	void setXY(int xpos, int ypos) {
 		setitemxy(list, xpos, ypos);
 		for (Object tab : tabs) {
 			setitemxy(tab, xpos, ypos);
 		}
 	}
-	void setwh(int _width, int _height) {
+	void setWH(int _width, int _height) {
 		setitemwh(list, _width, _height);
 		for (Object tab : tabs) {
 			setitemwh(tab, _width, _height);

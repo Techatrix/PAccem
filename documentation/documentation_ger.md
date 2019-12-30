@@ -66,7 +66,7 @@ LanguageManager lg: Lädt die aktuelle Sprachdatei und gibt deren Daten wieder. 
 
 RoomManager rm: Verwaltet den gesamten Raum(Gitter, Möbel, Nutzereingaben)
 
-DataManager dm: Verwaltet alle daten, wie 3D Modelle, Bilder, usw.
+DataManager dm: Verwaltet alle Daten, wie 3D Modelle, Bilder, usw.
 
 OverlayManager ov: Enthält das GUI
 
@@ -80,7 +80,7 @@ boolean usegl: ob die usegl Einstellung zum Programmstartzeitpunkt an oder aus w
 
 boolean allowcgol: ?
 
-ArrayList toovmessages: enthält alle Nachrichten die an die Konsole gesendet werden sollen. (siehe: Overlay)
+ArrayList toovmessages: enthält alle Nachrichten, die an die Konsole gesendet werden sollen. (siehe: Overlay)
 
 int[] c: Ein Array aus Farbwerten welche sich nach dem Dunkelmodus ausrichten. (0-8 => 0 - 255 oder 255 - 0)
 
@@ -94,7 +94,7 @@ boolean disableblur: ob Weichzeichnen deaktiviert ist
 
 void settings(): Wird ausgeführt bevor das Programmfenster erstellt wird.
 
-void setup(): Wird ausgeführt nachdem das Programmfenster erstellt wurde.
+void setup(): Wird ausgeführt, nachdem das Programmfenster erstellt wurde.
 
 void draw(): Wird für jedes Bild ausgeführt.
 
@@ -123,7 +123,7 @@ String setfontrawinput: Wird vom Thread in setFontRaw() als Parameter genutzt
 
 void initSettings(): Wird ausgeführt bevor das Programmfenster erstellt wird
 
-void initSetup(): Wird ausgeführt nachdem das Programmfenster erstellt wurde
+void initSetup(): Wird ausgeführt, nachdem das Programmfenster erstellt wurde
 
 void setTitle(String name): Legt den Programmfenstertitel fest
 
@@ -134,14 +134,14 @@ void setFontRaw(): Wird von setfont(String newfontname) als Thread ausgeführt.
 
 void recalculateColor(): Legt die Farbwerte in PAccem/PApplet gegeben nach dem Dunkelmodus fest
 
-void manageArgs(): Verarbeitet alle Argumente welche an das Programm übergeben wurden.
+void manageArgs(): Verarbeitet alle Argumente, welche an das Programm übergeben wurden.
 
 | Name     | Aktion                    |
 |----------|---------------------------|
 | \-debug  | Aktiviert den Debugmode   |
 | \-noblur | Deaktiviert Weichzeichnen |
 
-void loop(): Es wird nachgesehen ob sich die Programmfenstergröße geändert hat und daraufhin die Fenstergrößeneinstellungen angepasst und ggf. die Größe der 3D-Grafikoberfläche(pg) angepasst.
+void loop(): Es wird nachgesehen, ob sich die Programmfenstergröße geändert hat und daraufhin die Fenstergrößeneinstellungen angepasst und ggf. die Größe der 3D-Grafikoberfläche(pg) angepasst.
 
 ### DataManager
 
@@ -157,7 +157,7 @@ final PrefabData[] prefabs: Liste aller Fertigteile welcher der Nutzer verwenden
 
 #### Funktionen
 
-int[] validate(): Sieht nach, ob alle Möbel in ihren Fertigteile ins Fertigteil hineinpassen.
+int[] validate(): Sieht nach, ob alle Möbel in ihren Fertigteilen ins Fertigteil hineinpassen.
 
 boolean validateId(int id): Sieht nach, ob ein Möbelstück mit der gegebenen id existiert.
 
@@ -203,11 +203,11 @@ color tint: Färbung des Möbelstücks
 
 void draw(boolean viewmode, boolean selected): Zeichnet/Rendert das Möbelstück
 
-void drawFrame(boolean selected): Zeichnet/Rendert die Box auf dem Möbelstücks
+void drawFrame(boolean selected): Zeichnet/Rendert eine Box auf dem Möbelstücks
 
-boolean checkover(): Ermittelt ob die Maus auf das Möbelstück zeigt
+boolean checkover(): Ermittelt, ob die Maus auf das Möbelstück zeigt
 
-boolean checkover(int xpos, int ypos): Ermittelt ob das Möbelstück in der gegebenen Gitterposition liegt
+boolean checkover(int xpos, int ypos): Ermittelt, ob das Möbelstück in der gegebenen Gitterposition liegt
 
 boolean setXPos(int value): Legt die x Position des Möbelstücks fest
 
@@ -239,9 +239,9 @@ boolean setTile(GridTile value, int x, int y): Legt die Variablen des gegebenen 
 
 GridTile getTile(int x, int y): Gibt die Variablen des gegebenen Kachels zurück
 
-boolean isinGrid(int x, int y): Ermittelt ob die gegebene Position im Gitter liegt
+boolean isinGrid(int x, int y): Ermittelt, ob die gegebene Position im Gitter liegt
 
-boolean isRoomGroupinuse(int id): Ermittelt ob eine gegebene Raumgruppe im Gitter verwendet wird
+boolean isRoomGroupinuse(int id): Ermittelt, ob eine gegebene Raumgruppe im Gitter verwendet wird
 
 void removeRoomGroup(int id): Entfernt eine gegebene Raumgruppe aus der Liste
 
@@ -275,13 +275,13 @@ String get(String key): Gibt die Übersetzung mit dem gegebenen Schlüsselwort z
 
 ### OverlayManager
 
-Die OverlayManager Klasse ist für das gesamt GUI zuständig. Die Variablen und die build() Funktion können beliebig verändert werden um jedes mögliche GUI zu erstellen. Sie ist eine Erweiterung der Overlay Klasse, welche Aufgaben wie Zeichnen/Rendern und Event Handling übernimmt.
+Die OverlayManager Klasse ist für das gesamt GUI zuständig. Die Variablen und die build() Funktion können beliebig verändert werden, um jedes mögliche GUI zu erstellen. Sie ist eine Erweiterung der Overlay Klasse, welche Aufgaben wie Zeichnen/Rendern und Event Handling übernimmt.
 
 #### Variablen
 
-final int xoff: Wird verwendet um das Gitter am Overlay auszurichten
+final int xoff: Wird verwendet, um das Gitter am Overlay auszurichten
 
-final int yoff: Wird verwendet um das Gitter am Overlay auszurichten
+final int yoff: Wird verwendet, um das Gitter am Overlay auszurichten
 
 boolean drawpopup: Sichtbarkeitsstatus des Popups
 
@@ -325,8 +325,9 @@ void drawPopup(int id): Öffnet ein Popup (unterschiedlich je nach id)
 
 ### Overlay
 
-Das Overlay basiert auf einem Parent Child Konzept in dem Viele Element ein oder mehrere Elemente beinhalten.
+Das Overlay basiert auf einem Parent Child Konzept in dem ein Element ein oder mehrere Kinder/Elemente beinhalten und ein Kind/Element nur ein Parent besitzt.
 Z.B eine ListView kann eine Serie an Container enthalten, welche wiederum Text oder Image enthalten.
+Dies ähneld dem Aufbau eines Baumdiagramms. 
 Die Implementierung Idee basiert auf der von Google entwickelten SDK namens Flutter.
 
 #### Variablen
@@ -341,7 +342,7 @@ void setitems(Object[] items): Nimmt alle OverlayElemente an sich und positionie
 
 void draw(): Zeichnet/Rendert das Overlay
 
-boolean ishit(): Ermittelt ob die Maus auf dem Overlay liegt
+boolean isHit(): Ermittelt, ob die Maus auf dem Overlay liegt
 
 void mouseWheel(MouseEvent e): Wird ausgeführt, wenn der Nutzer sein Mausrad dreht
 
@@ -354,8 +355,6 @@ boolean mouseDragged(): Wird ausgeführt, wenn der Nutzer seine Maus bewegt und 
 void keyPressed(KeyEvent e): Wird ausgeführt, wenn der Nutzer eine Tastaturtaste drückt
 
 void keyReleased(): Wird ausgeführt, wenn der Nutzer eine Tastaturtaste loslässt
-
-#### Extra
 
 ### RoomManager
 
@@ -385,8 +384,8 @@ int tool: id des aktuell gewählten Werkzeuges
 | 1  | Zeichnen                         |
 | 2  | Möbel oder Fertigteil platzieren |
 | 3  | Möbelstück auswählen             |
-| 4  | Füll Werkzeug                    |
-| 5  | Fenster Platzieren               |
+| 4  | Füllen                           |
+| 5  | Fenster platzieren               |
 
 boolean viewmode: Wahr = 3D Ansicht, Falsch = 2D Ansicht
 
@@ -394,9 +393,9 @@ ArrayList dragtiles: Liste aller Kachel über welche der Nutzer bereits gezeichn
 
 boolean dragstate: Zeichenstatus
 
-int newfurnitureid = 0: id von neu Platzierten Möbelstücken
+int newfurnitureid: id von neu Platzierten Möbelstücken
 
-int newroomgroup: id der aktuell ausgewählten Raumgruppe zum zeichnen
+int newroomgroup: id der aktuell ausgewählten Raumgruppe zum Zeichnen
 
 boolean isprefab: ob gerade ein Fertigteil platziert wird
 
@@ -422,15 +421,15 @@ float getYPos(): Verwandelt die Maus Y Position in eine Raumgitter Y Position.
 
 boolean isFurniture(int xpos, int ypos): Gibt an, ob sich ein Möbelstück an der gegebenen Position gibt
 
-int getXGridSize(): Gibt die X Größe/Breite des Raumgitter.
+int getXGridSize(): Gibt die X Größe/Breite des Raumgitters.
 
-int getYGridSize(): Gibt die Y Größe/Höhe des Raumgitter.
+int getYGridSize(): Gibt die Y Größe/Höhe des Raumgitters.
 
-String[] loadRooms(): Gibt eine Liste aller Räume im Ordner: data/rooms/
+String[] loadRooms(): Gibt eine Liste aller Räume (in data/rooms/)
 
-void save(String name): Speichert den aktuellen Raum in data/rooms/ mit dem gegebenen Namen.
+void save(String name): Speichert den aktuellen Raum (in data/rooms/) mit dem gegebenen Namen
 
-void load(String name): Lädt den gegebenen Raum in data/rooms/.
+void load(String name): Lädt den gegebenen Raum (in data/rooms/)
 
 int getPriceReport(): Gibt einen Preisbericht zurück, welche Informationen über die Raumkosten enthält.
 
@@ -456,7 +455,7 @@ Enthält einen Kostenbericht alle Möbel des aktuellen Raums.
 
 ### Settings
 
-Die Settings Klasse lädt alle Einstellungen aus data/settings.json, welcher er abspeichert, validiert und in ein leichter zugängliches Format verwandet. (siehe: Variablen)
+Die Settings Klasse lädt alle Einstellungen (aus data/settings.json), welcher er abspeichert, validiert und in ein leichter zugängliches Format verwandet. (siehe: Variablen)
 
 #### Variablen
 
@@ -464,7 +463,7 @@ final SettingStringValue[] strings: Einstellung vom Typ String/Text
 
 final SettingBooleanValue[] booleans: Einstellung vom Typ Boolean/Wahrheitswert
 
-final SettingIntValue[] ints: Einstellung vom Typ Int/Ganze Zahl
+final SettingIntValue[] ints: Einstellung vom Typ Int/ganze Zahl
 
 final SettingFloatValue[] floats: Einstellung vom Typ Float/Kommazahl
 
@@ -472,11 +471,11 @@ final SettingFloatValue[] floats: Einstellung vom Typ Float/Kommazahl
 
 int getSize(): Ermittelt die gesamte Anzahl an Einstellungen
 
-String set(int id, String value): Setzt die gegebene Einstellung zum gegebenen Wert. (automatische Datentyp Umwandlung)
+String set(int id, String value): Setzt die gegebene Einstellung zum gegebenen Wert. (automatische Datentypumwandlung)
 
 SettingValue get(int id): Gibt die Einstellung mit der gegebenen id
 
-void load(): Lädt die Einstellungen von data/settings.json wenn möglich
+void load(): Lädt die Einstellungen von data/settings.json, wenn möglich
 
 void save(): Speichert die Einstellung in data/settings.json
 
@@ -502,14 +501,14 @@ Der Wert kann durch einen Minimal- Maximalwert eingegrenzt werden.
 
 ##### SettingValue
 
-Eine als Rückgabewert verwendete Klasse um einen Wert von einem beliebigen
+Eine als Rückgabewert verwendete Klasse, um einen Wert von einem beliebigen
 Datentyp auszugeben.
 
 ### Extra
 
 #### Baseclasses
 
-In baseclasses.pde werden Klassen zur Vererbung definiert und "temporäre" Klassen, welche in abstrakten Funktionen verwendet werden um Konstante Werte
+In BaseClasses.pde werden Klassen zur Vererbung definiert und "temporäre" Klassen, welche in abstrakten Funktionen verwendet werden um Konstante Werte
 weiter zu geben.
 
 Point: 2D Punkt
@@ -526,13 +525,13 @@ class STemp: Speichert einen String/Text
 
 #### Basefunctions
 
-In basefunctions.pde werden vielseitige Funktionen definiert.
+In BaseFunctions.pde werden vielseitige Funktionen definiert.
 
 String getAbout(): Gibt den Info Text
 
 void setKey(int k, boolean bool): Legt den Status von manchen Tasten fest. (Pfeiltasten, T)
 
-String cap(String str): Verwandelt den ersten Buchstaben eines Strings/Text in Großschrift
+String cap(String str): Verwandelt den ersten Buchstaben eines Strings/Texts in Großschrift
 
 String fixLength(String str, int length, char c): Füllt einen String/Text mit einem gegebenen Zeichen bis der String/Text eine gegebene Länge erreicht hat.
 
@@ -556,8 +555,6 @@ Alle weiteren im Programm verwendeten Konstanten sind in PConstants definiert. (
 
 ### Overlay Elemente
 
-Ein Overlay besteht aus einer vielzahl von Kinder/Elementen. Die anordnung ist dabei ähnlich wie bei einem Baumdiagramm.
-
 #### Container
 
 Enthält ein Kind/Element.
@@ -566,7 +563,7 @@ Wenn man mit der Maus auf den Container zeigt wird die Farbe verändert.
 
 #### Dynamic
 
-Erstellt anhand der abstrakten Funktion getitem() ein Kind/Element welches dann angezeigt wird.
+Erstellt anhand der abstrakten Funktion getItem() ein Kind/Element welches dann angezeigt wird.
 
 #### EventDetector
 
@@ -577,11 +574,13 @@ Erkennt Maus und Keyboard Events vom Nutzer auf sein Kind/Element.
 Ähnlich wie ListView, jedoch können mehrere Kinder pro Reihe angezeigt werden.
 
 #### Image
+
 Zeigt ein Bild an.
 
 #### ListView
 
 Eine einfache Liste aus Elementen/Kindern.
+Die Liste kann in jede Richtung zeigen.
 
 #### Popup
 
@@ -590,9 +589,9 @@ Der Hintergrund wird verdunkelt und weichgezeichnet.
 
 Weichzeichner: siehe data/assets/shader/blur.glsl
 
-#### Sizedbox
+#### SizedBox
 
-Wird in ListView verwendet um Leerstellen zu erstellen. Der Expand Parameter verursacht, dass die Sizedbox die maximale Größe in der ListView annimmt, dabei wird er sich den Platz mit anderen Sizedboxen fair teilen müssen. :(
+Wird in ListView verwendet um Leerstellen zu erstellen. Der Expand Parameter verursacht, dass die SizedBox die maximale Größe in der ListView annimmt, dabei wird er sich den Platz mit anderen SizedBoxen fair teilen müssen. :(
 
 #### Slider
 
@@ -600,7 +599,7 @@ Ein horizontaler Schieberegler.
 
 #### Tabbar
 
-Enthält eine ListView als Tabbar und zeigt je nach dem welcher Tab ausgewählt
+Enthält eine ListView als Tab Leiste und zeigt je nach dem welcher Tab ausgewählt
 ist das dazugehörige Kind/Element an.
 
 #### Text
@@ -642,11 +641,11 @@ Versteckt sein Kind/Element anhand seiner abstrakten Funktion
 
 OBase: Enthält Klassen, Enums, Interfaces und Funktionen welche vom gesamten Overlay verwendet werden.
 
-Box: Wird im Overlay verwendet, um die Grenzen des Elements weiterzugeben.
+Box: Wird im Overlay verwendet, um die Grenzen des Kindes/Elements weiterzugeben.
 
-TabData: Enthält Informationen, welche von Tabbar verwendet werden, um die Tabs zu erzeugen.
+TabData: Enthält Informationen, welches verwendet wird, um die Tabs zu erzeugen.
 
-Builder: Erstellt einen Array aus Objects mithilfe einer abstrakten Funktion.
+Builder: Erstellt einen Array aus Objects(Kinder/Elemente) mithilfe einer abstrakten Funktion.
 
 ListViewBuilder: Tut das gleiche, jedoch werden die Objects danach in eine ListView verwandelt.
 
@@ -658,7 +657,7 @@ Fit: Gibt das Verhalten von Image an. (siehe Image Code)
 
 IOverlay: Enthält Funktionen, welche alle Overlay Elemente enthalten müssen.
 
-dynamic casting: Da Java keine dynamische Variable besitzt, wird hier mithilfe des "instanceof" operators die Klasse ermittelt und der Befehl nach dem Casting für das Object ausgeführt.
+Dynamic casting: Da Java keine dynamische Variable besitzt, wird hier mithilfe des "instanceof" operators die Klasse ermittelt und der Befehl nach dem Casting für das Object ausgeführt.
 
 Anhang
 ------

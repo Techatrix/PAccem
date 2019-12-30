@@ -3,11 +3,11 @@ class RoomManager {
 	Grid roomgrid;						// the current room grid
 	int selectionid = -1;				// id of the currently selected furniture (-1 = none)
 	String name;						// name of the room
-
-	float xoff, yoff, scale; // 2D
-	float dxoff, dyoff, dzoff, angle1, angle2, dspeed; // 3D
-
 	int gridtilesize;					// size of one tile
+
+	float xoff, yoff, scale; 							// 2D view variables
+	float dxoff, dyoff, dzoff, angle1, angle2, dspeed;	// 3D view variables
+
 
 	int tool = 0;						// id of the currently selected tool
 	// 0=move, 1=draw to room grid, 2=place furn. or pref., 3=select furn., 4=fill, 5=place window,
@@ -17,9 +17,9 @@ class RoomManager {
 	ArrayList<int[]> dragtiles = new ArrayList<int[]>();	// list of all tiles that have already been dragged over
 	boolean dragstate;										// state to switch over when dragging
 
-	int newfurnitureid = 0;				// id of the currently selected furniture/prefab
-	int newroomgroup = 0;				// id of the current room tile group you are drawing
-	boolean isprefab = false;			// whether or not you are placing a furniture or a prefab
+	int newfurnitureid = 0;						// id of the currently selected furniture/prefab
+	int newroomgroup = 0;						// id of the current room tile group you are drawing
+	boolean isprefab = false;					// whether or not you are placing a furniture or a prefab
 	color furnituretint = color(255,255,255);	// tint setting for the furnitures
 
 	RoomManager() {
@@ -90,7 +90,6 @@ class RoomManager {
 			dragtiles = new ArrayList<int[]>();
 		}
 	}
-
 	void mousePressed() {
 		if(mouseButton == LEFT && !viewmode) {
 			selectionid = -1;
@@ -615,7 +614,7 @@ class RoomManager {
 		toovmessages.add("New Room " + xsize + "x" + ysize);
 	}
 
-	void switchViewmode() {	// well... switch the view mode (2D -> 3D, 3D -> 2D)
+	void switchViewmode() {	// well... switches the view mode (2D -> 3D, 3D -> 2D)
 		viewmode = !viewmode;
 	}
 

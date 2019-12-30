@@ -42,7 +42,8 @@ class Settings {
 	int getSize() {	// get length of all settings
 		return /*colors.length +*/ strings.length + booleans.length + ints.length + floats.length;
 	}
-	String set(int id, String value) { // sets chosen setting value to the given value (automatic data type conversion)
+
+	String set(int id, String value) { // sets the chosen settings value to the given value (automatic data type conversion)
 		String result = null;
 		int index = 0;
 		for (int i=0;i<strings.length;i++) {
@@ -72,6 +73,7 @@ class Settings {
 		save();
 		return result;
 	}
+
 	SettingValue get(int id) { // return the setting value with the given id
 		int index = 0;
 		for (int i=0;i<strings.length;i++) {
@@ -101,6 +103,7 @@ class Settings {
 		toovmessages.add("Setting not found: " + id);
 		return null;
 	}
+
 	void load() { // loads the settings from data/settings.json if possible
 		if(deb) {
 			toovmessages.add("Loading Settings");
@@ -301,6 +304,7 @@ class SettingFloatValue {
 		return new SettingValue(name, str(value), 3);
 	}
 }
+
 class SettingValue {
 	String name;	// name of the setting
 	String value;	// value of the setting

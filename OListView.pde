@@ -20,11 +20,11 @@ class ListView extends PWH implements IOverlay {
 		this.items = items;
 		this.itemheight = itemheight;
 		this.dir = dir;
-		setwh(_width, _height);
+		setWH(_width, _height);
 	}
 
 	void mouseWheel(MouseEvent ee) {
-		if(ishit()) {
+		if(isHit()) {
 			int length = 0;
 
 			for (Object item : items) {
@@ -35,7 +35,7 @@ class ListView extends PWH implements IOverlay {
 					}
 				}
 				if(!e) {
-					Box b = getitemboundary(item);
+					Box b = getItemBoundary(item);
 					length += max(itemheight, (dir == Dir.DOWN || dir == Dir.UP) ? b.h : b.w);
 				}
 			}
@@ -66,7 +66,7 @@ class ListView extends PWH implements IOverlay {
 		for (Object item : items) {
 			mousePresseditem(item);
 		}
-		return ishit();
+		return isHit();
 	}
 	boolean mouseDragged() {
 		for (Object item : items) {
@@ -93,19 +93,19 @@ class ListView extends PWH implements IOverlay {
     	noClip();
 	}
 
-	Box getboundary() {
+	Box getBoundary() {
 		return new Box(_width, _height);
 	}
 	
-	boolean ishit() {
+	boolean isHit() {
 	  	return mouseX >= xpos && mouseX < xpos+_width && mouseY >= ypos && mouseY < ypos+_height;
 	}
-	void setxy(int xpos, int ypos) {
+	void setXY(int xpos, int ypos) {
 		this.xpos = xpos;
 		this.ypos = ypos;
 		recalculateitems();
 	}
-	void setwh(int _width, int _height) {
+	void setWH(int _width, int _height) {
 		if(this._width == 0 && this._height == 0) {
 			this._width = _width;
 			this._height = _height;
@@ -125,7 +125,7 @@ class ListView extends PWH implements IOverlay {
 				}
 			}
 			if(!e) {
-				Box b = getitemboundary(item);
+				Box b = getItemBoundary(item);
 				sizelength += max(itemheight, (dir == Dir.DOWN || dir == Dir.UP) ? b.h : b.w);
 			}
 		}
@@ -145,7 +145,7 @@ class ListView extends PWH implements IOverlay {
 					e = true;
 				}
 			}
-			Box b = getitemboundary(item);
+			Box b = getItemBoundary(item);
 			if(dir == Dir.DOWN || dir == Dir.UP) {
 				if(dir == Dir.DOWN) {
 					setitemxy(item, xpos, ypos+off+off2);

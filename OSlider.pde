@@ -12,7 +12,7 @@ abstract class Slider extends PWH implements IOverlay {
 	}
 
 	boolean mousePressed() {
-		if(ishit()) {
+		if(isHit()) {
 			selected = true;
 			onchange(constrain(map(mouseX, xpos, xpos+_width,0,1), 0,1));
 			return true;
@@ -49,19 +49,19 @@ abstract class Slider extends PWH implements IOverlay {
 		}
 	}
 
-	Box getboundary() {
+	Box getBoundary() {
 		return new Box(_width, _height);
 	}
 	
-	boolean ishit() {
+	boolean isHit() {
 	  	return mouseX >= xpos && mouseX < xpos+_width && mouseY >= ypos && mouseY < ypos+_height;
 	}
 
-	void setxy(int xpos, int ypos) {
+	void setXY(int xpos, int ypos) {
 		this.xpos = xpos;
 		this.ypos = ypos;
 	}
-	void setwh(int _width, int _height) {
+	void setWH(int _width, int _height) {
 		this._width = _width;
 		this._height = _height;
 	}

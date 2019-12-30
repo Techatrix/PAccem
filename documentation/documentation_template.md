@@ -302,7 +302,7 @@ void setitems(Object[] items):
 
 void draw(): 
 
-boolean ishit(): 
+boolean isHit(): 
 
 void mouseWheel(MouseEvent e): 
 
@@ -353,7 +353,7 @@ ArrayList dragtiles:
 
 boolean dragstate: 
 
-int newfurnitureid = 0: 
+int newfurnitureid: 
 
 int newroomgroup: 
 
@@ -375,9 +375,9 @@ void keyPressed(KeyEvent e):
 
 void keyReleased(): 
 
-float getXPos(): V
+float getXPos(): 
 
-float getYPos(): V
+float getYPos(): 
 
 boolean isFurniture(int xpos, int ypos): 
 
@@ -491,12 +491,9 @@ final String githublink:
 
 #### Dynamic
 
-
 #### EventDetector
 
-
 #### GridView
-
 
 #### Image
 
@@ -504,7 +501,7 @@ final String githublink:
 
 #### Popup
 
-#### Sizedbox
+#### SizedBox
 
 #### Slider
 
@@ -553,7 +550,7 @@ Fit:
 
 IOverlay: 
 
-dynamic casting: 
+Dynamic casting: 
 
 Attachment
 ------

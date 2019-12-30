@@ -1,58 +1,58 @@
-abstract class GetVisible implements IOverlay {
+abstract class Visible implements IOverlay {
 	Object item;
 	
-	GetVisible() {
+	Visible() {
 	}
-	GetVisible(Object item) {
+	Visible(Object item) {
 		this.item = item;
 	}
 
 	void mouseWheel(MouseEvent e) {
-		if(getvisible()) {
+		if(Visible()) {
 			mouseWheelitem(item, e);
 		}
 	}
 	boolean mousePressed() {
-		if(getvisible()) {
+		if(Visible()) {
 			return mousePresseditem(item);
 		}
 		return false;
 	}
 	boolean mouseDragged() {
-		if(getvisible()) {
+		if(Visible()) {
 			return mouseDraggeditem(item);
 		}
 		return false;
 	}
 
 	void keyPressed() {
-		if(getvisible()) {
+		if(Visible()) {
 			keyPresseditem(item);
 		}
 	}
-	abstract boolean getvisible();
+	abstract boolean Visible();
 
 	void draw(boolean hit) {
-		if(getvisible()) {
+		if(Visible()) {
 			drawitem(item, hit);
 		}
 	}
 
-	Box getboundary() {
-		return getitemboundary(item);
+	Box getBoundary() {
+		return getItemBoundary(item);
 	}
 	
-	boolean ishit() {
-		if(getvisible()) {
-	  		return getisitemhit(item);
+	boolean isHit() {
+		if(Visible()) {
+	  		return getisItemHit(item);
 		}
 		return false;
 	}
 
-	void setxy(int xpos, int ypos) {
+	void setXY(int xpos, int ypos) {
 		setitemxy(item, xpos, ypos);
 	}
-	void setwh(int _width, int _height) {
+	void setWH(int _width, int _height) {
 		setitemwh(item, _width, _height);
 	}
 }

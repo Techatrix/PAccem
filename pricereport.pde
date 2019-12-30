@@ -1,6 +1,6 @@
-class PriceReport extends FurniturePriceReport{
-	int tilecount;				// the amount of tiles which are active in the grid
-	int pricepertile;			// price per tile in the grid
+class PriceReport extends FurniturePriceReport {
+	int tilecount;		// the amount of tiles which are active in the grid
+	int pricepertile;	// price per tile in the grid
 
 	PriceReport(int tilecount, int pricepertile, int[] furnitureids, int[] furniturecounts) {
 		super(furnitureids, furniturecounts);
@@ -14,8 +14,8 @@ class PriceReport extends FurniturePriceReport{
 	}
 }
 class FurniturePriceReport {
-	int[] furnitureids;			// ids of the furnitures in the grid
-	int[] furniturecounts;		// amounts of the furnitures in the grid
+	int[] furnitureids;		// ids of the furnitures in the grid
+	int[] furniturecounts;	// amounts of the furnitures in the grid
 
 	FurniturePriceReport(int[] furnitureids, int[] furniturecounts) {
 		this.furnitureids = furnitureids;

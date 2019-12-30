@@ -38,6 +38,10 @@ class ApplicationManager {
 					//blurshader.set("blurSize", 9);
 					//blurshader.set("sigma", 3.0);
 					//blurshader.set("samplesize", 1);
+
+					// pixelate shader
+					//blurshader = loadShader("data/assets/shader/pixelate.glsl");
+  					//blurshader.set("resolution", float(width), float(height));
 				} catch(RuntimeException e) {
 					disableblur = true;
 					toovmessages.add("Shader RuntimeException: " + e);

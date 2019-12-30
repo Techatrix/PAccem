@@ -3,7 +3,7 @@ class OverlayManager extends Overlay {
 	final int yoff = 30;						// used for aligning the room grid with the overlay
 
 	boolean drawpopup = false;					// visibility state of current popup
-	int tabid = -1;								// used by Tab bar (in OTabbar.pde)
+	int tabid = -1;								// used by Tab bar (see OTabbar.pde)
 	String newroomname;							// the name of a new room 
 	int newroomxsize = 15, newroomysize = 15;	// the size of a new room
 	Object tempdata;							// temporary variable with different uses(mostly for transferring data to popups)
@@ -30,13 +30,13 @@ class OverlayManager extends Overlay {
 		visible = !st.booleans[1].value;
 		build();
 	}
-	void build() {
+	void build() { // creates the overlay
 		Object[] items = new Object[4];
 		items[0] = 
 		new Popup() {
 			@Override public void ontrue() {}
 			@Override public void onfalse() {}
-			@Override public boolean getvisible() {return drawpopup;}
+			@Override public boolean Visible() {return drawpopup;}
 		};
 		// Tab bar 
 		items[1] = 
@@ -64,7 +64,7 @@ class OverlayManager extends Overlay {
 							@Override public Object i(int i) {
 								final Temp temp = new Temp(i);
 								return new EventDetector(new Container(new Text(lg.get("room") + ": " + rm.loadRooms()[i]))) {
-									@Override public void onevent(EventType et, MouseEvent e) {
+									@Override public void onEvent(EventType et, MouseEvent e) {
 										if(et == EventType.MOUSEPRESSED) {
 											rm.load(rm.loadRooms()[temp.i]);
 										}
@@ -83,7 +83,7 @@ class OverlayManager extends Overlay {
 							}),
 							new SizedBox(),
 							new EventDetector(new Container(new Text(lg.get("save")))) {
-								@Override public void onevent(EventType et, MouseEvent e) {
+								@Override public void onEvent(EventType et, MouseEvent e) {
 									if(et == EventType.MOUSEPRESSED) {
 										if(st.strings[0].value == ov.newroomname) {
 											drawPopup(8);
@@ -157,7 +157,7 @@ class OverlayManager extends Overlay {
 				// debug
 				new Transform(
 					new Dynamic() {
-						@Override public Object getitem() {
+						@Override public Object getItem() {
 							final String[] names = new String[] {"name","xoff","yoff","scale","dxoff","dyoff","dzoff","angle1","angle2",
 								"dspeed","gridtilesize","tool","viewmode","newfurnitureid","isprefab","newroomgroup","selectionid"};
 							final String[] values = new String[] {rm.name,str(rm.xoff),str(rm.yoff),str(rm.scale),str(rm.dxoff),
@@ -179,7 +179,7 @@ class OverlayManager extends Overlay {
 						@Override public Object i(int i) {
 							if(i==0) {
 								return new EventDetector(new Container(new Text(lg.get("addrg")))) {
-									@Override public void onevent(EventType et, MouseEvent e) {
+									@Override public void onEvent(EventType et, MouseEvent e) {
 										if(et == EventType.MOUSEPRESSED) {
 											drawPopup(5);
 										}
@@ -217,7 +217,7 @@ class OverlayManager extends Overlay {
 										// select roomgroup
 										// TODO: Icon
 										new EventDetector(new Container(new Text("S"),70,30, (rm.newroomgroup == temp.i) ? color(c[3]) : color(c[5]))) {
-											@Override public void onevent(EventType et, MouseEvent e) {
+											@Override public void onEvent(EventType et, MouseEvent e) {
 												if(et == EventType.MOUSEPRESSED) {
 													rm.newroomgroup = temp.i;
 													ov.build();
@@ -226,7 +226,7 @@ class OverlayManager extends Overlay {
 										},
 										// delete roomgroup
 										new EventDetector(new Container(new Image(dm.icons[8]),30,30)) {
-											@Override public void onevent(EventType et, MouseEvent e) {
+											@Override public void onEvent(EventType et, MouseEvent e) {
 												if(et == EventType.MOUSEPRESSED) {
 													if(temp2.i > 1) {
 														if(rm.roomgrid.isRoomGroupinuse(temp.i)) {
@@ -251,7 +251,7 @@ class OverlayManager extends Overlay {
 				// price
 				new Transform(
 					new Dynamic() {
-						@Override public Object getitem() {
+						@Override public Object getItem() {
 							PriceReport pr = rm.getPriceReport();
 							int total = 0;
 							Object[] o = new Object[pr.furnitureids.length+1];
@@ -288,7 +288,7 @@ class OverlayManager extends Overlay {
 												)
 											)
 										) {
-											@Override public void onevent(EventType et, MouseEvent e) {
+											@Override public void onEvent(EventType et, MouseEvent e) {
 												if(et == EventType.MOUSEPRESSED) {
 													rm.newfurnitureid = temp.i;
 													rm.isprefab = false;
@@ -300,20 +300,20 @@ class OverlayManager extends Overlay {
 								}.build(dm.furnitures.length),300, height-yoff-60,2
 							),
 							new EventDetector(new Container(new Text(lg.get("selectcolor")), 300, 30)) {
-								@Override public void onevent(EventType et, MouseEvent e) {
+								@Override public void onEvent(EventType et, MouseEvent e) {
 									if(et == EventType.MOUSEPRESSED) {
 										drawPopup(6);
 									}
 								}
 							},
 							new EventDetector(new Container(new Text(lg.get("prefablist")), 300, 30)) {
-								@Override public void onevent(EventType et, MouseEvent e) {
+								@Override public void onEvent(EventType et, MouseEvent e) {
 									if(et == EventType.MOUSEPRESSED) {
 										tabid = 7;
 									}
 								}
 							},
-						},300, height-yoff
+						},300, height-yoff-100
 					),0,yoff, Align.TOPRIGHT
 				),
 				// prefab list
@@ -333,7 +333,7 @@ class OverlayManager extends Overlay {
 												)
 											)
 										) {
-											@Override public void onevent(EventType et, MouseEvent e) {
+											@Override public void onEvent(EventType et, MouseEvent e) {
 												if(et == EventType.MOUSEPRESSED) {
 													rm.newfurnitureid = temp.i;
 													rm.isprefab = true;
@@ -345,7 +345,7 @@ class OverlayManager extends Overlay {
 								}.build(dm.prefabs.length),300, height-yoff-30,2
 							),
 							new EventDetector(new Container(new Text(lg.get("furnlist")), 300, 30)) {
-								@Override public void onevent(EventType et, MouseEvent e) {
+								@Override public void onEvent(EventType et, MouseEvent e) {
 									if(et == EventType.MOUSEPRESSED) {
 										tabid = 6;
 									}
@@ -357,17 +357,19 @@ class OverlayManager extends Overlay {
 			}
 			) {
 			@Override public void ontab(int i) {
-				TabData td = ov.tabs[i];
-				if(td.type) {
-					drawPopup(td.id);
-				} else {
-					if(td.id == -1) {
-						rm.switchViewmode();
+				if(-1 < i && i < ov.tabs.length) {
+					TabData td = ov.tabs[i];
+					if(td.type) {
+						drawPopup(td.id);
 					} else {
-						if(tabid == td.id) {
-							tabid = -1;
+						if(td.id == -1) {
+							rm.switchViewmode();
 						} else {
-							tabid = td.id;
+							if(tabid == td.id) {
+								tabid = -1;
+							} else {
+								tabid = td.id;
+							}
 						}
 					}
 				}
@@ -384,7 +386,7 @@ class OverlayManager extends Overlay {
 					final Temp temp = new Temp(i);
 					if (i < 6) {
 						return new EventDetector(new Container(new Image(dm.icons[temp.i+1]))) {
-							@Override public void onevent(EventType et, MouseEvent e) {
+							@Override public void onEvent(EventType et, MouseEvent e) {
 								if(et == EventType.MOUSEPRESSED) {
 									rm.tool = temp.i;
 									if(rm.tool == 2) {
@@ -398,7 +400,7 @@ class OverlayManager extends Overlay {
 							return new SizedBox(true);
 						} else {
 							return new EventDetector(new Container(new Image(dm.icons[7]))) {
-							@Override public void onevent(EventType et, MouseEvent e) {
+							@Override public void onEvent(EventType et, MouseEvent e) {
 								if(et == EventType.MOUSEPRESSED) {
 									drawconsole = !drawconsole;
 								}
@@ -411,10 +413,10 @@ class OverlayManager extends Overlay {
 		);
 		// Message Box
 		items[3] = 
-		new GetVisible(
+		new Visible(
 			new Transform(
 				new Dynamic() {
-					@Override public Object getitem() {
+					@Override public Object getItem() {
 						Object o = new EventDetector(
 							new ListViewBuilder() {
 								@Override public Object i(int i) {
@@ -423,7 +425,7 @@ class OverlayManager extends Overlay {
 								}
 							}.build(messages.size(),width-xoff,messageboxheight, 30, Dir.DOWN)
 						) {
-							@Override public void onevent(EventType et, MouseEvent e) {
+							@Override public void onEvent(EventType et, MouseEvent e) {
 								if(et == EventType.MOUSEWHEEL) {
 									int length = messages.size()*30;
 									if(length > messageboxheight) {
@@ -438,7 +440,7 @@ class OverlayManager extends Overlay {
 					}
 				},xoff, height-messageboxheight
 			)
-		) {@Override public boolean getvisible() {return drawconsole;}};
+		) {@Override public boolean Visible() {return drawconsole;}};
 		setItems(items);
 	}
 
@@ -460,8 +462,8 @@ class OverlayManager extends Overlay {
 	}
 
 	void drawPopup(int id) { // opens a Popup
-		switch(id) { // popups
-			case 0: // Opens the requiresrestart popup
+		switch(id) {
+			case 0: // requires restart
 				items[0] =
 				new Popup(
 					new ListView(
@@ -470,7 +472,7 @@ class OverlayManager extends Overlay {
 							new Text(lg.get("ratste"), CENTER, 3),
 							new SizedBox(true),
 							new EventDetector(new Container(new Text(lg.get("ok")))) {
-								@Override public void onevent(EventType et, MouseEvent e) {
+								@Override public void onEvent(EventType et, MouseEvent e) {
 									if(et == EventType.MOUSEPRESSED) {drawpopup = false;}
 								}
 							},
@@ -478,7 +480,7 @@ class OverlayManager extends Overlay {
 					)) {
 					@Override public void ontrue() {drawpopup = false;}
 					@Override public void onfalse() {drawpopup = false;}
-					@Override public boolean getvisible() {return drawpopup;}
+					@Override public boolean Visible() {return drawpopup;}
 				};
 			break;
 			case 1: // new Room
@@ -511,7 +513,7 @@ class OverlayManager extends Overlay {
 					),},lg.get("ok"), lg.get("cancel")) {
 					@Override public void ontrue() {drawpopup = false;rm.newRoom(newroomxsize, newroomysize);}
 					@Override public void onfalse() {drawpopup = false;}
-					@Override public boolean getvisible() {return drawpopup;}
+					@Override public boolean Visible() {return drawpopup;}
 				};
 			break;
 			case 2: // about
@@ -522,12 +524,12 @@ class OverlayManager extends Overlay {
 							new Text(getAbout(), CENTER, 4),
 							new SizedBox(true),
 							new EventDetector(new Container(new Text("Github"))) {
-								@Override public void onevent(EventType et, MouseEvent e) {
+								@Override public void onEvent(EventType et, MouseEvent e) {
 									if(et == EventType.MOUSEPRESSED) {link(githublink);}
 								}
 							},
 							new EventDetector(new Container(new Text(lg.get("ok")))) {
-								@Override public void onevent(EventType et, MouseEvent e) {
+								@Override public void onEvent(EventType et, MouseEvent e) {
 									if(et == EventType.MOUSEPRESSED) {drawpopup = false;}
 								}
 							},
@@ -535,7 +537,7 @@ class OverlayManager extends Overlay {
 					)) {
 					@Override public void ontrue() {drawpopup = false;}
 					@Override public void onfalse() {drawpopup = false;}
-					@Override public boolean getvisible() {return drawpopup;}
+					@Override public boolean Visible() {return drawpopup;}
 				};
 			break;
 			case 3: // reset
@@ -548,10 +550,10 @@ class OverlayManager extends Overlay {
 					},lg.get("ok"), lg.get("cancel")) {
 					@Override public void ontrue() {drawpopup = false;rm.reset();}
 					@Override public void onfalse() {drawpopup = false;}
-					@Override public boolean getvisible() {return drawpopup;}
+					@Override public boolean Visible() {return drawpopup;}
 				};
 			break;
-			case 4: // remove roomgroup
+			case 4: // remove room group
 				items[0] =
 				new Popup(
 					new Object[] {
@@ -565,10 +567,10 @@ class OverlayManager extends Overlay {
 						ov.build();
 					}
 					@Override public void onfalse() {drawpopup = false;}
-					@Override public boolean getvisible() {return drawpopup;}
+					@Override public boolean Visible() {return drawpopup;}
 				};
 			break;
-			case 5: // new roomgroup
+			case 5: // new room group
 				tempdata = "";
 				items[0] =
 				new Popup(
@@ -589,12 +591,10 @@ class OverlayManager extends Overlay {
 							rm.roomgrid.addRoomGroup((String)tempdata, color(50,50,50));
 							ov.build();
 							drawpopup = false;
-						} else {
-							// TODO: Message
 						}
 					}
 					@Override public void onfalse() {drawpopup = false;}
-					@Override public boolean getvisible() {return drawpopup;}
+					@Override public boolean Visible() {return drawpopup;}
 				};
 			break;
 			case 6: // select color
@@ -638,7 +638,7 @@ class OverlayManager extends Overlay {
 					},lg.get("ok"), lg.get("cancel")) {
 					@Override public void ontrue() {drawpopup = false;build();}
 					@Override public void onfalse() {drawpopup = false;}
-					@Override public boolean getvisible() {return drawpopup;}
+					@Override public boolean Visible() {return drawpopup;}
 				};
 			break;
 			case 7: // activate cgol
@@ -651,10 +651,10 @@ class OverlayManager extends Overlay {
 					},lg.get("ok"), lg.get("cancel")) {
 					@Override public void ontrue() {drawpopup = false;allowcgol = true;rm.furnitures = new ArrayList<Furniture>();}
 					@Override public void onfalse() {drawpopup = false;}
-					@Override public boolean getvisible() {return drawpopup;}
+					@Override public boolean Visible() {return drawpopup;}
 				};
-			break; // overwrite default room?
-			case 8:
+			break; 
+			case 8: // overwrite default room?
 				items[0] =
 				new Popup(
 					new Object[] {
@@ -664,7 +664,7 @@ class OverlayManager extends Overlay {
 					},lg.get("yes"), lg.get("no")) {
 					@Override public void ontrue() {drawpopup = false;rm.save(rm.name);ov.build();}
 					@Override public void onfalse() {drawpopup = false;}
-					@Override public boolean getvisible() {return drawpopup;}
+					@Override public boolean Visible() {return drawpopup;}
 				};
 			break;
 		}

@@ -79,4 +79,12 @@
         "src": "couch31",
         "price": 50,
       },
+      {
+        "id": 10,
+        "width": 1,
+        "height": 1,
+        "name": "Desk",
+        "src": "desk",
+        "price": 50,
+      },
 ]

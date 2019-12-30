@@ -1,4 +1,4 @@
-final String appname = "PAccem";
-final String appversion = "0.9.0.11 Experimental";
-final String appmaker = "Arian Hosseini (Techatrix)";
-final String githublink = "https://github.com/Techatrix/PAccem";
+final String appname = "PAccem";									// name of the application
+final String appversion = "0.9.0.13 Experimental";					// version of the application
+final String appmaker = "Arian Hosseini (Techatrix)";				// author
+final String githublink = "https://github.com/Techatrix/PAccem";	// link to the Github repository

@@ -29,12 +29,12 @@ abstract class Popup extends PWH implements IOverlay {
         new ListView(
 			new Object[] {
 				new EventDetector(new Container(new Text(truetext))) {
-					@Override public void onevent(EventType et, MouseEvent e) {
+					@Override public void onEvent(EventType et, MouseEvent e) {
 						if(et == EventType.MOUSEPRESSED) {ontrue();}
 					}
 				},
 				new EventDetector(new Container(new Text(falsetext))) {
-					@Override public void onevent(EventType et, MouseEvent e) {
+					@Override public void onEvent(EventType et, MouseEvent e) {
 						if(et == EventType.MOUSEPRESSED) {onfalse();}
 					}
 				},
@@ -51,35 +51,35 @@ abstract class Popup extends PWH implements IOverlay {
 	}
 
 	void mouseWheel(MouseEvent e) {
-		if(getvisible()) {
+		if(Visible()) {
 			mouseWheelitem(item, e);
 		}
 	}
 	boolean mousePressed() {
-		if(getvisible()) {
+		if(Visible()) {
 			return mousePresseditem(item);
 		}
 		return false;
 	}
 	boolean mouseDragged() {
-		if(getvisible()) {
+		if(Visible()) {
 			return mouseDraggeditem(item);
 		}
 		return false;
 	}
 
 	void keyPressed() {
-		if(getvisible()) {
+		if(Visible()) {
 			keyPresseditem(item);
 		}
 	}
 
 	abstract void ontrue();
 	abstract void onfalse();
-	abstract boolean getvisible();
+	abstract boolean Visible();
 
 	void draw(boolean hit) {
-		if(getvisible()) {
+		if(Visible()) {
 			if(blur && usegl && !disableblur) {
 				filter(blurshader);
 			}
@@ -87,18 +87,18 @@ abstract class Popup extends PWH implements IOverlay {
 		}
 	}
 
-	Box getboundary() {
-		return getitemboundary(item);
+	Box getBoundary() {
+		return getItemBoundary(item);
 	}
 
-	void setxy(int xpos, int ypos) {
+	void setXY(int xpos, int ypos) {
 		setitemxy(item, xpos, ypos);
 	}
-	void setwh(int _width, int _height) {
+	void setWH(int _width, int _height) {
 		setitemwh(item, _width, _height);
 	}
 
-	boolean ishit() {
-		return getvisible() && getisitemhit(item);
+	boolean isHit() {
+		return Visible() && getisItemHit(item);
 	}
 }

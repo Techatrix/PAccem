@@ -13,7 +13,7 @@ class Text extends PWH implements IOverlay {
 		this.text = text;
 		this.align = align;
 		this.lines = lines;
-		setwh(-1, -1);
+		setWH(-1, -1);
 	}
 
 	void draw(boolean hit) {
@@ -27,19 +27,19 @@ class Text extends PWH implements IOverlay {
 		}
 	}
 
-	Box getboundary() {
+	Box getBoundary() {
 		return new Box(max(_width, textWidth(text)), max(_height, lines*(16 + textDescent())));
 	}
 	
-	boolean ishit() {
+	boolean isHit() {
 	  	return mouseX >= xpos && mouseX < xpos+_width && mouseY >= ypos && mouseY < ypos+_height;
 	}
 
-	void setxy(int xpos, int ypos) {
+	void setXY(int xpos, int ypos) {
 		this.xpos = xpos;
 		this.ypos = ypos;
 	}
-	void setwh(int _width, int _height) {
+	void setWH(int _width, int _height) {
 		this._width = _width;
 		this._height = _height;
 	}
@@ -66,10 +66,10 @@ abstract class SetValueText extends PWH implements IOverlay {
 		this.value = value;
 		this.newvalue = value;
 		this.valuestyle = valuestyle;
-		setwh(-1, -1);
+		setWH(-1, -1);
 	}
 	boolean mousePressed() {
-		if(ishit()) {
+		if(isHit()) {
 			selected = true;
 			return true;
 		}
@@ -129,20 +129,20 @@ abstract class SetValueText extends PWH implements IOverlay {
 		}
 	}
 
-	Box getboundary() {
+	Box getBoundary() {
 		textSize(16);
 		return new Box(max(_width, textWidth(text)*1), max(_height, 16 + textDescent()));
 	}
 	
-	boolean ishit() {
+	boolean isHit() {
 	  	return mouseX >= xpos && mouseX < xpos+_width && mouseY >= ypos && mouseY < ypos+_height;
 	}
 
-	void setxy(int xpos, int ypos) {
+	void setXY(int xpos, int ypos) {
 		this.xpos = xpos;
 		this.ypos = ypos;
 	}
-	void setwh(int _width, int _height) {
+	void setWH(int _width, int _height) {
 		this._width = _width;
 		this._height = _height;
 	}
@@ -153,7 +153,7 @@ abstract class GetValueText extends PWH implements IOverlay {
 
 	GetValueText(String text) {
 		this.text = text;
-		setwh(-1, -1);
+		setWH(-1, -1);
 	}
 
 	abstract String getvalue();
@@ -170,20 +170,20 @@ abstract class GetValueText extends PWH implements IOverlay {
 		}
 	}
 
-	Box getboundary() {
+	Box getBoundary() {
 		textSize(16);
 		return new Box(max(_width, textWidth(text)*1), max(_height, 16 + textDescent()));
 	}
 	
-	boolean ishit() {
+	boolean isHit() {
 	  	return mouseX >= xpos && mouseX < xpos+_width && mouseY >= ypos && mouseY < ypos+_height;
 	}
 
-	void setxy(int xpos, int ypos) {
+	void setXY(int xpos, int ypos) {
 		this.xpos = xpos;
 		this.ypos = ypos;
 	}
-	void setwh(int _width, int _height) {
+	void setWH(int _width, int _height) {
 		this._width = _width;
 		this._height = _height;
 	}
