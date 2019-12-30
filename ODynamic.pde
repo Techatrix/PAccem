@@ -5,25 +5,25 @@ abstract class Dynamic extends PWH implements IOverlay {
 		item = getItem();
 	}
 	boolean mousePressed() {
-		return mousePresseditem(item);
+		return mousePressedItem(item);
 	}
 
-	void mouseWheel(MouseEvent e) {
-		mouseWheelitem(item, e);
+	boolean mouseWheel(MouseEvent e) {
+		return mouseWheelItem(item, e);
 	}
 	boolean mouseDragged() {
-		return mouseDraggeditem(item);
+		return mouseDraggedItem(item);
 	}
 	void keyPressed() {
-		keyPresseditem(item);
+		keyPressedItem(item);
 	}
 	abstract Object getItem();
 
 	void draw(boolean hit) {
 		item = getItem();
-		setitemxy(item, xpos, ypos);
-		setitemwh(item, _width, _height);
-		drawitem(item, hit);
+		setItemXY(item, xpos, ypos);
+		setItemWH(item, _width, _height);
+		drawItem(item, hit);
 	}
 
 	Box getBoundary() {

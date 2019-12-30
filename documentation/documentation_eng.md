@@ -70,6 +70,8 @@ DataManager dm: stores data (3D-models, images, etc.)
 
 OverlayManager ov: creates and manages the GUI
 
+Clipper cl: allows "pushing" and "popping" of clip() ( see: Processing push(), pop(), clip() )
+
 PGraphics pg: used for 3D-graphics
 
 PShader blurshader: blur shader
@@ -142,7 +144,29 @@ void manageArgs(): handles all arguments which have been handed over to the prog
 
 void loop(): set window size according to the width & height setting
 
+### Clipper
+
+Clipper allows to "push" and "pop" the clip setting in the program. This relies on the clip() function of processing which limits the a area in which a draw function draws.
+
+#### Variables
+
+ArrayList<Clip> clips: contains the current and all previous clip settings to which can be "popped".
+
+#### Functions
+
+Clip get(): return the current clip setting
+
+void pushClip(): "pushes" the current clip setting. This means that the current clip setting is being saved and then it set to the chosen one.
+
+void popClip(): "poppes" the current clip setting. This means that it returns to the last clip setting that has been saved.
+
+####Extra
+
+Clip: Contains a clip setting
+
 ### DataManager
+
+DataManager loads (all) Assets from data/assets and saves, validates and converts them into an easier accessible format.
 
 #### Variables
 

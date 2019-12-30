@@ -1,13 +1,10 @@
-//import java.util.Map;
-//import java.io.*;
-//import java.util.stream.IntStream;
-
 ApplicationManager am;	// manages the overall application (title, size, initialization)
 Settings st;			// loads and stores the current settings
 LanguageManager lg;		// loads the current language file
 RoomManager rm;			// manages the room(grid, furniture & user input)
 DataManager dm;			// stores data (3D-models, images, etc.)
 OverlayManager ov;		// creates and manages the GUI
+Clipper cl;				// allows pushing and popping of clip()
 
 PGraphics pg;			// used for 3D-graphics
 PShader blurshader;		// blur shader

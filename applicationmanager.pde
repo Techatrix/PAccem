@@ -49,6 +49,7 @@ class ApplicationManager {
 				}
 			}
 		}
+		cl = new Clipper();								// initialize clipper
 		lg = new LanguageManager(st.strings[1].value);	// initialize languagemanager
 		dm = new DataManager();							// initialize datamanager
 		rm = new RoomManager();							// initialize roommanager

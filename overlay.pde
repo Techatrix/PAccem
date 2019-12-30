@@ -7,10 +7,11 @@ class Overlay {
 			toovmessages.add("Loading Overlay");
 		}
 	}
+	
 	void setItems(Object[] items) { // sets the items of the overlay
 		this.items = items;
 		for (Object item : items) {
-			setitemxy(item, 0,0); // position all items at the origin
+			setItemXY(item, 0,0); // position all items at the origin
 		}
 	}
 
@@ -32,7 +33,7 @@ class Overlay {
 			}
 
 			for (int i=items.length-1;i>=0;i--) {
-				drawitem(items[i], h[i]); // the actual draw call
+				drawItem(items[i], h[i]); // the actual draw call
 			}
 		}
 	}
@@ -51,7 +52,7 @@ class Overlay {
 	void mouseWheel(MouseEvent e) {
 		if(visible) {
 			for (Object item : items) {
-				mouseWheelitem(item, e);
+				mouseWheelItem(item, e);
 			}
 		}
 	}
@@ -59,7 +60,7 @@ class Overlay {
 		boolean hit = false;
 		if(visible) {
 			for (Object item : items) {
-				if(mousePresseditem(item)) {
+				if(mousePressedItem(item)) {
 					hit = true;
 					return true;
 				}
@@ -73,7 +74,7 @@ class Overlay {
 		boolean hit = false;
 		if(visible) {
 			for (Object item : items) {
-				if(mouseDraggeditem(item)) {
+				if(mouseDraggedItem(item)) {
 					hit = true;
 					return true;
 				}
@@ -85,7 +86,7 @@ class Overlay {
 	void keyPressed(KeyEvent e) {
 		if(visible) {
 			for (Object item : items) {
-				keyPresseditem(item);
+				keyPressedItem(item);
 			}
 		}
 	}

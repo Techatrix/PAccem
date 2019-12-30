@@ -30,6 +30,7 @@ class OverlayManager extends Overlay {
 		visible = !st.booleans[1].value;
 		build();
 	}
+
 	void build() { // creates the overlay
 		Object[] items = new Object[4];
 		items[0] = 
@@ -279,7 +280,8 @@ class OverlayManager extends Overlay {
 								new Builder() {
 									@Override public Object i(int i) {
 										final Temp temp = new Temp(i);
-										return new EventDetector(new Container(
+										return new EventDetector(
+											new Container(
 												new ListView(
 													new Object[] {
 														new Image(dm.furnitures[temp.i].image, 150, round(150*0.75), Fit.RATIO, rm.furnituretint),
@@ -313,7 +315,7 @@ class OverlayManager extends Overlay {
 									}
 								}
 							},
-						},300, height-yoff-100
+						},300, height-yoff
 					),0,yoff, Align.TOPRIGHT
 				),
 				// prefab list
@@ -356,7 +358,7 @@ class OverlayManager extends Overlay {
 				),
 			}
 			) {
-			@Override public void ontab(int i) {
+			@Override public void onTab(int i) {
 				if(-1 < i && i < ov.tabs.length) {
 					TabData td = ov.tabs[i];
 					if(td.type) {
@@ -374,7 +376,7 @@ class OverlayManager extends Overlay {
 					}
 				}
 			}
-			@Override public int getid() {
+			@Override public int getId() {
 				return tabid;
 			}
 		};
