@@ -1,49 +1,58 @@
-abstract class GetVisible implements IOverlay {
+abstract class Visible implements IOverlay {
 	Object item;
-
-	GetVisible(Object item) {
+	
+	Visible() {
+	}
+	Visible(Object item) {
 		this.item = item;
 	}
-
-	void mouseWheel(MouseEvent e) {
-		if(getvisible()) {
-			mouseWheelitem(item, e);
+	boolean mouseWheel(MouseEvent e) {
+		if(Visible()) {
+			return mouseWheelItem(item, e);
 		}
+		return false;
 	}
 	boolean mousePressed() {
-		if(getvisible()) {
-			return mousePresseditem(item);
+		if(Visible()) {
+			return mousePressedItem(item);
 		}
 		return false;
 	}
+	boolean mouseDragged() {
+		if(Visible()) {
+			return mouseDraggedItem(item);
+		}
+		return false;
+	}
+
 	void keyPressed() {
-		if(getvisible()) {
-			keyPresseditem(item);
+		if(Visible()) {
+			keyPressedItem(item);
 		}
 	}
-	abstract boolean getvisible();
+	abstract boolean Visible();
 
 	void draw(boolean hit) {
-		if(getvisible()) {
-			drawitem(item, hit);
+		if(Visible()) {
+			drawItem(item, hit);
 		}
 	}
 
-	Box getbound() {
-		return getboundry(item);
+	Box getBoundary() {
+		return getItemBoundary(item);
 	}
 	
-	boolean ishit() {
-		if(getvisible()) {
-	  		return getisitemhit(item);
+	boolean isHit() {
+		if(Visible()) {
+	  		return getisItemHit(item);
 		}
 		return false;
 	}
 
-	void setxy(int xpos, int ypos) {
-		setitemxy(item, xpos, ypos);
+	void setXY(int xpos, int ypos) {
+		setItemXY(item, xpos, ypos);
 	}
-	void setwh(int _width, int _height) {
-		setitemwh(item, _width, _height);
+	void setWH(int _width, int _height) {
+		setItemWH(item, _width, _height);
 	}
 }

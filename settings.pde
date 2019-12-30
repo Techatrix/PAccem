@@ -7,7 +7,7 @@ class Settings {
 
 	Settings() {
 		if(deb) {
-			println("Load Settings Class");
+			toovmessages.add("Loading Settings Class");
 		}
 		strings = new SettingStringValue[3];
 		booleans = new SettingBooleanValue[4];
@@ -26,53 +26,54 @@ class Settings {
 		strings[2] = new SettingStringValue("font", "Roboto");
 
 		booleans[0] = new SettingBooleanValue("darkmode", true);
-		booleans[1] = new SettingBooleanValue("hide overlay", false);
+		booleans[1] = new SettingBooleanValue("hideoverlay", false);
 		booleans[2] = new SettingBooleanValue("fullscreen", false);
-		booleans[3] = new SettingBooleanValue("Use OpenGl Renderer", false);	// shoud be disabled on 32-bit and on old devices
+		booleans[3] = new SettingBooleanValue("useglrenderer", false);	// should be disabled on 32-bit and older devices
 
 		ints[0] = new SettingIntValue("width", 1200, 600, displayWidth);
 		ints[1] = new SettingIntValue("height", 800, 600, displayHeight);
-		ints[2] = new SettingIntValue("Anti-aliasing", 4, 0, 8);
+		ints[2] = new SettingIntValue("antialiasing", 4, 0, 8);
 
 		floats[0] = new SettingFloatValue("gridlineweight", 1);
-		//floats[1] = new SettingFloatValue("overlayscale", 1, 0.7, 1.5); (used in old ui)
 
 		load();
 	}
 	
-	int getsize() {
+	int getSize() {	// get length of all settings
 		return /*colors.length +*/ strings.length + booleans.length + ints.length + floats.length;
 	}
-	String set(int id, String value) { // sets choosen setting value to the given value (automatic data type conversion)
+
+	String set(int id, String value) { // sets the chosen settings value to the given value (automatic data type conversion)
 		String result = null;
 		int index = 0;
 		for (int i=0;i<strings.length;i++) {
 			if(index == id) {
-				result = strings[i].setvalue(value);
+				result = strings[i].setValue(value);
 			}
 			index++;
 		}
 		for (int i=0;i<booleans.length;i++) {
 			if(index == id) {
-				result = booleans[i].setvalue(value);
+				result = booleans[i].setValue(value);
 			}
 			index++;
 		}
 		for (int i=0;i<ints.length;i++) {
 			if(index == id) {
-				result = ints[i].setvalue(value);
+				result = ints[i].setValue(value);
 			}
 			index++;
 		}
 		for (int i=0;i<floats.length;i++) {
 			if(index == id) {
-				result = floats[i].setvalue(value);
+				result = floats[i].setValue(value);
 			}
 			index++;
 		}
 		save();
 		return result;
 	}
+
 	SettingValue get(int id) { // return the setting value with the given id
 		int index = 0;
 		for (int i=0;i<strings.length;i++) {
@@ -99,12 +100,13 @@ class Settings {
 			}
 			index++;
 		}
-		println("Setting not found: " + id);
+		toovmessages.add("Setting not found: " + id);
 		return null;
 	}
+
 	void load() { // loads the settings from data/settings.json if possible
 		if(deb) {
-			println("Loaded Settings");
+			toovmessages.add("Loading Settings");
 		}
 		File f1 = new File(sketchPath("data/settings.json"));
 
@@ -114,28 +116,28 @@ class Settings {
 			/*
 			for (int i=0;i<colors.length;i++) {
 				SettingColorValue c = colors[i];
-				c.setvalue(color(j.getFloat(c.name + "red"), j.getFloat(c.name + "green"), j.getFloat(c.name + "blue")));
+				c.setValue(color(j.getFloat(c.name + "red"), j.getFloat(c.name + "green"), j.getFloat(c.name + "blue")));
 				colors[i] = c;
 			}
 			*/
 			for (int i=0;i<strings.length;i++) {
 				SettingStringValue s = strings[i];
-				s.setvalue(j.getString(s.name));
+				s.setValue(j.getString(s.name, s.defaultvalue));
 				strings[i] = s;
 			}
 			for (int i=0;i<booleans.length;i++) {
 				SettingBooleanValue b = booleans[i];
-				b.setvalue(j.getBoolean(b.name));
+				b.setValue(j.getBoolean(b.name, b.defaultvalue));
 				booleans[i] = b;
 			}
 			for (int k=0;k<ints.length;k++) {
 				SettingIntValue i = ints[k];
-				i.setvalue(j.getInt(i.name));
+				i.setValue(j.getInt(i.name, i.defaultvalue));
 				ints[k] = i;
 			}
 			for (int i=0;i<floats.length;i++) {
 				SettingFloatValue f = floats[i];
-				f.setvalue(j.getFloat(f.name));
+				f.setValue(j.getFloat(f.name, f.defaultvalue));
 				floats[i] = f;
 			}
 		}
@@ -143,7 +145,7 @@ class Settings {
 
 	void save() { // saves the settings to data/settings.json
 		if(deb) {
-			println("Saved Settings");
+			toovmessages.add("Saved Settings");
 		}
 
 		File f1 = new File(sketchPath("data/settings.json"));
@@ -155,9 +157,9 @@ class Settings {
 		/*
 		for (int i=0;i<colors.length;i++) {
 			SettingColorValue c = colors[i];
-			j.setFloat(c.name + "red", red(c.getvalue()));
-			j.setFloat(c.name + "green", green(c.getvalue()));
-			j.setFloat(c.name + "blue", blue(c.getvalue()));
+			j.setInt(c.name + "red", red(c.getValue()));
+			j.setInt(c.name + "green", green(c.getValue()));
+			j.setInt(c.name + "blue", blue(c.getValue()));
 		}
 		*/
 		for (int i=0;i<strings.length;i++) {
@@ -192,24 +194,24 @@ class SettingColorValue {
 		name = newname;
 		value = newdefaultvalue;
 	}
-	void setvalue(color newvalue) {
+	void setValue(color newvalue) {
 		value = newvalue;
 	}
 }
 */
 class SettingStringValue {
 	final String name;
+	final String defaultvalue;
 	String value;
-	SettingStringValue(String newname) {
-		name = newname;
-	}
+
 	SettingStringValue(String newname, String newdefaultvalue) {
 		name = newname;
-		this.value = newdefaultvalue;
+		value = newdefaultvalue;
+		defaultvalue = newdefaultvalue;
 	}
-	String setvalue(String newvalue) {
-		this.value = newvalue;
-		return this.value;
+	String setValue(String newvalue) {
+		value = newvalue;
+		return value;
 	}
 	SettingValue get() {
 		return new SettingValue(name, value, 0);
@@ -217,24 +219,24 @@ class SettingStringValue {
 }
 class SettingBooleanValue {
 	final String name;
+	final boolean defaultvalue;
 	boolean value;
-	SettingBooleanValue(String newname) {
-		name = newname;
-	}
+
 	SettingBooleanValue(String newname, boolean newdefaultvalue) {
 		name = newname;
-		this.value = newdefaultvalue;
+		value = newdefaultvalue;
+		defaultvalue = newdefaultvalue;
 	}
-	void setvalue(boolean newvalue) {
-		this.value = newvalue;
+	void setValue(boolean newvalue) {
+		value = newvalue;
 	}
-	String setvalue(String newvalue) {
+	String setValue(String newvalue) {
 		if(newvalue.equals("true") || newvalue.equals("1")) {
-			this.value = true;
+			value = true;
 			return "true";
 		}
 		if(newvalue.equals("false") || newvalue.equals("1")) {
-			this.value = false;
+			value = false;
 			return "false";
 		}
 		return null;
@@ -245,26 +247,26 @@ class SettingBooleanValue {
 }
 class SettingIntValue {
 	final String name;
+	final int defaultvalue;
 	int value;
 	final int min;
 	final int max;
-	SettingIntValue(String newname) {
-		this(newname, 0);
-	}
+
 	SettingIntValue(String newname, int newdefaultvalue) {
 		this(newname, newdefaultvalue, Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
 	SettingIntValue(String newname, int newdefaultvalue, int minvalue, int maxvalue) {
 		name = newname;
 		value = newdefaultvalue;
+		defaultvalue = newdefaultvalue;
 		min = minvalue;
 		max = maxvalue;
 	}
-	void setvalue(int newvalue) {
+	void setValue(int newvalue) {
 		value = constrain(newvalue, min, max);
 	}
-	String setvalue(String newvalue) {
-		setvalue(int(newvalue));
+	String setValue(String newvalue) {
+		setValue(int(newvalue));
 		return str(value);
 	}
 	SettingValue get() {
@@ -273,35 +275,36 @@ class SettingIntValue {
 }
 class SettingFloatValue {
 	final String name;
+	final float defaultvalue;
 	float value;
 	final float min;
 	final float max;
-	SettingFloatValue(String newname) {
-		this(newname, 0.0);
-	}
+	
 	SettingFloatValue(String newname, float newdefaultvalue) {
 		this(newname, newdefaultvalue, Float.MIN_VALUE, Float.MAX_VALUE);
 	}
 	SettingFloatValue(String newname, float newdefaultvalue, float minvalue, float maxvalue) {
 		name = newname;
 		value = newdefaultvalue;
+		defaultvalue = newdefaultvalue;
 		min = minvalue;
 		max = maxvalue;
 	}
-	void setvalue(float newvalue) {
+	void setValue(float newvalue) {
 		value = constrain(newvalue, min, max);
 		if(Float.isNaN(this.value)) {
 			value = 0;
 		}
 	}
-	String setvalue(String newvalue) {
-		setvalue(float(newvalue));
+	String setValue(String newvalue) {
+		setValue(float(newvalue));
 		return str(value);
 	}
 	SettingValue get() {
 		return new SettingValue(name, str(value), 3);
 	}
 }
+
 class SettingValue {
 	String name;	// name of the setting
 	String value;	// value of the setting

@@ -1,15 +1,10 @@
 class Grid {
-	GridTile[][] tiles; // 2 dimensionales array of tiles
-	color[] roomgroups = new color[5];	// color values of all roomgroups
+	GridTile[][] tiles; // 2 dimensional array of tiles
+	ArrayList<RoomGroup> roomgroups; // list of all room groups
 
 	Grid(int xsize, int ysize) {
-		color c = color(50,50,50);
-		roomgroups[0] = c;
-		roomgroups[1] = c;
-		roomgroups[2] = c;
-		roomgroups[3] = c;
-		roomgroups[4] = c;
-
+		roomgroups = new ArrayList<RoomGroup>();
+		roomgroups.add(new RoomGroup("Main", color(50,50,50)));
 		tiles = new GridTile[xsize][ysize];
 		for (int x=0; x<xsize; x++) {
 			for (int y=0; y<ysize; y++) {
@@ -18,9 +13,16 @@ class Grid {
 		}
 	}
 	
-	void draw(boolean viewmode, float gts) { // draw the roomgrid
-		if(isKeyT) { // TODO: add confirm
-			cgol(); // thats a secret (but youve got the source code so its not hard to find out what it does)
+	void draw(boolean viewmode, float gts) { // draw the room grid
+		if(isKeyT) {
+			if(allowcgol) {
+				cgol(); // thats a secret (but you've got the source code so its not hard to find out what it does)
+				// and its not even well hidden
+			} else {
+				if(!ov.drawpopup) {
+					ov.drawPopup(7);
+				}
+			}
 		}
 		if(!viewmode) { // setup 2D view
 			scale(gts);
@@ -64,36 +66,36 @@ class Grid {
 		strokeCap(PROJECT);
 		for (int x=0; x<tiles.length; x++) {
 			for (int y=0; y<tiles[0].length; y++) {
-				if(gettilestate(x,y)) {
+				if(getTileState(x,y)) {
 					if(!viewmode) { // 2D
 						noStroke();
-						fill(roomgroups[gettile(x,y).roomgroup]);
+						fill(roomgroups.get(getTile(x,y).roomgroup).c);
 						rect(x,y,1,1);
 
 						stroke(c[0]);
 
-						GridTile t = gettile(x,y);
+						GridTile t = getTile(x,y);
 						if(t == null)
 							break;
-						if(!gettilestate(x+1,y)) { // right side
+						if(!getTileState(x+1,y)) { // right side
 							if(t.window[0])
 								stroke(0,0,255);
 							line(x+1,y,x+1,y+1);
 							stroke(c[0]);
 						}
-						if(!gettilestate(x-1,y)) { // left side
+						if(!getTileState(x-1,y)) { // left side
 							if(t.window[1])
 								stroke(0,0,255);
 							line(x,y,x,y+1);
 							stroke(c[0]);
 						}
-						if(!gettilestate(x,y+1)) { // bottom side
+						if(!getTileState(x,y+1)) { // bottom side
 							if(t.window[2])
 								stroke(0,0,255);
 							line(x,y+1,x+1,y+1);
 							stroke(c[0]);
 						}
-						if(!gettilestate(x,y-1)) { // top side
+						if(!getTileState(x,y-1)) { // top side
 							if(t.window[3])
 								stroke(0,0,255);
 							line(x,y,x+1,y);
@@ -101,7 +103,7 @@ class Grid {
 						}
 					} else { // 3D
 						pg.noStroke();
-						pg.fill(roomgroups[gettile(x,y).roomgroup]);
+						pg.fill(roomgroups.get(getTile(x,y).roomgroup).c);
 
 						pg.beginShape(QUADS);
 						pg.vertex(x, 0, y);
@@ -113,12 +115,12 @@ class Grid {
 						pg.fill(200);
 						pg.strokeWeight(st.floats[0].value/gts);
 
-						GridTile t = gettile(x,y);
+						GridTile t = getTile(x,y);
 						if(t == null) {
 							break;
 						}
 
-						if(!gettilestate(x+1,y)) { // right side
+						if(!getTileState(x+1,y)) { // right side
 							pg.vertex(x+1, 0, y);
 							pg.vertex(x+1, 0, y+1);
 							if(t.window[0]) { // right window
@@ -130,7 +132,7 @@ class Grid {
 							pg.vertex(x+1, -1, y+1);
 							pg.vertex(x+1, -1, y);
 						}
-						if(!gettilestate(x-1,y)) { // left side
+						if(!getTileState(x-1,y)) { // left side
 							pg.vertex(x, 0, y);
 							pg.vertex(x, 0, y+1);
 							if(t.window[1]) { // left window
@@ -142,7 +144,7 @@ class Grid {
 							pg.vertex(x, -1, y+1);
 							pg.vertex(x, -1, y);
 						}
-						if(!gettilestate(x,y+1)) { // bottom side
+						if(!getTileState(x,y+1)) { // bottom side
 							pg.vertex(x  , 0, y+1);
 							pg.vertex(x+1, 0, y+1);
 							if(t.window[2]) { // bottom window
@@ -154,7 +156,7 @@ class Grid {
 							pg.vertex(x+1, -1, y+1);
 							pg.vertex(x  , -1, y+1);
 						}
-						if(!gettilestate(x,y-1)) { // top side
+						if(!getTileState(x,y-1)) { // top side
 							pg.vertex(x  , 0, y);
 							pg.vertex(x+1, 0, y);
 							if(t.window[3]) { // top window
@@ -174,57 +176,81 @@ class Grid {
 		strokeCap(ROUND);
 	}
 
-	void filltool(boolean value, int x, int y) {
-		if(gettilestate(x,y) != value) {
-			if(!rm.isfurniture(x,y) || value) {
-				settilestate(value, x,y);
+	void fillTool(boolean value, int x, int y) { // apply the fill tool
+		if(getTileState(x,y) != value) {
+			if(!rm.isFurniture(x,y) || value) {
+				setTileState(value, x,y);
 
-				if(isingrid(x+1, y)) {
-					filltool(value, x+1,y);
+				if(isinGrid(x+1, y)) {
+					fillTool(value, x+1,y);
 				}
-				if(isingrid(x-1, y)) {
-					filltool(value, x-1,y);
+				if(isinGrid(x-1, y)) {
+					fillTool(value, x-1,y);
 				}
-				if(isingrid(x, y+1)) {
-					filltool(value, x,y+1);
+				if(isinGrid(x, y+1)) {
+					fillTool(value, x,y+1);
 				}
-				if(isingrid(x, y-1)) {
-					filltool(value, x,y-1);
+				if(isinGrid(x, y-1)) {
+					fillTool(value, x,y-1);
 				}
 			}
 		}
 	}
 
-	boolean settilestate(boolean value, int x, int y) { // sets the state of the grid tile on given state
-		if(isingrid(x,y)) {
+	boolean setTileState(boolean value, int x, int y) { // sets the state of the grid tile on given state
+		if(isinGrid(x,y)) {
 			tiles[x][y].state = value;
 			return true;
 		}
 		return false;
 	}
-	boolean gettilestate(int x, int y) { // return the state of the grid tile on the chosen position
-		return gettile(x,y).state;
+	boolean getTileState(int x, int y) { // return the state of the grid tile on the chosen position
+		return getTile(x,y).state;
 	}
 
-	boolean settile(GridTile value, int x, int y) { // sets the grid tile on the chosen position to the given grid tile
-		if(isingrid(x,y)) {
+	boolean setTile(GridTile value, int x, int y) { // sets the grid tile on the chosen position to the given grid tile
+		if(isinGrid(x,y)) {
 			tiles[x][y] = value;
 			return true;
 		}
 		return false;
 	}
-	GridTile gettile(int x, int y) { // return the grid tile on the chosen position if possible
-		if(isingrid(x,y)) {
+	GridTile getTile(int x, int y) { // return the grid tile on the chosen position if possible
+		if(isinGrid(x,y)) {
 			return tiles[x][y];
 		}
 		return new GridTile();
 	}
 
-	boolean isingrid(int x, int y) { // return true if the chosen position is inside the roomgrid
+	boolean isinGrid(int x, int y) { // return true if the chosen position is inside the room grid
 		return (x > -1 && x < tiles.length && y > -1 && y < tiles[0].length);
 	}
 
-	void cgol() {
+	boolean isRoomGroupinuse(int id) { // returns whether or not a room group is in use
+		for (int x=0; x<tiles.length; x++) {
+			for (int y=0; y<tiles[0].length; y++) {
+				if(tiles[x][y].state && tiles[x][y].roomgroup == id) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	void removeRoomGroup(int id) { // removes a room group and sets all references in the grid to the main room group
+		for (int x=0; x<tiles.length; x++) {
+			for (int y=0; y<tiles[0].length; y++) {
+				if(tiles[x][y].roomgroup == id) {
+					tiles[x][y].roomgroup = 0;
+				}
+			}
+		}
+		roomgroups.remove(id);
+	}
+	void addRoomGroup(String name, color value) {
+		roomgroups.add(new RoomGroup(name, value));
+	}
+
+	void cgol() { // hmmmm?
 		GridTile[][] newtiles = new GridTile[tiles.length][tiles[0].length];
 		for (int x=0; x<tiles.length; x++) {
 			for (int y=0; y<tiles[0].length; y++) {
@@ -255,22 +281,22 @@ class Grid {
 		tiles = newtiles;
 	}
 
-	int getprice() { // calculate the price of the roomgrid
-		int price = 0;
+	int getActiveTiles() { // returns the amount of active tiles
+		int count = 0;
 		for (int x=0; x<tiles.length; x++) {
 			for (int y=0; y<tiles[0].length; y++) {
 				if(tiles[x][y].state) {
-					price += 1;
+					count++;
 				}
 			}
 		}
-		return price;
+		return count;
 	}
 }
 
 class GridTile {
 	boolean state;		// whether or not this tile is part of the room
-	int roomgroup;		// roomgroup id
+	int roomgroup;		// room group id
 	boolean[] window;	// window data
 
 	GridTile() {
@@ -283,5 +309,15 @@ class GridTile {
 		this.state = state;
 		this.roomgroup = roomgroup;
 		window = new boolean[4];
+	}
+}
+
+class RoomGroup {
+	String name;	// name of the room group
+	color c;		// color of the room group
+
+	RoomGroup(String name, color c) {
+		this.name = name;
+		this.c = c;
 	}
 }

@@ -1,5 +1,4 @@
-final String appname = "PAccem"; // Raumplaner 2020, Roccem, PAccem
-final String appversion = "0.8.1";
-final String appmaker = "Techatrix";
-final String githublink = "https://github.com/Techatrix/PAccem";
-final boolean deb = false; // debug mode
+final String appname = "PAccem";									// name of the application
+final String appversion = "0.9.0.14 Experimental";					// version of the application
+final String appmaker = "Arian Hosseini (Techatrix)";				// author
+final String githublink = "https://github.com/Techatrix/PAccem";	// link to the Github repository

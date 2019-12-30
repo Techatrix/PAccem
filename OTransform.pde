@@ -2,9 +2,8 @@ class Transform implements IOverlay {
 	Object item;
 	int xoff = 0;
 	int yoff = 0;
-	Align ali = null;
+	Align ali;
 
-	// TODO: Allow Align and Transform at the same time
 	Transform(Object item, int xoff, int yoff) {
 		this.item = item;
 		this.xoff = xoff;
@@ -14,38 +13,47 @@ class Transform implements IOverlay {
 		this.item = item;
 		this.ali = ali;
 	}
-	void mouseWheel(MouseEvent e) {
-		mouseWheelitem(item, e);
+	Transform(Object item, int xoff, int yoff, Align ali) {
+		this.item = item;
+		this.xoff = xoff;
+		this.yoff = yoff;
+		this.ali = ali;
+	}
+	boolean mouseWheel(MouseEvent e) {
+		return mouseWheelItem(item, e);
 	}
 	boolean mousePressed() {
-		return mousePresseditem(item);
+		return mousePressedItem(item);
+	}
+	boolean mouseDragged() {
+		return mouseDraggedItem(item);
 	}
 	void keyPressed() {
-		keyPresseditem(item);
+		keyPressedItem(item);
 	}
 
 	void draw(boolean hit) {
-		drawitem(item, hit);
+		drawItem(item, hit);
 	}
 
-	Box getbound() {
-		return getboundry(item);
+	Box getBoundary() {
+		return getItemBoundary(item);
 	}
 	
-	boolean ishit() {
-	  	return getisitemhit(item);
+	boolean isHit() {
+	  	return getisItemHit(item);
 	}
 
-	void setxy(int xpos, int ypos) {
+	void setXY(int xpos, int ypos) {
 		recalculatealign();
-		setitemxy(item, xpos+xoff, ypos+yoff);
+		setItemXY(item, xpos+xoff, ypos+yoff);
 	}
-	void setwh(int _width, int _height) {
-		setitemwh(item, _width, _height);
+	void setWH(int _width, int _height) {
+		setItemWH(item, _width, _height);
 		recalculatealign();
 	}
 	void recalculatealign() {
-		Box b = getbound();
+		Box b = getBoundary();
 		if(ali == Align.TOPRIGHT) {
 			this.xoff = width-b.w;
 		} else if(ali == Align.BOTTOMLEFT) {

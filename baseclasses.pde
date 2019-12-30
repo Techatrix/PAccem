@@ -1,16 +1,16 @@
 /* --------------- super classes --------------- */
-class Point { // point
+class Point { // 2D point
 	int xpos = 0;
 	int ypos = 0;
 }
-class PWH extends Point { // point width height
+class PWH extends Point { // point, width and height
 	int _width = 0;
 	int _height = 0;
 }
 class RPoint extends Point { // rotation and point 
 	float rot = 0;
 }
-class RPWH extends PWH { // rotation and point width height
+class RPWH extends PWH { // rotation, point, width and height
 	float rot = 0;
 }
 /* --------------- temporary classes --------------- */
