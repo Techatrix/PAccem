@@ -18,8 +18,6 @@ boolean isKeyUp, isKeyRight, isKeyLeft, isKeyDown, isKeyT;	// state of these key
 boolean deb = false;	// debug mode
 boolean disableblur = false;	// whether or not blur is disabled
 
-/* --------------- Experimental Version! WIP --------------- */
-
 /* --------------- main --------------- */
 void settings() { // is being executed once before the window is created	(pre-main())
 	am = new ApplicationManager();
