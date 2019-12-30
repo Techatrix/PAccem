@@ -1,13 +1,13 @@
 class Overlay {
-	Object[] items;								// array of all items in the overlay
-	boolean visible = true;						// visibility state of the overlay
+	Object[] items;				// array of all items in the overlay
+	boolean visible = true;		// visibility state of the overlay
 
 	Overlay() {
 		if(deb) {
 			toovmessages.add("Loading Overlay");
 		}
 	}
-	void setItems(Object[] items) {
+	void setItems(Object[] items) { // sets the items of the overlay
 		this.items = items;
 		for (Object item : items) {
 			setitemxy(item, 0,0); // position all items at the origin
@@ -20,7 +20,7 @@ class Overlay {
 			boolean hit = false;
 			boolean[] h = new boolean[items.length];
 			for (int i=0;i<items.length;i++) {
-				boolean newhit = getisitemhit(items[i]);
+				boolean newhit = getisItemHit(items[i]);
 				if(newhit) {
 					if(!hit) {
 						h[i] = true;
@@ -40,7 +40,7 @@ class Overlay {
 	boolean isHit() { // return whether or not your mouse is on the overlay
 		if(visible) {
 			for (Object item : items) {
-				if(getisitemhit(item)) {
+				if(getisItemHit(item)) {
 					return true;
 				}
 			}

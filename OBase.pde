@@ -65,11 +65,11 @@ enum Fit { // used by Image
 interface IOverlay {
 
 	void draw(boolean hit);
-	Box getboundary();
-	boolean ishit();
+	Box getBoundary();
+	boolean isHit();
 
-	void setxy(int ypos, int xpos);
-	void setwh(int _width, int _height);
+	void setXY(int ypos, int xpos);
+	void setWH(int _width, int _height);
 }
 
 /* --------------- dynamic casting --------------- */
@@ -86,8 +86,8 @@ void mouseWheelitem(Object item, MouseEvent e) {
 		((Transform)item).mouseWheel(e);
 	} else if (item instanceof Dynamic) {
 		((Dynamic)item).mouseWheel(e);
-	} else if (item instanceof GetVisible) {
-		((GetVisible)item).mouseWheel(e);
+	} else if (item instanceof Visible) {
+		((Visible)item).mouseWheel(e);
 	} else if (item instanceof EventDetector) {
 		((EventDetector)item).mouseWheel(e);
 	} else if (item instanceof Popup) {
@@ -109,8 +109,8 @@ boolean mousePresseditem(Object item) {
 		return ((Transform)item).mousePressed();
 	} else if(item instanceof Dynamic) {
 		return ((Dynamic)item).mousePressed();
-	} else if(item instanceof GetVisible) {
-		return ((GetVisible)item).mousePressed();
+	} else if(item instanceof Visible) {
+		return ((Visible)item).mousePressed();
 	} else if (item instanceof EventDetector) {
 		((EventDetector)item).mousePressed();
 	} else if (item instanceof Popup) {
@@ -133,8 +133,8 @@ boolean mouseDraggeditem(Object item) {
 		return ((Transform)item).mouseDragged();
 	} else if(item instanceof Dynamic) {
 		return ((Dynamic)item).mouseDragged();
-	} else if(item instanceof GetVisible) {
-		return ((GetVisible)item).mouseDragged();
+	} else if(item instanceof Visible) {
+		return ((Visible)item).mouseDragged();
 	} else if (item instanceof EventDetector) {
 		((EventDetector)item).mouseDragged();
 	} else if (item instanceof Popup) {
@@ -159,8 +159,8 @@ void keyPresseditem(Object item) {
 		((Transform)item).keyPressed();
 	} else if (item instanceof Dynamic) {
 		((Dynamic)item).keyPressed();
-	} else if (item instanceof GetVisible) {
-		((GetVisible)item).keyPressed();
+	} else if (item instanceof Visible) {
+		((Visible)item).keyPressed();
 	} else if (item instanceof EventDetector) {
 		((EventDetector)item).keyPressed();
 	} else if (item instanceof Popup) {
@@ -175,31 +175,31 @@ int getlistindex(Object item) {
 	}
 	return -1;
 }
-boolean getisitemhit(Object item) {
+boolean getisItemHit(Object item) {
 	if (item instanceof Tabbar) {
-		return ((Tabbar)item).ishit();
+		return ((Tabbar)item).isHit();
 	} else if (item instanceof ListView) {
-		return ((ListView)item).ishit();
+		return ((ListView)item).isHit();
 	} else if(item instanceof GridView) {
-		return ((GridView)item).ishit();
+		return ((GridView)item).isHit();
 	} else if(item instanceof Container) {
-		return ((Container)item).ishit();
+		return ((Container)item).isHit();
 	} else if(item instanceof SetValueText) {
-		return ((SetValueText)item).ishit();
+		return ((SetValueText)item).isHit();
 	} else if(item instanceof GetValueText) {
-		return ((GetValueText)item).ishit();
+		return ((GetValueText)item).isHit();
 	} else if(item instanceof Transform) {
-		return ((Transform)item).ishit();
+		return ((Transform)item).isHit();
 	} else if(item instanceof Dynamic) {
-		return ((Dynamic)item).ishit();
-	} else if(item instanceof GetVisible) {
-		return ((GetVisible)item).ishit();
+		return ((Dynamic)item).isHit();
+	} else if(item instanceof Visible) {
+		return ((Visible)item).isHit();
 	} else if(item instanceof EventDetector) {
-		return ((EventDetector)item).ishit();
+		return ((EventDetector)item).isHit();
 	} else if(item instanceof Popup) {
-		return ((Popup)item).ishit();
+		return ((Popup)item).isHit();
 	} else if(item instanceof Slider) {
-		return ((Slider)item).ishit();
+		return ((Slider)item).isHit();
 	}
 	return false;
 }
@@ -224,8 +224,8 @@ void drawitem(Object item, boolean hit) {
 		((Transform)item).draw(hit);
 	} else if(item instanceof Dynamic) {
 		((Dynamic)item).draw(hit);
-	} else if(item instanceof GetVisible) {
-		((GetVisible)item).draw(hit);
+	} else if(item instanceof Visible) {
+		((Visible)item).draw(hit);
 	} else if(item instanceof EventDetector) {
 		((EventDetector)item).draw(hit);
 	} else if(item instanceof Popup) {
@@ -240,35 +240,35 @@ void drawitem(Object item, boolean hit) {
 }
 void setitemwh(Object item, int _width, int _height) {
 	if(item instanceof Tabbar) {
-		((Tabbar)item).setwh(_width, _height);
+		((Tabbar)item).setWH(_width, _height);
 	} else if(item instanceof ListView) {
-		((ListView)item).setwh(_width, _height);
+		((ListView)item).setWH(_width, _height);
 	} else if(item instanceof GridView) {
-		((GridView)item).setwh(_width, _height);
+		((GridView)item).setWH(_width, _height);
 	} else if(item instanceof Container) {
-		((Container)item).setwh(_width, _height);
+		((Container)item).setWH(_width, _height);
 	} else if(item instanceof SizedBox) {
-		((SizedBox)item).setwh(_width, _height);
+		((SizedBox)item).setWH(_width, _height);
 	} else if(item instanceof Text) {
-		((Text)item).setwh(_width, _height);
+		((Text)item).setWH(_width, _height);
 	} else if(item instanceof SetValueText) {
-		((SetValueText)item).setwh(_width, _height);
+		((SetValueText)item).setWH(_width, _height);
 	} else if(item instanceof GetValueText) {
-		((GetValueText)item).setwh(_width, _height);
+		((GetValueText)item).setWH(_width, _height);
 	} else if(item instanceof Image) {
-		((Image)item).setwh(_width, _height);
+		((Image)item).setWH(_width, _height);
 	} else if(item instanceof Transform) {
-		((Transform)item).setwh(_width, _height);
+		((Transform)item).setWH(_width, _height);
 	} else if(item instanceof Dynamic) {
-		((Dynamic)item).setwh(_width, _height);
-	} else if(item instanceof GetVisible) {
-		((GetVisible)item).setwh(_width, _height);
+		((Dynamic)item).setWH(_width, _height);
+	} else if(item instanceof Visible) {
+		((Visible)item).setWH(_width, _height);
 	} else if(item instanceof EventDetector) {
-		((EventDetector)item).setwh(_width, _height);
+		((EventDetector)item).setWH(_width, _height);
 	} else if(item instanceof Popup) {
-		((Popup)item).setwh(_width, _height);
+		((Popup)item).setWH(_width, _height);
 	} else if(item instanceof Slider) {
-		((Slider)item).setwh(_width, _height);
+		((Slider)item).setWH(_width, _height);
 	} else {
 		if(deb && item != null) {
 			toovmessages.add("setitemwh(): " + item + " unhandeled");
@@ -277,75 +277,75 @@ void setitemwh(Object item, int _width, int _height) {
 }
 void setitemxy(Object item, int xpos, int ypos) {
 	if(item instanceof Tabbar) {
-		((Tabbar)item).setxy(xpos, ypos);
+		((Tabbar)item).setXY(xpos, ypos);
 	} else if(item instanceof ListView) {
-		((ListView)item).setxy(xpos, ypos);
+		((ListView)item).setXY(xpos, ypos);
 	} else if(item instanceof GridView) {
-		((GridView)item).setxy(xpos, ypos);
+		((GridView)item).setXY(xpos, ypos);
 	} else if(item instanceof Container) {
-		((Container)item).setxy(xpos, ypos);
+		((Container)item).setXY(xpos, ypos);
 	} else if(item instanceof SizedBox) {
-		((SizedBox)item).setxy(xpos, ypos);
+		((SizedBox)item).setXY(xpos, ypos);
 	} else if(item instanceof Text) {
-		((Text)item).setxy(xpos, ypos);
+		((Text)item).setXY(xpos, ypos);
 	} else if(item instanceof SetValueText) {
-		((SetValueText)item).setxy(xpos, ypos);
+		((SetValueText)item).setXY(xpos, ypos);
 	} else if(item instanceof GetValueText) {
-		((GetValueText)item).setxy(xpos, ypos);
+		((GetValueText)item).setXY(xpos, ypos);
 	} else if(item instanceof Image) {
-		((Image)item).setxy(xpos, ypos);
+		((Image)item).setXY(xpos, ypos);
 	} else if(item instanceof Transform) {
-		((Transform)item).setxy(xpos, ypos);
+		((Transform)item).setXY(xpos, ypos);
 	} else if(item instanceof Dynamic) {
-		((Dynamic)item).setxy(xpos, ypos);
-	} else if(item instanceof GetVisible) {
-		((GetVisible)item).setxy(xpos, ypos);
+		((Dynamic)item).setXY(xpos, ypos);
+	} else if(item instanceof Visible) {
+		((Visible)item).setXY(xpos, ypos);
 	} else if(item instanceof EventDetector) {
-		((EventDetector)item).setxy(xpos, ypos);
+		((EventDetector)item).setXY(xpos, ypos);
 	} else if(item instanceof Popup) {
-		((Popup)item).setxy(xpos, ypos);
+		((Popup)item).setXY(xpos, ypos);
 	} else if(item instanceof Slider) {
-		((Slider)item).setxy(xpos, ypos);
+		((Slider)item).setXY(xpos, ypos);
 	} else {
 		if(deb && item != null) {
 			toovmessages.add("setitemxy(): " + item + " unhandeled");
 		}
 	}
 }
-Box getitemboundary(Object item) {
+Box getItemBoundary(Object item) {
 	if (item instanceof Tabbar) {
-		return ((Tabbar)item).getboundary();
+		return ((Tabbar)item).getBoundary();
 	} else if (item instanceof ListView) {
-		return ((ListView)item).getboundary();
+		return ((ListView)item).getBoundary();
 	} else if(item instanceof GridView) {
-		return ((GridView)item).getboundary();
+		return ((GridView)item).getBoundary();
 	} else if(item instanceof Container) {
-		return ((Container)item).getboundary();
+		return ((Container)item).getBoundary();
 	} else if(item instanceof SizedBox) {
-		return ((SizedBox)item).getboundary();
+		return ((SizedBox)item).getBoundary();
 	} else if(item instanceof Text) {
-		return ((Text)item).getboundary();
+		return ((Text)item).getBoundary();
 	} else if(item instanceof SetValueText) {
-		return ((SetValueText)item).getboundary();
+		return ((SetValueText)item).getBoundary();
 	} else if(item instanceof GetValueText) {
-		return ((GetValueText)item).getboundary();
+		return ((GetValueText)item).getBoundary();
 	} else if(item instanceof Image) {
-		return ((Image)item).getboundary();
+		return ((Image)item).getBoundary();
 	} else if(item instanceof Transform) {
-		return ((Transform)item).getboundary();
+		return ((Transform)item).getBoundary();
 	} else if(item instanceof Dynamic) {
-		return ((Dynamic)item).getboundary();
-	} else if(item instanceof GetVisible) {
-		return ((GetVisible)item).getboundary();
+		return ((Dynamic)item).getBoundary();
+	} else if(item instanceof Visible) {
+		return ((Visible)item).getBoundary();
 	} else if(item instanceof EventDetector) {
-		return ((EventDetector)item).getboundary();
+		return ((EventDetector)item).getBoundary();
 	} else if(item instanceof Popup) {
-		return ((Popup)item).getboundary();
+		return ((Popup)item).getBoundary();
 	} else if(item instanceof Slider) {
-		return ((Slider)item).getboundary();
+		return ((Slider)item).getBoundary();
 	} else {
 		if(deb) {
-			toovmessages.add("getboundary(): " + item + " unhandeled");
+			toovmessages.add("getBoundary(): " + item + " unhandeled");
 		}
 	}
 	return null;

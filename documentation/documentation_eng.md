@@ -26,11 +26,11 @@ Introduction
 
 | Number | Tool, use                                                 |
 |--------|-----------------------------------------------------------|
-| 1      | Move Tool, to look around in the 2D view mode              |
+| 1      | Move Tool, to look around in the 2D view mode             |
 | 2      | Draw Tool, to create to room layout                       |
 | 3      | Furniture Tool, to place new Furnitures                   |
 | 4      | Select Tool, to select furnitures and move or delete them |
-| 6      | Fill Tool, to fill out an area in the room grid            |
+| 6      | Fill Tool, to fill out an area in the room grid           |
 | 7      | Window Tool, to place windows                             |
 
 Inheritance 
@@ -135,10 +135,10 @@ void recalculateColor(): recalculates the easily accessible color values accordi
 
 void manageArgs(): handles all arguments which have been handed over to the program
 
-| Name     | Action                    |
-|----------|---------------------------|
-| \-debug  | activates the debug mode  |
-| \-noblur | deactivates blurring      |
+| Name     | Action                   |
+|----------|--------------------------|
+| \-debug  | activates the debug mode |
+| \-noblur | deactivates blurring     |
 
 void loop(): set window size according to the width & height setting
 
@@ -271,394 +271,381 @@ String get(String key): get a translation in the current language
 
 ### OverlayManager
 
-Die OverlayManager Klasse ist für das gesamt GUI zuständig. Die Variables und die build() Funktion können beliebig verändert werden um jedes mögliche GUI zu erstellen. Sie ist eine Erweiterung der Overlay Klasse, welche Aufgaben wie Zeichnen/Rendern und Event Handling übernimmt.
+The OverlayManager Class is responsible for the hole GUI. The variables and the build() function can be change to create (any) wanted GUI. It is an extension of the Overlay class, which implements drawing and event handling.
 
 #### Variables
 
-final int xoff: Wird verwendet um das Gitter am Overlay auszurichten
+final int xoff: used for aligning the room grid with the overlay
 
-final int yoff: Wird verwendet um das Gitter am Overlay auszurichten
+final int yoff: used for aligning the room grid with the overlay
 
-boolean drawpopup: Sichtbarkeitsstatus des Popups
+boolean drawpopup: visibility state of current popup
 
-int tabid: wird von Tabbar verwendet (siehe: OTabbar.pde)
+int tabid: used by Tab bar (see OTabbar.pde)
 
-String newroomname: Der Name für einen neuen Raum
+String newroomname: the name of a new room 
 
-int newroomxsize, newroomysize: Die Größe für einen neuen Raum
+int newroomxsize, newroomysize: the size of a new room
 
-Object tempdata: temporäre Variable mit verschiedenen Verwendungen (meisten zum transfer von Daten mit dem Popup)
+Object tempdata:  temporary variable with different uses(mostly for transferring data to popups)
 
-ArrayList messages: Alle Nachrichten welche in der Nachrichten Box sind
+ArrayList messages: messages on the console
 
-int consoleoff: Offset der Nachrichten (scrollen)
+int consoleoff: offset of the console messages (scrolling)
 
-boolean drawconsole: Sichtbarkeitsstatus der Nachrichten Box
+boolean drawconsole: visibility state of console
 
-final int messageboxheight: Höhe der Nachrichten Box
+final int messageboxheight: constant height of the message box
 
 #### Functions
 
-void build(): Erstellt das Overlay
+void build(): creates the overlay
 
-void checkMessages(): Fügt alle Nachrichten in toovmessages (siehe: PAccem/PApplet) der Nachrichten Box hinzu
+void checkMessages(): print out all messages in the to overlay messages variable
 
-void printMessage(String text): Fügt eine Nachricht der Nachrichten Box hinzu
+void printMessage(String text): add a message to the console
 
-void drawPopup(int id): Öffnet ein Popup (unterschiedlich je nach id)
+void drawPopup(int id): opens a Popup
 
-| ID | Popup                       |
-|----|-----------------------------|
-| 0  | Benötig Neustart            |
-| 1  | Neuer Raum                  |
-| 2  | Infos                       |
-| 3  | Zurücksetzen                |
-| 4  | Entferne Raumgruppe         |
-| 5  | Neue Raumgruppe             |
-| 6  | Wähle Farbe                 |
-| 7  | Aktiviere CGOL              |
-| 8  | Standartraum überschreiben? |
+| ID | Popup                   |
+|----|-------------------------|
+| 0  | requires restart        |
+| 1  | new Room                |
+| 2  | about                   |
+| 3  | reset                   |
+| 4  | remove room group       |
+| 5  | new room group          |
+| 6  | select color            |
+| 7  | activate cgol           |
+| 8  | overwrite default room? |
 
 ### Overlay
 
-Das Overlay basiert auf einem Parent Child Konzept in dem Viele Element ein oder mehrere Elemente beinhalten.
-Z.B eine ListView kann eine Serie an Container enthalten, welche wiederum Text oder Image enthalten.
-Die Implementierung Idee basiert auf der von Google entwickelten SDK namens Flutter.
+The Overlay is based on a parent child concept in which a Elements contains one or more Children/Elements and a Child/Element only has one parent.
+For Example a ListView can contains a series of Container, which for example contains Text or Image.
+This is similar to how a tree diagrams works.
+The idea is based on a from Google developed SDK named Flutter.
 
 #### Variables
 
-Object[] items: Liste aller Elemente im Overlay
+Object[] items: array of all items in the overlay
 
-boolean visible: Sichtbarkeitsstatus des Overlays
+boolean visible: visibility state of the overlay
 
 #### Functions
 
-void setitems(Object[] items): Nimmt alle OverlayElemente an sich und
-positioniert sie am Nullpunk.
+void setItems(Object[] items): sets the items of the overlay
 
-void draw(): Zeichnet/Rendert das Overlay
+void draw(): draw the overlay
 
-boolean ishit(): Ermittelt ob die Maus auf dem Overlay liegt
+boolean isHit(): returns whether or not your mouse is on the overlay
 
-void mouseWheel(MouseEvent e): Wird ausgeführt, wenn der Nutzer sein Mausrad
-dreht
+void mouseWheel(MouseEvent e): is being executed when the user moves his mouse wheel
 
-boolean mousePressed(): Wird ausgeführt, wenn der Nutzer eine Maustaste drückt und gibt zurück, ob der Click etwas im Overlay ausgelöst hat
+boolean mousePressed(): is being executed when the user pressed a mouse button
 
-void mouseReleased(): Wird ausgeführt, wenn der Nutzer eine Maustaste loslässt
+void mouseReleased(): is being executed when the user releases a mouse button
 
-boolean mouseDragged(): Wird ausgeführt, wenn der Nutzer seine Maus bewegt und gibt zurück, ob die Bewegung etwas im Overlay ausgelöst hat
+boolean mouseDragged(): is being executed when the user moves his mouse while a mouse button is down
 
-void keyPressed(KeyEvent e): Wird ausgeführt, wenn der Nutzer eine Tastaturtaste drückt
+void keyPressed(KeyEvent e): is being executed when the user presses a key
 
-void keyReleased(): Wird ausgeführt, wenn der Nutzer eine Tastaturtaste loslässt
-
-#### Extra
+void keyReleased(): is being executed when the user releases a key
 
 ### RoomManager
 
-Die RoomManager Klasse ist die wichtigste Klasse im Programm, welcher die eigentlichen Raumplaner Functions implementiert.
+The  RoomManager class is the most important class in the program, which implements the actual room manager functionality.
 
 #### Variables
 
-ArrayList furnitures: Liste aller Möbel im Raum
+ArrayList furnitures: list of furnitures
 
-Grid roomgrid: Das aktuelle Raumgitter
+Grid roomgrid: the current room grid
 
-int selectionid: der Index des aktuell ausgewählten Möbelstücks (-1 = kein)
+int selectionid: id of the currently selected furniture (-1 = none)
 
-String name: Name des Raums
+String name: name of the room
 
-float xoff, yoff, scale: Variables für die 2D Ansicht
+float xoff, yoff, scale: 2D view variables
 
-float dxoff, dyoff, dzoff, angle1, angle2, dspeed: Variables für die 3D Ansicht
+float dxoff, dyoff, dzoff, angle1, angle2, dspeed: 3D view variables
 
-int gridtilesize: Größe eines Kachels
+int gridtilesize: size of one tile
 
-int tool: id des aktuell gewählten Werkzeuges
+int tool: id of the currently selected tool
 
-| ID | Werkzeug                         |
-|----|----------------------------------|
-| 0  | Bewegen                          |
-| 1  | Zeichnen                         |
-| 2  | Möbel oder Fertigteil platzieren |
-| 3  | Möbelstück auswählen             |
-| 4  | Füll Werkzeug                    |
-| 5  | Fenster Platzieren               |
+| ID | Tool                      |
+|----|---------------------------|
+| 0  | move                      |
+| 1  | draw                      |
+| 2  | place furniture or prefab |
+| 3  | select furniture          |
+| 4  | fill                      |
+| 5  | place window              |
 
-boolean viewmode: Wahr = 3D Ansicht, Falsch = 2D Ansicht
+boolean viewmode: true = 3D, false = 2D
 
-ArrayList dragtiles: Liste aller Kachel über welche der Nutzer bereits gezeichnet hat.
+ArrayList dragtiles: list of all tiles that have already been dragged over
 
-boolean dragstate: Zeichenstatus
+boolean dragstate: state to switch over when dragging
 
-int newfurnitureid = 0: id von neu Platzierten Möbelstücken
+int newfurnitureid: id of the currently selected furniture/prefab 
 
-int newroomgroup: id der aktuell ausgewählten Raumgruppe zum zeichnen
+int newroomgroup: id of the current room tile group you are drawing
 
-boolean isprefab: ob gerade ein Fertigteil platziert wird
+boolean isprefab: whether or not you are placing a furniture or a prefab
 
-color furnituretint: Färbung von neu Platzierten Möbelstücken
+color furnituretint: tint setting for the furnitures
 
 #### Functions
 
-void mouseWheel(MouseEvent e): Wird ausgeführt, wenn der Nutzer sein Mausrad dreht.
+void mouseWheel(MouseEvent e): is being executed when the user moves his mouse wheel
 
-void mouseDragged(): Wird ausgeführt, wenn der Nutzer seine Maus bewegt.
+void mouseDragged(): is being executed when the user moves his mouse while a mouse button is down
 
-void mouseReleased(): Wird ausgeführt, wenn der Nutzer eine Maustaste loslässt.
+void mouseReleased(): is being executed when the user releases a mouse button
 
-void mousePressed(): Wird ausgeführt, wenn der Nutzer eine Maustaste drückt.
+void mousePressed(): is being executed when the user pressed a mouse button
 
-void keyPressed(KeyEvent e): Wird ausgeführt, wenn der Nutzer eine Tastaturtaste drückt.
+void keyPressed(KeyEvent e): is being executed when the user presses a key
 
-void keyReleased(): Wird ausgeführt, wenn der Nutzer eine Tastaturtaste loslässt.
+void keyReleased(): is being executed when the user releases a key
 
-float getXPos(): Verwandelt die Maus X Position in eine Raumgitter X Position.
+float getXPos(): Converts Mouse-X position to room grid X-Position
 
-float getYPos(): Verwandelt die Maus Y Position in eine Raumgitter Y Position.
+float getYPos(): Converts Mouse-Y position to room grid Y-Position
 
-boolean isFurniture(int xpos, int ypos): Gibt an, ob sich ein Möbelstück an der gegebenen Position gibt
+boolean isFurniture(int xpos, int ypos): return whether or not there is a Furniture at the given position
 
-int getXGridSize(): Gibt die X Größe/Breite des Raumgitter.
+int getXGridSize(): get X-Size of the current room grid
 
-int getYGridSize(): Gibt die Y Größe/Höhe des Raumgitter.
+int getYGridSize(): get Y-Size of the current room grid
 
-String[] loadRooms(): Gibt eine Liste aller Räume im Ordner: data/rooms/
+String[] loadRooms(): loads all stored rooms (in data/rooms/)
 
-void save(String name): Speichert den aktuellen Raum in data/rooms/ mit dem gegebenen Namen.
+void save(String name): saves the current room (to data/rooms/)
 
-void load(String name): Lädt den gegebenen Raum in data/rooms/.
+void load(String name): loads the chosen room (from data/rooms/)
 
-int getPriceReport(): Gibt einen Preisbericht zurück, welche Informationen über die Raumkosten enthält.
+int getPriceReport(): calculate the complete price report of the room
 
-void reset(): Setzt den Raummanager zurück
+void reset(): reset everything (mostly everything)
 
-void newRoom(int xsize, int ysize): Erstellt einen neuen Raum mit der gegebenen Größe
+void newRoom(int xsize, int ysize): create a new room with the chosen size
 
-void switchViewmode(): änder die Ansicht (2D -\> 3D, 3D -\> 2D)
+void switchViewmode(): well... switches the view mode (2D -> 3D, 3D -> 2D)
 
-void resetCamera(boolean viewmode): setzt die gegebene Kameraansicht zurück
+void resetCamera(boolean viewmode): reset the chosen camera to the default view
 
-void draw(): Zeichnet/Rendert den Raum
+void draw(): draw the room grid and furnitures and some other things...
 
 #### Extra
 
-TODO
-
 ##### PriceReport
+
+Contains a complete price report about the current room.
 
 ##### FurniturePriceReport
 
+Contains a price report for all furnitures in the room.
+
 ### Settings
 
-Die Settings Klasse lädt alle Einstellungen aus data/settings.json, welcher er abspeichert, validiert und in ein leichter zugängliches Format verwandet. (siehe: Variables)
+The Settings class loads all settings (from data/settings.json) and validates, saves and converts them in a easier accessible format.
 
 #### Variables
 
-final SettingStringValue[] strings: Einstellung vom Typ String/Text
+final SettingStringValue[] strings: setting values of type string
 
-final SettingBooleanValue[] booleans: Einstellung vom Typ Boolean/Wahrheitswert
+final SettingBooleanValue[] booleans: setting values of type boolean
 
-final SettingIntValue[] ints: Einstellung vom Typ Int/Ganze Zahl
+final SettingIntValue[] ints: setting values of type integer
 
-final SettingFloatValue[] floats: Einstellung vom Typ Float/Kommazahl
+final SettingFloatValue[] floats: setting values of type float
 
 #### Functions
 
-int getSize(): Ermittelt die gesamte Anzahl an Einstellungen
+int getSize(): get length of all settings
 
-String set(int id, String value): Setzt die gegebene Einstellung zum gegebenen
-Wert. (automatische Datentyp Umwandlung)
+String set(int id, String value): sets the chosen settings value to the given value (automatic data type conversion)
 
-SettingValue get(int id): Gibt die Einstellung mit der gegebenen id
+SettingValue get(int id): return the setting value with the given id
 
-void load(): Lädt die Einstellungen von data/settings.json wenn möglich
+void load(): loads the settings (from data/settings.json) if possible
 
-void save(): Speichert die Einstellung in data/settings.json
+void save(): saves the settings (to data/settings.json)
 
 #### Extra
 
 ##### SettingStringValue
 
-Ein Einstellungtyp, welcher einen String/Text abspeichert.
+A Settings type, which stores a String value.
 
 ##### SettingBooleanValue
 
-Ein Einstellungtyp, welcher einen Boolean/Wahrheitswert abspeichert.
+A Settings type, which stores a Boolean value.
 
 ##### SettingIntValue
 
-Ein Einstellungtyp, welcher einen Boolean/Wahrheitswert abspeichert.
-Der Wert kann durch einen Minimal- Maximalwert eingegrenzt werden.
+A Settings type, which stores a Integer value.
 
 ##### SettingFloatValue
 
-Ein Einstellungtyp, welcher einen Float/Kommazahl abspeichert.
-Der Wert kann durch einen Minimal- Maximalwert eingegrenzt werden.
+A Settings type, which stores a Float value.
 
 ##### SettingValue
 
-Eine als Rückgabewert verwendete Klasse um einen Wert von einem beliebigen
-Datentyp auszugeben.
+Is being used as a return value to return a value of any data type
 
 ### Extra
 
 #### Baseclasses
 
-In baseclasses.pde werden Klassen zur Vererbung definiert und "temporäre" Klassen, welche in abstrakten Functions verwendet werden um Konstante Werte
-weiter zu geben.
+In BaseClasses.pde are classes defined from which other classes can extend and "temporary" classes, which store values to pass a constant value on to a abstract function.
 
-Point: 2D Punkt
+Point: 2D point
 
-PWH extends Point: Punkt, Breite und Höhe
+PWH extends Point: point, width and height
 
-RPoint extends Point: Rotation und Punkt
+RPoint extends Point: rotation and point
 
-RPWH extends PWH: Rotation, Punkt, Breite und Höhe
+RPWH extends PWH: rotation, point, width and height
 
-class Temp: Speichert einen Integer/ganze Zahl
+class Temp: Stores an Integer
 
-class STemp: Speichert einen String/Text
+class STemp: Stores a String
 
 #### Basefunctions
 
-In basefunctions.pde werden vielseitige Functions definiert.
+In BaseFunctions.pde are some versatile functions defined
 
-String getAbout(): Gibt den Info Text
+String getAbout(): returns the about text
 
-void setKey(int k, boolean bool): Legt den Status von manchen Tasten fest. (Pfeiltasten, T)
+void setKey(int k, boolean bool): sets the state of some keys(Arrow keys, T)
 
-String cap(String str): Verwandelt den ersten Buchstaben eines Strings/Text in Großschrift
+String cap(String str): converts the first letter of a string to upper case
 
-String fixLength(String str, int length, char c): Füllt einen String/Text mit einem gegebenen Zeichen bis der String/Text eine gegebene Länge erreicht hat.
+String fixLength(String str, int length, char c): 
 
-void printColor(int c): Schreibt eine Farbe in die Konsole.
+void printColor(int c): prints a color
 
-void printColorhex(int c):Schreibt eine Farbe in Hexadecimal in die Konsole.
+void printColorhex(int c): prints a color int hexadecimal
 
 #### Constants
 
-In basefunctions.pde sind Konstanten definiert.
+final String appname: name of the application
 
-final String appname: Name des Programms
+final String appversion: version of the application
 
-final String appversion: Version des Programms
+final String appmaker: author
 
-final String appmaker: Name des Autors
+final String githublink: link to the Github repository
 
-final String githublink: Link zum GitHub Repository
-
-Alle weiteren im Programm verwendeten Konstanten sind in PConstants definiert. (siehe Anhang)
-
-### Overlay Elemente
-
-Ein Overlay besteht aus einer vielzahl von Kinder/Elementen. Die anordnung ist dabei ähnlich wie bei einem Baumdiagramm.
+### Overlay Elements
 
 #### Container
 
-Enthält ein Kind/Element.
-
-Wenn man mit der Maus auf den Container zeigt wird die Farbe verändert.
+Contains a Child/Element.
+Is being highlighted when the user hovers over it.
 
 #### Dynamic
 
-Erstellt anhand der abstrakten Funktion getitem() ein Kind/Element welches dann angezeigt wird.
+Creates a new Child/Element with the abstract function getItem() and then draws it.
 
 #### EventDetector
 
-Erkennt Maus und Keyboard Events vom Nutzer auf sein Kind/Element.
+Detects mouse and keyboard events of its Child/Element and executes his abstract onEvent() function.
 
 #### GridView
 
-Ähnlich wie ListView, jedoch können mehrere Kinder pro Reihe angezeigt werden.
+Display a grid of Children/Elements similar to ListView, but there can be multiple Children/Elements per row.
 
 #### Image
-Zeigt ein Bild an.
+
+Draws an image.
 
 #### ListView
 
-Eine einfache Liste aus Elementen/Kindern.
+A basic list of Children/Elements.
+The list can go in every direction.
 
 #### Popup
 
-Zeigt ein Kind/Element im Bildschirmmittelpunkt an.
+Draws its Child/Element in the center of the screen.
+The Background gets darkened and blurred.
 
-Der Hintergrund wird verdunkelt und weichgezeichnet.
+Blur Shader: see data/assets/shader/blur.glsl
 
-Weichzeichner: siehe data/assets/shader/blur.glsl
+#### SizedBox
 
-#### Sizedbox
-
-Wird in ListView verwendet um Leerstellen zu erstellen. Der Expand Parameter verursacht, dass die Sizedbox die maximale Größe in der ListView annimmt, dabei wird er sich den Platz mit anderen Sizedboxen fair teilen müssen. :(
+Is being used in ListView to creates empty spaces. The Expand parameter makes that the SizedBox fills the hole empty space in the ListView, but if there are other SizedBoxes in the ListView it will have to share the space with them. :(
 
 #### Slider
 
-Ein horizontaler Schieberegler.
+A horizontal Slider.
 
 #### Tabbar
 
-Enthält eine ListView als Tabbar und zeigt je nach dem welcher Tab ausgewählt
-ist das dazugehörige Kind/Element an.
+Contains a ListView as a tab bar and shows according to the selected tab the corresponding Child/Element.
 
 #### Text
 
-Zeigt einen unveränderbaren Text an.
+Shows an unchangeable text.
 
 #### SetValueText
 
-Zeigt einen vom Nutzer veränderbaren Text an.
+Shows a text that can be changed by the user.
 
 ##### SetValueStyle
 
-Definiert das Verhalten von SetValueText.
+Defines the behavior of the SetValueText.
 
-int type: Datentyp der Eingabe
+int type: data type of the input.
 
-| ID | Datentyp              |
-|----|-----------------------|
-| 0  | String/Text           |
-| 1  | Boolean/Wahrheitswert |
-| 2  | Integer/ganze Zahl    |
-| 3  | Float/Kommazahl       |
+| ID | Data type |
+|----|-----------|
+| 0  | String    |
+| 1  | Boolean   |
+| 2  | Integer   |
+| 3  | Float     |
 
-int maxlength: die maximale Eingabenlänge
+int maxlength: the maximal length of the input
 
 #### GetValueText
 
-Zeigt einen unveränderbaren Text an, welcher durch eine abstrakte Funktion ermittelt wird.
+Shows an unchangeable text, which is being determined by a abstract function.
 
 #### Transform
 
-Verschiebt sein Kind/Element und oder positioniert es in einer Bildschirmecke.
+Moves its Child/Element and or positions it at a window corner.
 
 #### Visible
 
-Versteckt sein Kind/Element anhand seiner abstrakten Funktion
+Hides its Child/Element according to the result of a abstract function.
 
 #### Extra
 
-OBase: Enthält Klassen, Enums, Interfaces und Functions welche vom gesamten Overlay verwendet werden.
+OBase: Contains Classes, Enums, Interfaces and Function which are being used by the hole Overlay
 
-Box: Wird im Overlay verwendet, um die Grenzen des Elements weiterzugeben.
+Box: Is being used in the Overlay to hand over the boundary of an Child/Element.
 
-TabData: Enthält Informationen, welche von Tabbar verwendet werden, um die Tabs zu erzeugen.
+TabData: Contains information which is being used to create tabs
 
-Builder: Erstellt einen Array aus Objects mithilfe einer abstrakten Funktion.
+Builder: Creates an Array of Objects(Children/Elements) through an abstract function.
 
-ListViewBuilder: Tut das gleiche, jedoch werden die Objects danach in eine ListView verwandelt.
+ListViewBuilder: Does the same as Builder, but wraps its result in a ListView.
 
-Dir: Gibt eine Richtung an. (siehe ListView Code)
+Dir: Contains a Direction. (see ListView Code)
 
-Align: Gibt eine Position an. (siehe Align Code)
+Align: Contains a Position. (see Align Code)
 
-Fit: Gibt das Verhalten von Image an. (siehe Image Code)
+Fit: Defines the behavior of Image. (see Image Code)
 
-IOverlay: Enthält Functions, welche alle Overlay Elemente enthalten müssen.
+IOverlay: Contains function, which every Overlay element has to have.
 
-dynamic casting: Da Java keine dynamische Variable besitzt, wird hier mithilfe des "instanceof" operators die Klasse ermittelt und der Befehl nach dem Casting für das Object ausgeführt.
+Dynamic casting: Java doesn't have a dynamic variable, because of that the "instanceof" operator is being used to determine the Class of an Child/Element and then executes its function.
 
-Anhang
+Attachment
 ------
 
 PAccem Github Repository: [Link](https://github.com/Techatrix/PAccem)

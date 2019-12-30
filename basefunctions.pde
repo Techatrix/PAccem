@@ -1,4 +1,4 @@
-String getAbout() { // return the about text
+String getAbout() { // returns the about text
 	String text = appname + "\n";
 	text += lg.get("version") + ": " + appversion + "\n";
 	text += lg.get("madeby") + ": " + appmaker + "\n";
@@ -22,10 +22,10 @@ String fixLength(String str, int length, char c) {
 	}
 	return str;
 }
-void printColor(int c) {
+void printColor(int c) { // prints a color
 	println("Red: " + (int)red(c) + ", Green: " + (int)green(c) + ", Blue: " + (int)blue(c));
 }
-void printColorhex(int c) {
+void printColorhex(int c) { // prints a color int hexadecimal
 	String red = Integer.toHexString((int)red(c));
 	String green = Integer.toHexString((int)green(c));
 	String blue = Integer.toHexString((int)blue(c));

@@ -36,24 +36,24 @@ class Transform implements IOverlay {
 		drawitem(item, hit);
 	}
 
-	Box getboundary() {
-		return getitemboundary(item);
+	Box getBoundary() {
+		return getItemBoundary(item);
 	}
 	
-	boolean ishit() {
-	  	return getisitemhit(item);
+	boolean isHit() {
+	  	return getisItemHit(item);
 	}
 
-	void setxy(int xpos, int ypos) {
+	void setXY(int xpos, int ypos) {
 		recalculatealign();
 		setitemxy(item, xpos+xoff, ypos+yoff);
 	}
-	void setwh(int _width, int _height) {
+	void setWH(int _width, int _height) {
 		setitemwh(item, _width, _height);
 		recalculatealign();
 	}
 	void recalculatealign() {
-		Box b = getboundary();
+		Box b = getBoundary();
 		if(ali == Align.TOPRIGHT) {
 			this.xoff = width-b.w;
 		} else if(ali == Align.BOTTOMLEFT) {

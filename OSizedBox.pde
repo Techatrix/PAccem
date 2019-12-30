@@ -13,26 +13,26 @@ class SizedBox extends PWH implements IOverlay {
 		this(false, _width, _height);
 	}
 	SizedBox(boolean expand, int _width, int _height) {
-		setwh(_width, _height);
+		setWH(_width, _height);
 		this.expand = expand;
 	}
 
 	void draw(boolean hit) {
 	}
 
-	Box getboundary() {
+	Box getBoundary() {
 		return new Box(_width, _height);
 	}
 	
-	boolean ishit() {
+	boolean isHit() {
 	  	return mouseX >= xpos && mouseX < xpos+_width && mouseY >= ypos && mouseY < ypos+_height;
 	}
 
-	void setxy(int xpos, int ypos) {
+	void setXY(int xpos, int ypos) {
 		this.xpos = xpos;
 		this.ypos = ypos;
 	}
-	void setwh(int _width, int _height) {
+	void setWH(int _width, int _height) {
 		this._width = _width;
 		this._height = _height;
 	}

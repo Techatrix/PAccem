@@ -2,7 +2,7 @@ abstract class Dynamic extends PWH implements IOverlay {
 	Object item;
 
 	Dynamic() {
-		item = getitem();
+		item = getItem();
 	}
 	boolean mousePressed() {
 		return mousePresseditem(item);
@@ -17,27 +17,27 @@ abstract class Dynamic extends PWH implements IOverlay {
 	void keyPressed() {
 		keyPresseditem(item);
 	}
-	abstract Object getitem();
+	abstract Object getItem();
 
 	void draw(boolean hit) {
-		item = getitem();
+		item = getItem();
 		setitemxy(item, xpos, ypos);
 		setitemwh(item, _width, _height);
 		drawitem(item, hit);
 	}
 
-	Box getboundary() {
-		return getitemboundary(item);
+	Box getBoundary() {
+		return getItemBoundary(item);
 	}
 	
-	boolean ishit() {
-		return getisitemhit(item);
+	boolean isHit() {
+		return getisItemHit(item);
 	}
-	void setxy(int xpos, int ypos) {
+	void setXY(int xpos, int ypos) {
 		this.xpos = xpos;
 		this.ypos = ypos;
 	}
-	void setwh(int _width, int _height) {
+	void setWH(int _width, int _height) {
 		this._width = _width;
 		this._height = _height;
 	}

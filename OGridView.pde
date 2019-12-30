@@ -17,24 +17,24 @@ class GridView extends PWH implements IOverlay {
 		this._height = _height;
 		this.itemheight = itemheight;
 		this.gridlength = gridlength;
-		setwh(_width, _height);
+		setWH(_width, _height);
 	}
 
 	void mouseWheel(MouseEvent e) {
 	}
 	boolean mousePressed() {
-		if(ishit()) {
+		if(isHit()) {
 			for (Object item : items) {
 				mousePresseditem(item);
 			}
 		}
-		return ishit();
+		return isHit();
 	}
 	boolean mouseDragged() {
 		return false;
 	}
 	void keyPressed() {
-		if(ishit()) {
+		if(isHit()) {
 			for (Object item : items) {
 				keyPresseditem(item);
 			}
@@ -57,25 +57,25 @@ class GridView extends PWH implements IOverlay {
 		rect(xpos, ypos, _width, _height);
 
 		for (Object item : items) {
-			drawitem(item, ishit());
+			drawitem(item, isHit());
 		}
     	noClip();
 	}
 
-	Box getboundary() {
+	Box getBoundary() {
 		return new Box(_width, _height);
 	}
 
-	boolean ishit() {
+	boolean isHit() {
 	  	return mouseX >= xpos && mouseX < xpos+_width && mouseY >= ypos && mouseY < ypos+_height;
 	}
 
-	void setxy(int xpos, int ypos) {
+	void setXY(int xpos, int ypos) {
 		this.xpos = xpos;
 		this.ypos = ypos;
 		recalculateitems();
 	}
-	void setwh(int _width, int _height) {
+	void setWH(int _width, int _height) {
 		if(this._width == 0 && this._height == 0) {
 			this._width = _width;
 			this._height = _height;

@@ -11,8 +11,8 @@ class Container extends PWH implements IOverlay {
 	}
 	Container(Object item, int _width, int _height) {
 		this.item = item;
-		Box b = getitemboundary(item);
-		setwh(max(round(b.w), _width), max(round(b.h), _height));
+		Box b = getItemBoundary(item);
+		setWH(max(round(b.w), _width), max(round(b.h), _height));
 	}
 	Container(Object item, int _width, int _height, color _color) {
 		this(item, _width, _height);
@@ -29,7 +29,7 @@ class Container extends PWH implements IOverlay {
 	}
 	boolean mousePressed() {
 		mousePresseditem(item);
-		return ishit();
+		return isHit();
 	}
 	boolean mouseDragged() {
 		return mouseDraggeditem(item);
@@ -42,7 +42,7 @@ class Container extends PWH implements IOverlay {
 		fill(autocolor ? c[5] : _color);
 		noStroke();
 		rect(xpos, ypos, _width, _height);
-		boolean h = hit && ishit();
+		boolean h = hit && isHit();
 		drawitem(item, h);
 		if(h && selectable) {
 			fill(c[8], 50);
@@ -50,16 +50,16 @@ class Container extends PWH implements IOverlay {
 		}
 	}
 
-	Box getboundary() {
+	Box getBoundary() {
 		return new Box(_width, _height);
 	}
 
-	void setxy(int xpos, int ypos) {
+	void setXY(int xpos, int ypos) {
 		this.xpos = xpos;
 		this.ypos = ypos;
 		recalculateitems();
 	}
-	void setwh(int _width, int _height) {
+	void setWH(int _width, int _height) {
 		if(this._width == 0 && this._height == 0) {
 			this._width = _width;
 			this._height = _height;
@@ -71,7 +71,7 @@ class Container extends PWH implements IOverlay {
 		setitemwh(item, _width, _height);
 	}
 
-	boolean ishit() {
+	boolean isHit() {
 		return mouseX >= xpos && mouseX < xpos+_width && mouseY >= ypos && mouseY < ypos+_height;
 	}
 }
