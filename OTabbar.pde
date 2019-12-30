@@ -8,26 +8,29 @@ abstract class Tabbar implements IOverlay {
 	}
 
 	void draw(boolean hit) {
-		drawitem(list, hit);
-		if(isvalidtab()) {
-			drawitem(tabs[getid()], hit);
+		drawItem(list, hit);
+		if(isValidTab()) {
+			drawItem(tabs[getId()], hit);
 		}
 	}
 
-	void mouseWheel(MouseEvent e) {
-		mouseWheelitem(list, e);
-		if(isvalidtab()) {
-			mouseWheelitem(tabs[getid()], e);
+	boolean mouseWheel(MouseEvent e) {
+		boolean result = mouseWheelItem(list, e);
+		if(isValidTab()) {
+			if(mouseWheelItem(tabs[getId()], e)) {
+				result = true;
+			}
 		}
-	}
+		return result;
+		}
 	boolean mousePressed() {
 		boolean hit = false;
-		if(mousePresseditem(list)) {
+		if(mousePressedItem(list)) {
 			hit = true;
-			ontab(getlistindex(list));
+			onTab(getListIndex(list));
 		}
-		if(isvalidtab()) {
-			if(mousePresseditem(tabs[getid()])) {
+		if(isValidTab()) {
+			if(mousePressedItem(tabs[getId()])) {
 				hit = true;
 			}
 		}
@@ -37,17 +40,17 @@ abstract class Tabbar implements IOverlay {
 		return false;
 	}
 	void keyPressed() {
-		keyPresseditem(list);
-		if(isvalidtab()) {
-			keyPresseditem(tabs[getid()]);
+		keyPressedItem(list);
+		if(isValidTab()) {
+			keyPressedItem(tabs[getId()]);
 		}
 	}
 
-	abstract void ontab(int i);
-	abstract int getid();
+	abstract void onTab(int i);
+	abstract int getId();
 
-	boolean isvalidtab() {
-		return -1 < getid() && getid() < tabs.length;
+	boolean isValidTab() {
+		return -1 < getId() && getId() < tabs.length;
 	}
 
 	Box getBoundary() {
@@ -59,8 +62,8 @@ abstract class Tabbar implements IOverlay {
 		if(getisItemHit(list)) {
 			hit = true;
 		}
-		if(isvalidtab()) {
-			if(getisItemHit(tabs[getid()])) {
+		if(isValidTab()) {
+			if(getisItemHit(tabs[getId()])) {
 				hit = true;
 			}
 		}
@@ -68,15 +71,15 @@ abstract class Tabbar implements IOverlay {
 	}
 
 	void setXY(int xpos, int ypos) {
-		setitemxy(list, xpos, ypos);
+		setItemXY(list, xpos, ypos);
 		for (Object tab : tabs) {
-			setitemxy(tab, xpos, ypos);
+			setItemXY(tab, xpos, ypos);
 		}
 	}
 	void setWH(int _width, int _height) {
-		setitemwh(list, _width, _height);
+		setItemWH(list, _width, _height);
 		for (Object tab : tabs) {
-			setitemwh(tab, _width, _height);
+			setItemWH(tab, _width, _height);
 		}
 	}
 }

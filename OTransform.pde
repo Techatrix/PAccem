@@ -19,21 +19,21 @@ class Transform implements IOverlay {
 		this.yoff = yoff;
 		this.ali = ali;
 	}
-	void mouseWheel(MouseEvent e) {
-		mouseWheelitem(item, e);
+	boolean mouseWheel(MouseEvent e) {
+		return mouseWheelItem(item, e);
 	}
 	boolean mousePressed() {
-		return mousePresseditem(item);
+		return mousePressedItem(item);
 	}
 	boolean mouseDragged() {
-		return mouseDraggeditem(item);
+		return mouseDraggedItem(item);
 	}
 	void keyPressed() {
-		keyPresseditem(item);
+		keyPressedItem(item);
 	}
 
 	void draw(boolean hit) {
-		drawitem(item, hit);
+		drawItem(item, hit);
 	}
 
 	Box getBoundary() {
@@ -46,10 +46,10 @@ class Transform implements IOverlay {
 
 	void setXY(int xpos, int ypos) {
 		recalculatealign();
-		setitemxy(item, xpos+xoff, ypos+yoff);
+		setItemXY(item, xpos+xoff, ypos+yoff);
 	}
 	void setWH(int _width, int _height) {
-		setitemwh(item, _width, _height);
+		setItemWH(item, _width, _height);
 		recalculatealign();
 	}
 	void recalculatealign() {

@@ -73,28 +73,29 @@ interface IOverlay {
 }
 
 /* --------------- dynamic casting --------------- */
-void mouseWheelitem(Object item, MouseEvent e) {
+boolean mouseWheelItem(Object item, MouseEvent e) {
 	if (item instanceof Tabbar) {
-		((Tabbar)item).mouseWheel(e);
+		return ((Tabbar)item).mouseWheel(e);
 	} else if (item instanceof ListView) {
-		((ListView)item).mouseWheel(e);
+		return ((ListView)item).mouseWheel(e);
 	} else if (item instanceof GridView) {
-		((GridView)item).mouseWheel(e);
+		return ((GridView)item).mouseWheel(e);
 	} else if (item instanceof Container) {
-		((Container)item).mouseWheel(e);
+		return ((Container)item).mouseWheel(e);
 	} else if (item instanceof Transform) {
-		((Transform)item).mouseWheel(e);
+		return ((Transform)item).mouseWheel(e);
 	} else if (item instanceof Dynamic) {
-		((Dynamic)item).mouseWheel(e);
+		return ((Dynamic)item).mouseWheel(e);
 	} else if (item instanceof Visible) {
-		((Visible)item).mouseWheel(e);
+		return ((Visible)item).mouseWheel(e);
 	} else if (item instanceof EventDetector) {
-		((EventDetector)item).mouseWheel(e);
+		return ((EventDetector)item).mouseWheel(e);
 	} else if (item instanceof Popup) {
-		((Popup)item).mouseWheel(e);
+		return ((Popup)item).mouseWheel(e);
 	}
+	return false;
 }
-boolean mousePresseditem(Object item) {
+boolean mousePressedItem(Object item) {
 	if (item instanceof Tabbar) {
 		return ((Tabbar)item).mousePressed();
 	} else if (item instanceof ListView) {
@@ -120,7 +121,7 @@ boolean mousePresseditem(Object item) {
 	}
 	return false;
 }
-boolean mouseDraggeditem(Object item) {
+boolean mouseDraggedItem(Object item) {
 	if (item instanceof Tabbar) {
 		return ((Tabbar)item).mouseDragged();
 	} else if (item instanceof ListView) {
@@ -144,7 +145,7 @@ boolean mouseDraggeditem(Object item) {
 	}
 	return false;
 }
-void keyPresseditem(Object item) {
+void keyPressedItem(Object item) {
 	if (item instanceof Tabbar) {
 		((Tabbar)item).keyPressed();
 	} else if (item instanceof ListView) {
@@ -167,11 +168,11 @@ void keyPresseditem(Object item) {
 		((Popup)item).keyPressed();
 	}
 }
-int getlistindex(Object item) {
+int getListIndex(Object item) {
 	if (item instanceof ListView) {
-		return ((ListView)item).getindex();
+		return ((ListView)item).getIndex();
 	} else if(item instanceof GridView) {
-		return ((GridView)item).getindex();
+		return ((GridView)item).getIndex();
 	}
 	return -1;
 }
@@ -203,7 +204,7 @@ boolean getisItemHit(Object item) {
 	}
 	return false;
 }
-void drawitem(Object item, boolean hit) {
+void drawItem(Object item, boolean hit) {
 	if (item instanceof Tabbar) {
 		((Tabbar)item).draw(hit);
 	} else if (item instanceof ListView) {
@@ -234,11 +235,11 @@ void drawitem(Object item, boolean hit) {
 		((Slider)item).draw(hit);
 	} else if(item instanceof SizedBox) {} else {
 		if(deb) {
-			toovmessages.add("drawitem(): " + item + " unhandeled");
+			toovmessages.add("drawItem(): " + item + " unhandeled");
 		}
 	}
 }
-void setitemwh(Object item, int _width, int _height) {
+void setItemWH(Object item, int _width, int _height) {
 	if(item instanceof Tabbar) {
 		((Tabbar)item).setWH(_width, _height);
 	} else if(item instanceof ListView) {
@@ -271,11 +272,11 @@ void setitemwh(Object item, int _width, int _height) {
 		((Slider)item).setWH(_width, _height);
 	} else {
 		if(deb && item != null) {
-			toovmessages.add("setitemwh(): " + item + " unhandeled");
+			toovmessages.add("setItemWH(): " + item + " unhandeled");
 		}
 	}
 }
-void setitemxy(Object item, int xpos, int ypos) {
+void setItemXY(Object item, int xpos, int ypos) {
 	if(item instanceof Tabbar) {
 		((Tabbar)item).setXY(xpos, ypos);
 	} else if(item instanceof ListView) {
@@ -308,7 +309,7 @@ void setitemxy(Object item, int xpos, int ypos) {
 		((Slider)item).setXY(xpos, ypos);
 	} else {
 		if(deb && item != null) {
-			toovmessages.add("setitemxy(): " + item + " unhandeled");
+			toovmessages.add("setItemXY(): " + item + " unhandeled");
 		}
 	}
 }

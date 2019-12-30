@@ -50,27 +50,28 @@ abstract class Popup extends PWH implements IOverlay {
 		);
 	}
 
-	void mouseWheel(MouseEvent e) {
+	boolean mouseWheel(MouseEvent e) {
 		if(Visible()) {
-			mouseWheelitem(item, e);
+			return mouseWheelItem(item, e);
 		}
+		return false;
 	}
 	boolean mousePressed() {
 		if(Visible()) {
-			return mousePresseditem(item);
+			return mousePressedItem(item);
 		}
 		return false;
 	}
 	boolean mouseDragged() {
 		if(Visible()) {
-			return mouseDraggeditem(item);
+			return mouseDraggedItem(item);
 		}
 		return false;
 	}
 
 	void keyPressed() {
 		if(Visible()) {
-			keyPresseditem(item);
+			keyPressedItem(item);
 		}
 	}
 
@@ -83,7 +84,7 @@ abstract class Popup extends PWH implements IOverlay {
 			if(blur && usegl && !disableblur) {
 				filter(blurshader);
 			}
-			drawitem(item, hit);
+			drawItem(item, hit);
 		}
 	}
 
@@ -92,10 +93,10 @@ abstract class Popup extends PWH implements IOverlay {
 	}
 
 	void setXY(int xpos, int ypos) {
-		setitemxy(item, xpos, ypos);
+		setItemXY(item, xpos, ypos);
 	}
 	void setWH(int _width, int _height) {
-		setitemwh(item, _width, _height);
+		setItemWH(item, _width, _height);
 	}
 
 	boolean isHit() {

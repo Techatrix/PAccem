@@ -70,6 +70,8 @@ DataManager dm: Verwaltet alle Daten, wie 3D Modelle, Bilder, usw.
 
 OverlayManager ov: Enthält das GUI
 
+Clipper cl: Ermöglicht das Pushen und Poppen von clip() ( siehe: Processing push(), pop(), clip() )
+
 PGraphics pg: Grafikoberfläche für 3D-Grafik
 
 PShader blurshader: Ein Shader welcher Gaussian Blur Effekt enthält. (siehe: data/assets/shader/blur.glsl)
@@ -142,6 +144,26 @@ void manageArgs(): Verarbeitet alle Argumente, welche an das Programm übergeben
 | \-noblur | Deaktiviert Weichzeichnen |
 
 void loop(): Es wird nachgesehen, ob sich die Programmfenstergröße geändert hat und daraufhin die Fenstergrößeneinstellungen angepasst und ggf. die Größe der 3D-Grafikoberfläche(pg) angepasst.
+
+### Clipper
+
+Clipper ermöglich es zu die clip Einstellung zu "pushen" und zu "poppen". Dies benötig die clip() Funktion aus Processing, welche den Bereich in der eine Zeichenfunktion zeichnet, eingrenzt.
+
+#### Variables
+
+ArrayList<Clip> clips: Enthält die aktuelle und alle vergangenen clip Einstellungen zu welchen man "poppen" kann.
+
+#### Functions
+
+Clip get(): gibt die aktuelle clip Einstellung.
+
+void pushClip(): "pusht" die aktuelle clip Einstellung. Das bedeutet, dass die aktuelle clip Einstellung gespeichert wird und auf die gegebene Einstellung umgestellt wird.
+
+void popClip(): "poppt" die aktuelle clip Einstellung. Das bedeutet, dass die ehemalige clip Einstellung, welche durch pushClip() gespeichert wurde, wieder verwendet wird und somit die aktuelle überschrieben wird.
+
+####Extra
+
+Clip: Enthält eine clip Einstellung, also einen Bildschirmbereich
 
 ### DataManager
 

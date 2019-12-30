@@ -134,6 +134,24 @@ void manageArgs():
 
 void loop(): 
 
+### Clipper
+
+#### Variables
+
+ArrayList<Clip> clips: 
+
+#### Functions
+
+Clip get(): 
+
+void pushClip(): 
+
+void popClip(): 
+
+####Extra
+
+Clip: 
+
 ### DataManager
 
 #### Variables

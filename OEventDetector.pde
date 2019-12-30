@@ -4,34 +4,34 @@ abstract class EventDetector implements IOverlay {
 	EventDetector(Object item) {
 		this.item = item;
 	}
-	void mouseWheel(MouseEvent e) {
+	boolean mouseWheel(MouseEvent e) {
 		if(isHit()) {
 			onEvent(EventType.MOUSEWHEEL, e);
 		}
-		mouseWheelitem(item, e);
+		return mouseWheelItem(item, e);
 	}
 	boolean mousePressed() {
 		if(isHit()) {
 			onEvent(EventType.MOUSEPRESSED, null);
 		}
-		return mousePresseditem(item);
+		return mousePressedItem(item);
 	}
 	boolean mouseDragged() {
 		if(isHit()) {
 			onEvent(EventType.MOUSEDRAGGED, null);
 		}
-		return mouseDraggeditem(item);
+		return mouseDraggedItem(item);
 	}
 	void keyPressed() {
 		if(isHit()) {
 			onEvent(EventType.KEYPRESSED, null);
 		}
-		keyPresseditem(item);
+		keyPressedItem(item);
 	}
 	abstract void onEvent(EventType et, MouseEvent e);
 
 	void draw(boolean hit) {
-		drawitem(item, hit);
+		drawItem(item, hit);
 	}
 
 	Box getBoundary() {
@@ -43,10 +43,10 @@ abstract class EventDetector implements IOverlay {
 	}
 
 	void setXY(int xpos, int ypos) {
-		setitemxy(item, xpos, ypos);
+		setItemXY(item, xpos, ypos);
 	}
 	void setWH(int _width, int _height) {
-		setitemwh(item, _width, _height);
+		setItemWH(item, _width, _height);
 	}
 
 }
