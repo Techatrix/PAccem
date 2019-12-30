@@ -10,6 +10,18 @@ class Box {
 		this.h = round(h);
 	}
 }
+class TabData {
+	String name;
+	int id;
+	boolean type;
+	
+	TabData(String name, int id, boolean type) {
+		this.name = name;
+		this.id = id;
+		this.type = type;
+	}
+}
+
 abstract class Builder{
 
 	Object[] build(int length) {
@@ -22,44 +34,68 @@ abstract class Builder{
 
 	abstract Object i(int i);
 }
-enum Dir { // used by listview
+abstract class ListViewBuilder{
+	ListView build(int length, int _width, int _height) {
+		return build(length, _width, _height, 30, Dir.DOWN);
+	}
+	ListView build(int length, int _width, int _height, int itemheight) {
+		return build(length, _width, _height, itemheight, Dir.DOWN);
+	}
+	ListView build(int length, int _width, int _height, int itemheight, Dir dir) {
+		Object[] items = new Object[length];
+		for (int i=0;i<length;i++) {
+			items[i] = i(i);
+		}
+		return new ListView(items, _width, _height, itemheight, dir);
+	}
+
+	abstract Object i(int i);
+}
+
+enum Dir { // used by ListView
     UP, RIGHT, DOWN, LEFT;
 }
-enum Align { // used by transform
+enum Align { // used by Transform
     TOPLEFT, TOPRIGHT, BOTTOMLEFT, BOTTOMRIGHT, CENTERCENTER;
 }
-enum Fit { // used by image
+enum Fit { // used by Image
 	EXPAND, RATIO
 }
-interface IOverlay{
+
+interface IOverlay {
 
 	void draw(boolean hit);
-	Box getbound();
-	boolean ishit();
+	Box getBoundary();
+	boolean isHit();
 
-	void setxy(int ypos, int xpos);
-	void setwh(int _width, int _height);
+	void setXY(int ypos, int xpos);
+	void setWH(int _width, int _height);
 }
 
 /* --------------- dynamic casting --------------- */
-void mouseWheelitem(Object item, MouseEvent e) {
+boolean mouseWheelItem(Object item, MouseEvent e) {
 	if (item instanceof Tabbar) {
-		((Tabbar)item).mouseWheel(e);
+		return ((Tabbar)item).mouseWheel(e);
 	} else if (item instanceof ListView) {
-		((ListView)item).mouseWheel(e);
+		return ((ListView)item).mouseWheel(e);
 	} else if (item instanceof GridView) {
-		((GridView)item).mouseWheel(e);
+		return ((GridView)item).mouseWheel(e);
 	} else if (item instanceof Container) {
-		((Container)item).mouseWheel(e);
+		return ((Container)item).mouseWheel(e);
 	} else if (item instanceof Transform) {
-		((Transform)item).mouseWheel(e);
-	} else if (item instanceof GetVisible) {
-		((GetVisible)item).mouseWheel(e);
+		return ((Transform)item).mouseWheel(e);
+	} else if (item instanceof Dynamic) {
+		return ((Dynamic)item).mouseWheel(e);
+	} else if (item instanceof Visible) {
+		return ((Visible)item).mouseWheel(e);
 	} else if (item instanceof EventDetector) {
-		((EventDetector)item).mouseWheel(e);
+		return ((EventDetector)item).mouseWheel(e);
+	} else if (item instanceof Popup) {
+		return ((Popup)item).mouseWheel(e);
 	}
+	return false;
 }
-boolean mousePresseditem(Object item) {
+boolean mousePressedItem(Object item) {
 	if (item instanceof Tabbar) {
 		return ((Tabbar)item).mousePressed();
 	} else if (item instanceof ListView) {
@@ -72,14 +108,44 @@ boolean mousePresseditem(Object item) {
 		return ((SetValueText)item).mousePressed();
 	} else if(item instanceof Transform) {
 		return ((Transform)item).mousePressed();
-	} else if(item instanceof GetVisible) {
-		return ((GetVisible)item).mousePressed();
+	} else if(item instanceof Dynamic) {
+		return ((Dynamic)item).mousePressed();
+	} else if(item instanceof Visible) {
+		return ((Visible)item).mousePressed();
 	} else if (item instanceof EventDetector) {
 		((EventDetector)item).mousePressed();
+	} else if (item instanceof Popup) {
+		((Popup)item).mousePressed();
+	} else if (item instanceof Slider) {
+		((Slider)item).mousePressed();
 	}
 	return false;
 }
-void keyPresseditem(Object item) {
+boolean mouseDraggedItem(Object item) {
+	if (item instanceof Tabbar) {
+		return ((Tabbar)item).mouseDragged();
+	} else if (item instanceof ListView) {
+		return ((ListView)item).mouseDragged();
+	} else if(item instanceof GridView) {
+		return ((GridView)item).mouseDragged();
+	} else if(item instanceof Container) {
+		return ((Container)item).mouseDragged();
+	} else if(item instanceof Transform) {
+		return ((Transform)item).mouseDragged();
+	} else if(item instanceof Dynamic) {
+		return ((Dynamic)item).mouseDragged();
+	} else if(item instanceof Visible) {
+		return ((Visible)item).mouseDragged();
+	} else if (item instanceof EventDetector) {
+		((EventDetector)item).mouseDragged();
+	} else if (item instanceof Popup) {
+		((Popup)item).mouseDragged();
+	} else if (item instanceof Slider) {
+		((Slider)item).mouseDragged();
+	}
+	return false;
+}
+void keyPressedItem(Object item) {
 	if (item instanceof Tabbar) {
 		((Tabbar)item).keyPressed();
 	} else if (item instanceof ListView) {
@@ -92,43 +158,53 @@ void keyPresseditem(Object item) {
 		((SetValueText)item).keyPressed();
 	} else if (item instanceof Transform) {
 		((Transform)item).keyPressed();
-	} else if (item instanceof GetVisible) {
-		((GetVisible)item).keyPressed();
+	} else if (item instanceof Dynamic) {
+		((Dynamic)item).keyPressed();
+	} else if (item instanceof Visible) {
+		((Visible)item).keyPressed();
 	} else if (item instanceof EventDetector) {
 		((EventDetector)item).keyPressed();
+	} else if (item instanceof Popup) {
+		((Popup)item).keyPressed();
 	}
 }
-int getlistindex(Object item) {
+int getListIndex(Object item) {
 	if (item instanceof ListView) {
-		return ((ListView)item).getindex();
+		return ((ListView)item).getIndex();
 	} else if(item instanceof GridView) {
-		return ((GridView)item).getindex();
+		return ((GridView)item).getIndex();
 	}
 	return -1;
 }
-boolean getisitemhit(Object item) {
+boolean getisItemHit(Object item) {
 	if (item instanceof Tabbar) {
-		return ((Tabbar)item).ishit();
+		return ((Tabbar)item).isHit();
 	} else if (item instanceof ListView) {
-		return ((ListView)item).ishit();
+		return ((ListView)item).isHit();
 	} else if(item instanceof GridView) {
-		return ((GridView)item).ishit();
+		return ((GridView)item).isHit();
 	} else if(item instanceof Container) {
-		return ((Container)item).ishit();
+		return ((Container)item).isHit();
 	} else if(item instanceof SetValueText) {
-		return ((SetValueText)item).ishit();
+		return ((SetValueText)item).isHit();
 	} else if(item instanceof GetValueText) {
-		return ((GetValueText)item).ishit();
+		return ((GetValueText)item).isHit();
 	} else if(item instanceof Transform) {
-		return ((Transform)item).ishit();
-	} else if(item instanceof GetVisible) {
-		return ((GetVisible)item).ishit();
+		return ((Transform)item).isHit();
+	} else if(item instanceof Dynamic) {
+		return ((Dynamic)item).isHit();
+	} else if(item instanceof Visible) {
+		return ((Visible)item).isHit();
 	} else if(item instanceof EventDetector) {
-		return ((EventDetector)item).ishit();
+		return ((EventDetector)item).isHit();
+	} else if(item instanceof Popup) {
+		return ((Popup)item).isHit();
+	} else if(item instanceof Slider) {
+		return ((Slider)item).isHit();
 	}
 	return false;
 }
-void drawitem(Object item, boolean hit) {
+void drawItem(Object item, boolean hit) {
 	if (item instanceof Tabbar) {
 		((Tabbar)item).draw(hit);
 	} else if (item instanceof ListView) {
@@ -147,91 +223,131 @@ void drawitem(Object item, boolean hit) {
 		((Image)item).draw(hit);
 	} else if(item instanceof Transform) {
 		((Transform)item).draw(hit);
-	} else if(item instanceof GetVisible) {
-		((GetVisible)item).draw(hit);
+	} else if(item instanceof Dynamic) {
+		((Dynamic)item).draw(hit);
+	} else if(item instanceof Visible) {
+		((Visible)item).draw(hit);
 	} else if(item instanceof EventDetector) {
 		((EventDetector)item).draw(hit);
+	} else if(item instanceof Popup) {
+		((Popup)item).draw(hit);
+	} else if(item instanceof Slider) {
+		((Slider)item).draw(hit);
+	} else if(item instanceof SizedBox) {} else {
+		if(deb) {
+			toovmessages.add("drawItem(): " + item + " unhandeled");
+		}
 	}
 }
-void setitemwh(Object item, int _width, int _height) {
+void setItemWH(Object item, int _width, int _height) {
 	if(item instanceof Tabbar) {
-		((Tabbar)item).setwh(_width, _height);
+		((Tabbar)item).setWH(_width, _height);
 	} else if(item instanceof ListView) {
-		((ListView)item).setwh(_width, _height);
+		((ListView)item).setWH(_width, _height);
 	} else if(item instanceof GridView) {
-		((GridView)item).setwh(_width, _height);
+		((GridView)item).setWH(_width, _height);
 	} else if(item instanceof Container) {
-		((Container)item).setwh(_width, _height);
+		((Container)item).setWH(_width, _height);
 	} else if(item instanceof SizedBox) {
-		((SizedBox)item).setwh(_width, _height);
+		((SizedBox)item).setWH(_width, _height);
 	} else if(item instanceof Text) {
-		((Text)item).setwh(_width, _height);
+		((Text)item).setWH(_width, _height);
 	} else if(item instanceof SetValueText) {
-		((SetValueText)item).setwh(_width, _height);
+		((SetValueText)item).setWH(_width, _height);
 	} else if(item instanceof GetValueText) {
-		((GetValueText)item).setwh(_width, _height);
+		((GetValueText)item).setWH(_width, _height);
 	} else if(item instanceof Image) {
-		((Image)item).setwh(_width, _height);
+		((Image)item).setWH(_width, _height);
 	} else if(item instanceof Transform) {
-		((Transform)item).setwh(_width, _height);
-	} else if(item instanceof GetVisible) {
-		((GetVisible)item).setwh(_width, _height);
+		((Transform)item).setWH(_width, _height);
+	} else if(item instanceof Dynamic) {
+		((Dynamic)item).setWH(_width, _height);
+	} else if(item instanceof Visible) {
+		((Visible)item).setWH(_width, _height);
 	} else if(item instanceof EventDetector) {
-		((EventDetector)item).setwh(_width, _height);
+		((EventDetector)item).setWH(_width, _height);
+	} else if(item instanceof Popup) {
+		((Popup)item).setWH(_width, _height);
+	} else if(item instanceof Slider) {
+		((Slider)item).setWH(_width, _height);
+	} else {
+		if(deb && item != null) {
+			toovmessages.add("setItemWH(): " + item + " unhandeled");
+		}
 	}
 }
-void setitemxy(Object item, int xpos, int ypos) {
+void setItemXY(Object item, int xpos, int ypos) {
 	if(item instanceof Tabbar) {
-		((Tabbar)item).setxy(xpos, ypos);
+		((Tabbar)item).setXY(xpos, ypos);
 	} else if(item instanceof ListView) {
-		((ListView)item).setxy(xpos, ypos);
+		((ListView)item).setXY(xpos, ypos);
 	} else if(item instanceof GridView) {
-		((GridView)item).setxy(xpos, ypos);
+		((GridView)item).setXY(xpos, ypos);
 	} else if(item instanceof Container) {
-		((Container)item).setxy(xpos, ypos);
+		((Container)item).setXY(xpos, ypos);
 	} else if(item instanceof SizedBox) {
-		((SizedBox)item).setxy(xpos, ypos);
+		((SizedBox)item).setXY(xpos, ypos);
 	} else if(item instanceof Text) {
-		((Text)item).setxy(xpos, ypos);
+		((Text)item).setXY(xpos, ypos);
 	} else if(item instanceof SetValueText) {
-		((SetValueText)item).setxy(xpos, ypos);
+		((SetValueText)item).setXY(xpos, ypos);
 	} else if(item instanceof GetValueText) {
-		((GetValueText)item).setxy(xpos, ypos);
+		((GetValueText)item).setXY(xpos, ypos);
 	} else if(item instanceof Image) {
-		((Image)item).setxy(xpos, ypos);
+		((Image)item).setXY(xpos, ypos);
 	} else if(item instanceof Transform) {
-		((Transform)item).setxy(xpos, ypos);
-	} else if(item instanceof GetVisible) {
-		((GetVisible)item).setxy(xpos, ypos);
+		((Transform)item).setXY(xpos, ypos);
+	} else if(item instanceof Dynamic) {
+		((Dynamic)item).setXY(xpos, ypos);
+	} else if(item instanceof Visible) {
+		((Visible)item).setXY(xpos, ypos);
 	} else if(item instanceof EventDetector) {
-		((EventDetector)item).setxy(xpos, ypos);
+		((EventDetector)item).setXY(xpos, ypos);
+	} else if(item instanceof Popup) {
+		((Popup)item).setXY(xpos, ypos);
+	} else if(item instanceof Slider) {
+		((Slider)item).setXY(xpos, ypos);
+	} else {
+		if(deb && item != null) {
+			toovmessages.add("setItemXY(): " + item + " unhandeled");
+		}
 	}
 }
-Box getboundry(Object item) {
+Box getItemBoundary(Object item) {
 	if (item instanceof Tabbar) {
-		return ((Tabbar)item).getbound();
+		return ((Tabbar)item).getBoundary();
 	} else if (item instanceof ListView) {
-		return ((ListView)item).getbound();
+		return ((ListView)item).getBoundary();
 	} else if(item instanceof GridView) {
-		return ((GridView)item).getbound();
+		return ((GridView)item).getBoundary();
 	} else if(item instanceof Container) {
-		return ((Container)item).getbound();
+		return ((Container)item).getBoundary();
 	} else if(item instanceof SizedBox) {
-		return ((SizedBox)item).getbound();
+		return ((SizedBox)item).getBoundary();
 	} else if(item instanceof Text) {
-		return ((Text)item).getbound();
+		return ((Text)item).getBoundary();
 	} else if(item instanceof SetValueText) {
-		return ((SetValueText)item).getbound();
+		return ((SetValueText)item).getBoundary();
 	} else if(item instanceof GetValueText) {
-		return ((GetValueText)item).getbound();
+		return ((GetValueText)item).getBoundary();
 	} else if(item instanceof Image) {
-		return ((Image)item).getbound();
+		return ((Image)item).getBoundary();
 	} else if(item instanceof Transform) {
-		return ((Transform)item).getbound();
-	} else if(item instanceof GetVisible) {
-		return ((GetVisible)item).getbound();
+		return ((Transform)item).getBoundary();
+	} else if(item instanceof Dynamic) {
+		return ((Dynamic)item).getBoundary();
+	} else if(item instanceof Visible) {
+		return ((Visible)item).getBoundary();
 	} else if(item instanceof EventDetector) {
-		return ((EventDetector)item).getbound();
+		return ((EventDetector)item).getBoundary();
+	} else if(item instanceof Popup) {
+		return ((Popup)item).getBoundary();
+	} else if(item instanceof Slider) {
+		return ((Slider)item).getBoundary();
+	} else {
+		if(deb) {
+			toovmessages.add("getBoundary(): " + item + " unhandeled");
+		}
 	}
 	return null;
 }

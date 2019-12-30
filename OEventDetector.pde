@@ -4,44 +4,49 @@ abstract class EventDetector implements IOverlay {
 	EventDetector(Object item) {
 		this.item = item;
 	}
-	boolean mousePressed() {
-		if(ishit()) {
-			onevent(EventType.MOUSEPRESSED, null);
+	boolean mouseWheel(MouseEvent e) {
+		if(isHit()) {
+			onEvent(EventType.MOUSEWHEEL, e);
 		}
-		return mousePresseditem(item);
+		return mouseWheelItem(item, e);
 	}
-
-	void mouseWheel(MouseEvent e) {
-		if(ishit()) {
-			onevent(EventType.MOUSEPRESSED, e);
+	boolean mousePressed() {
+		if(isHit()) {
+			onEvent(EventType.MOUSEPRESSED, null);
 		}
-		mouseWheelitem(item, e);
+		return mousePressedItem(item);
+	}
+	boolean mouseDragged() {
+		if(isHit()) {
+			onEvent(EventType.MOUSEDRAGGED, null);
+		}
+		return mouseDraggedItem(item);
 	}
 	void keyPressed() {
-		if(ishit()) {
-			onevent(EventType.KEYPRESSED, null);
+		if(isHit()) {
+			onEvent(EventType.KEYPRESSED, null);
 		}
-		keyPresseditem(item);
+		keyPressedItem(item);
 	}
-	abstract void onevent(EventType et, MouseEvent e);
+	abstract void onEvent(EventType et, MouseEvent e);
 
 	void draw(boolean hit) {
-		drawitem(item, hit);
+		drawItem(item, hit);
 	}
 
-	Box getbound() {
-		return getboundry(item);
+	Box getBoundary() {
+		return getItemBoundary(item);
 	}
 	
-	boolean ishit() {
-		return getisitemhit(item);
+	boolean isHit() {
+		return getisItemHit(item);
 	}
 
-	void setxy(int xpos, int ypos) {
-		setitemxy(item, xpos, ypos);
+	void setXY(int xpos, int ypos) {
+		setItemXY(item, xpos, ypos);
 	}
-	void setwh(int _width, int _height) {
-		setitemwh(item, _width, _height);
+	void setWH(int _width, int _height) {
+		setItemWH(item, _width, _height);
 	}
 
 }

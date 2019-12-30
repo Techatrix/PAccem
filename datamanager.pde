@@ -1,21 +1,22 @@
 class DataManager {
 	final PImage[] icons;				// list of all icons
+	final PImage[] extras;				// list of all extra images(data/assets/img/)
 	final FurnitureData[] furnitures;	// list of all furnitures that can be used
 	final PrefabData[] prefabs;			// list of all prefabs that can be used
 
+	// TODO: Validation
 	DataManager() {
 		if(deb) {
-			println("Load DataManager");
+			toovmessages.add("Loading DataManager");
 		}
 		/* --------------- load icon data --------------- */
-		icons = new PImage[7];
-		icons[0] = loadImage("data/assets/icon/0.png");
-		icons[1] = loadImage("data/assets/icon/1.png");
-		icons[2] = loadImage("data/assets/icon/2.png");
-		icons[3] = loadImage("data/assets/icon/3.png");
-		icons[4] = loadImage("data/assets/icon/4.png");
-		icons[5] = loadImage("data/assets/icon/5.png");
-		icons[6] = loadImage("data/assets/icon/6.png");
+		icons = new PImage[9];
+		for (int i=0;i<icons.length;i++) {
+			icons[i] = loadImage("data/assets/icon/"+i+".png");
+		}
+		/* --------------- load extras data --------------- */
+		extras = new PImage[1];
+		extras[0] = loadImage("data/assets/img/error.png");
 
 		/* --------------- load furniture data --------------- */
 		JSONArray furnituredata;
@@ -62,7 +63,6 @@ class DataManager {
 
 			JSONArray prefabfurnsdata = pref.getJSONArray("furnitures");
 			PrefabFurnitureData[] prefabfurns = new PrefabFurnitureData[prefabfurnsdata.size()];
-			// TODO: Check null
 
 			for (int j=0;j<prefabfurnsdata.size();j++) {
 				JSONObject preffurn = prefabfurnsdata.getJSONObject(j);
@@ -77,25 +77,40 @@ class DataManager {
 		}
 	}
 
-	// TODO: return list of invalid prefabs
-	int validate() { // checks if in every prefabs the used furnitures are in the given boundry box (can only be executed of class construction)
+	int[] validate() { // checks if in every prefabs the used furnitures are in the given boundary box (can only be executed after class construction)
+		ArrayList<Integer> r1 = new ArrayList<Integer>();
 		for (int i=0;i<prefabs.length;i++) {
 			if(!prefabs[i].validate()) {
-				return i;
+				r1.add(i);
 			}
 		}
-		return -1;
+        int[] r2 = new int[r1.size()];
+        for (int i=0;i<r2.length;i++) {
+         	r2[i] = r1.get(i);
+        }
+		return r2;
 	}
 
-	FurnitureData getfurnituredata(int id) { // return the furniture data with the corresponding id
+	boolean validateId(int id) { // checks if a furniture with the given id exists
+		for (int i=0;i<furnitures.length;i++) {
+			if(furnitures[i].id == id) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+
+	FurnitureData getFurnitureData(int id) { // return the furniture data with the corresponding id
 		for (FurnitureData fdata : furnitures) {
 			if(id == fdata.id) {
 				return fdata;
 			}
 		}
-		return null;
+		toovmessages.add("Furniture ID " + id + " not found");
+		return new FurnitureData();
 	}
-	PrefabData getprefabdata(int id) { // return the prefab data with the corresponding id
+	PrefabData getPrefabData(int id) { // return the prefab data with the corresponding id
 		return prefabs[id];
 	}
 }
@@ -110,6 +125,15 @@ class FurnitureData {
 	final String name;
 	final int price;
 
+	FurnitureData() { // not found furniture
+		this.id = -1;
+		this._width = 1;
+		this._height = 1;
+		this.image = dm.extras[0];
+		this.shape = new PShape();
+		this.name = "Not Found";
+		this.price = 0;
+	}
 	FurnitureData(int id, int _width, int _height, PImage image, PShape shape, String name, int price) {
 		this.id = id;
 		this._width = _width;
@@ -120,6 +144,7 @@ class FurnitureData {
 		this.price = price;
 	}
 }
+
 class PrefabFurnitureData {
 	final int id;
 	final int xpos;
@@ -144,7 +169,7 @@ class PrefabData {
 		this.furnitures = furnitures;
 	}
 
-	PImage getimage() {
+	PImage getImage() {
 		PGraphics pg = createGraphics(_width*50,_height*50);
 		pg.beginDraw();
 		pg.scale(50);
@@ -152,18 +177,18 @@ class PrefabData {
 
 		for (int i=0;i<furnitures.length;i++) {
 			PrefabFurnitureData preffurndata = furnitures[i];
-			FurnitureData furndata = dm.getfurnituredata(preffurndata.id);
+			FurnitureData furndata = dm.getFurnitureData(preffurndata.id);
 			pg.image(furndata.image, preffurndata.xpos, preffurndata.ypos, furndata._width, furndata._height);
 		}
 		pg.endDraw();
 		return pg.get();
 	}
 
-	boolean isfurniture(int xpos, int ypos) {
+	boolean isFurniture(int xpos, int ypos) {
 		if(xpos > -1 && xpos < _width && ypos > -1 && ypos < _height) {
 			for (int i=0;i<furnitures.length;i++) {
 				PrefabFurnitureData preffurndata = furnitures[i];
-				FurnitureData furndata = dm.getfurnituredata(preffurndata.id);
+				FurnitureData furndata = dm.getFurnitureData(preffurndata.id);
 				for (int x=0;x<furndata._width;x++) {
 					for (int y=0;y<furndata._height;y++) {
 						if(xpos == preffurndata.xpos+x && ypos == preffurndata.ypos+y) {
@@ -176,11 +201,11 @@ class PrefabData {
 		return false;
 	}
 
-	// TODO: can be optimized : only check boundry of furniture and not every tile
+	// TODO: can be optimized : only check boundary of furniture and not every tile
 	boolean validate() {
 		boolean result = true;
 		for (PrefabFurnitureData pfd : furnitures) {
-			FurnitureData fd = dm.getfurnituredata(pfd.id);
+			FurnitureData fd = dm.getFurnitureData(pfd.id);
 			for (int x=0;x<fd._width;x++) {
 				for (int y=0;y<fd._height;y++) {
 					if(pfd.xpos+x >= _width || pfd.xpos+x < 0) {

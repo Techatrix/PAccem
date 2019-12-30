@@ -10,6 +10,9 @@ class ListView extends PWH implements IOverlay {
 	ListView(Object[] items, int _width, int _height) {
 		this(items, _width, _height, 30);
 	}
+	ListView(Object[] items, int _width, int _height, Dir dir) {
+		this(items, _width, _height, 0, dir);
+	}
 	ListView(Object[] items, int _width, int _height, int itemheight) {
 		this(items, _width, _height, itemheight, Dir.DOWN);
 	}
@@ -17,11 +20,20 @@ class ListView extends PWH implements IOverlay {
 		this.items = items;
 		this.itemheight = itemheight;
 		this.dir = dir;
-		setwh(_width, _height);
+		setWH(_width, _height);
 	}
 
-	void mouseWheel(MouseEvent ee) {
-		if(ishit()) {
+	boolean mouseWheel(MouseEvent ee) {
+		boolean isitemwheelhit = false;
+		for (Object item : items) {
+			if(getisItemHit(item)) {
+				if(mouseWheelItem(item, ee)) {
+					isitemwheelhit = true;
+				}
+			}
+		}
+
+		if(isHit() && !isitemwheelhit) {
 			int length = 0;
 
 			for (Object item : items) {
@@ -32,7 +44,7 @@ class ListView extends PWH implements IOverlay {
 					}
 				}
 				if(!e) {
-					Box b = getboundry(item);
+					Box b = getItemBoundary(item);
 					length += max(itemheight, (dir == Dir.DOWN || dir == Dir.UP) ? b.h : b.w);
 				}
 			}
@@ -56,52 +68,71 @@ class ListView extends PWH implements IOverlay {
 					}
 				}
 			}
-			recalculateitems();
+			recalculateItems();
+			return true;
 		}
+		return false;
 	}
 	boolean mousePressed() {
 		for (Object item : items) {
-			mousePresseditem(item);
+			mousePressedItem(item);
 		}
-		return ishit();
+		return isHit();
+	}
+	boolean mouseDragged() {
+		for (Object item : items) {
+			if(mouseDraggedItem(item)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	void keyPressed() {
 		for (Object item : items) {
-			keyPresseditem(item);
+			keyPressedItem(item);
 		}
 	}
 
 	void draw(boolean hit) {
 		fill(c[6]);
-		clip(xpos, ypos, _width, _height);
-		rect(xpos, ypos, _width, _height);
 
-		for (Object item : items) {
-			drawitem(item, hit);
+		boolean c = false;
+		if(cl.get() == null) {
+			cl.pushClip(xpos, ypos, _width, _height);
+			c = true;
 		}
-    	noClip();
+
+		rect(xpos, ypos, _width, _height);
+		boolean h = hit && isHit();
+		for (Object item : items) {
+			drawItem(item, h);
+		}
+
+		if(c) {
+			cl.popClip();
+		}
 	}
 
-	Box getbound() {
+	Box getBoundary() {
 		return new Box(_width, _height);
 	}
 	
-	boolean ishit() {
+	boolean isHit() {
 	  	return mouseX >= xpos && mouseX < xpos+_width && mouseY >= ypos && mouseY < ypos+_height;
 	}
-	void setxy(int xpos, int ypos) {
+	void setXY(int xpos, int ypos) {
 		this.xpos = xpos;
 		this.ypos = ypos;
-		recalculateitems();
+		recalculateItems();
 	}
-	void setwh(int _width, int _height) {
+	void setWH(int _width, int _height) {
 		if(this._width == 0 && this._height == 0) {
 			this._width = _width;
 			this._height = _height;
 		}
-		recalculateitems();
+		recalculateItems();
 	}
-	void recalculateitems() {
+	void recalculateItems() {
 		int sizelength = 0;
 		int expands = 0;
 
@@ -114,7 +145,7 @@ class ListView extends PWH implements IOverlay {
 				}
 			}
 			if(!e) {
-				Box b = getboundry(item);
+				Box b = getItemBoundary(item);
 				sizelength += max(itemheight, (dir == Dir.DOWN || dir == Dir.UP) ? b.h : b.w);
 			}
 		}
@@ -134,64 +165,45 @@ class ListView extends PWH implements IOverlay {
 					e = true;
 				}
 			}
-			Box b = getboundry(item);
+			Box b = getItemBoundary(item);
 			if(dir == Dir.DOWN || dir == Dir.UP) {
 				if(dir == Dir.DOWN) {
-					setitemxy(item, xpos, ypos+off+off2);
+					setItemXY(item, xpos, ypos+off+off2);
 				}
 				if(e) {
-					setitemwh(item, _width, expandsize);
+					setItemWH(item, _width, expandsize);
 					off2 += expandsize;
 				} else {
-					setitemwh(item, _width, max(itemheight, b.h));
+					setItemWH(item, _width, max(itemheight, b.h));
 					off2 += max(itemheight, b.h);
 				}
 				if(dir == Dir.UP) {
-					setitemxy(item, xpos, ypos+_height-off-off2);
+					setItemXY(item, xpos, ypos+_height-off-off2);
 				}
 			} else {
 				if(dir == Dir.RIGHT) {
-					setitemxy(item, xpos+off+off2, ypos);
+					setItemXY(item, xpos+off+off2, ypos);
 				}
 				if(e) {
-					setitemwh(item, expandsize, _height);
+					setItemWH(item, expandsize, _height);
 					off2 += expandsize;
 				} else {
-					setitemwh(item, max(itemheight, b.w), _height);
+					setItemWH(item, max(itemheight, b.w), _height);
 					off2 += max(itemheight, b.w);
 				}
 				if(dir == Dir.LEFT) {
-					setitemxy(item, xpos+_width-off-off2, ypos);
+					setItemXY(item, xpos+_width-off-off2, ypos);
 				}
 			}
 		}
 	}
-	int getindex() {
+	int getIndex() {
 		for (int i=0;i<items.length;i++) {
 			Object item = items[i];
-			if(mousePresseditem(item)) {
+			if(mousePressedItem(item)) {
 				return i;
 			}
 		}
 		return -1;
 	}
-}
-
-
-abstract class ListViewBuilder{
-	ListView build(int length, int _width, int _height) {
-		return build(length, _width, _height, 30, Dir.DOWN);
-	}
-	ListView build(int length, int _width, int _height, int itemheight) {
-		return build(length, _width, _height, itemheight, Dir.DOWN);
-	}
-	ListView build(int length, int _width, int _height, int itemheight, Dir dir) {
-		Object[] items = new Object[length];
-		for (int i=0;i<length;i++) {
-			items[i] = i(i);
-		}
-		return new ListView(items, _width, _height, itemheight, dir);
-	}
-
-	abstract Object i(int i);
 }

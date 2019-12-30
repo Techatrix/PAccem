@@ -2,6 +2,7 @@ class GridView extends PWH implements IOverlay {
 	Object[] items;
 	int itemheight;
 	int gridlength;
+	int off = 0;
 	//Enum dir = Dir.DOWN;
 	// TODO: include direction
 
@@ -17,31 +18,44 @@ class GridView extends PWH implements IOverlay {
 		this._height = _height;
 		this.itemheight = itemheight;
 		this.gridlength = gridlength;
-		setwh(_width, _height);
+		setWH(_width, _height);
 	}
 
-	void mouseWheel(MouseEvent e) {
+	boolean mouseWheel(MouseEvent e) {
+		if(isHit()) {
+			int length = itemheight * ceil(items.length / (float)gridlength);
+			if(length > _height) {
+				off -= e.getCount()*15;
+				off = constrain(off, _height - length, 0);
+			}
+			recalculateItems();
+			return true;
+		}
+		return false;
 	}
 	boolean mousePressed() {
-		if(ishit()) {
+		if(isHit()) {
 			for (Object item : items) {
-				mousePresseditem(item);
+				mousePressedItem(item);
 			}
 		}
-		return ishit();
+		return isHit();
+	}
+	boolean mouseDragged() {
+		return false;
 	}
 	void keyPressed() {
-		if(ishit()) {
+		if(isHit()) {
 			for (Object item : items) {
-				keyPresseditem(item);
+				keyPressedItem(item);
 			}
 		}
 	}
 
-	int getindex() {
+	int getIndex() {
 		for (int i=0;i<items.length;i++) {
 			Object item = items[i];
-			if(mousePresseditem(item)) {
+			if(mousePressedItem(item)) {
 				return i;
 			}
 		}
@@ -50,44 +64,52 @@ class GridView extends PWH implements IOverlay {
 
 	void draw(boolean hit) {
 		fill(c[6]);
-		clip(xpos, ypos, _width, _height);
-		rect(xpos, ypos, _width, _height);
 
-		for (Object item : items) {
-			drawitem(item, ishit());
+		boolean c = false;
+		if(cl.get() == null) {
+			cl.pushClip(xpos, ypos, _width, _height);
+			c = true;
 		}
-    	noClip();
+
+		rect(xpos, ypos, _width, _height);
+		boolean h = hit && isHit();
+		for (Object item : items) {
+			drawItem(item, h);
+		}
+
+		if(c) {
+			cl.popClip();
+		}
 	}
 
-	Box getbound() {
+	Box getBoundary() {
 		return new Box(_width, _height);
 	}
 
-	boolean ishit() {
+	boolean isHit() {
 	  	return mouseX >= xpos && mouseX < xpos+_width && mouseY >= ypos && mouseY < ypos+_height;
 	}
 
-	void setxy(int xpos, int ypos) {
+	void setXY(int xpos, int ypos) {
 		this.xpos = xpos;
 		this.ypos = ypos;
-		recalculateitems();
+		recalculateItems();
 	}
-	void setwh(int _width, int _height) {
+	void setWH(int _width, int _height) {
 		if(this._width == 0 && this._height == 0) {
 			this._width = _width;
 			this._height = _height;
 		}
-		recalculateitems();
+		recalculateItems();
 	}
-	void recalculateitems() {
+	void recalculateItems() {
 		for (int i=0;i<items.length;i++) {
 			Object item = items[i];
 			int ih = floor(i / gridlength);
 			int iw = i % gridlength;
 
-
-			setitemxy(item, xpos+iw*(_width/gridlength), ypos+itemheight*ih);
-			setitemwh(item, _width/gridlength, itemheight);
+			setItemXY(item, xpos+iw*(_width/gridlength), ypos+itemheight*ih+off);
+			setItemWH(item, _width/gridlength, itemheight);
 		}
 	}
 }
