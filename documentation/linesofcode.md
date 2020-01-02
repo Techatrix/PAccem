@@ -3,15 +3,15 @@ Lines of Code
 
 | File                   | Count     |
 |------------------------|-----------|
-| applicationmanager.pde | 182       |
-| baseclasses.pde        | 30        |
-| basefunctions.pde      | 41        |
+| Applicationmanager.pde | 182       |
+| BaseClasses.pde        | 30        |
+| BaseFunctions.pde      | 41        |
 | Clipper.pde            | 42        |
-| constants.pde          | 5         |
-| datamanager.pde        | 234       |
-| furniture.pde          | 123       |
-| grid.pde               | 313       |
-| languagemanager.pde    | 30        |
+| Constants.pde          | 5         |
+| DataManager.pde        | 234       |
+| Furniture.pde          | 123       |
+| Grid.pde               | 313       |
+| LanguageManager.pde    | 30        |
 | OBase.pde              | 357       |
 | OCheckBox.pde          | 75        |
 | OContainer.pde         | 74        |
@@ -26,13 +26,13 @@ Lines of Code
 | OTabbar.pde            | 90        |
 | OText.pde              | 199       |
 | OTransform.pde         | 66        |
-| overlay.pde            | 92        |
-| overlaymanager.pde     | 705       |
+| Overlay.pde            | 92        |
+| OverlayManager.pde     | 705       |
 | OVisible.pde           | 55        |
 | PAccem.pde             | 69        |
-| pricereport.pde        | 23        |
-| roommanager.pde        | 781       |
-| settings.pde           | 302       |
+| PriceReport.pde        | 23        |
+| RoomManager.pde        | 781       |
+| Settings.pde           | 302       |
 |                        |           |
 | **Total lines**        | **4573**  |
 | **Total word**         | **15507** |
