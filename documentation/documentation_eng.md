@@ -350,17 +350,18 @@ void printMessage(String text): add a message to the console
 
 void drawPopup(int id): opens a Popup
 
-| ID | Popup                   |
-|----|-------------------------|
-| 0  | requires restart        |
-| 1  | new Room                |
-| 2  | about                   |
-| 3  | reset                   |
-| 4  | remove room group       |
-| 5  | new room group          |
-| 6  | select color            |
-| 7  | activate cgol           |
-| 8  | overwrite default room? |
+| ID | Popup                    |
+|----|--------------------------|
+| 0  | requires restart         |
+| 1  | new Room                 |
+| 2  | about                    |
+| 3  | reset                    |
+| 4  | remove room group        |
+| 5  | new room group           |
+| 6  | select color             |
+| 7  | activate cgol            |
+| 8  | overwrite default room?  |
+| 9  | requires opengl renderer |
 
 int getXOff(): return the xoff variable if the overlay is visible
 
@@ -592,7 +593,7 @@ final String githublink: link to the Github repository
 
 #### CheckBox
 
-Ein Kontrollkästchen, um Wahrheitswerteinstellungen anzuzeigen.
+A Checkbox for displaying boolean settings.
 
 #### Container
 

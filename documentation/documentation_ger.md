@@ -363,6 +363,7 @@ void drawPopup(int id): Öffnet ein Popup (unterschiedlich je nach id)
 | 6  | Wähle Farbe                 |
 | 7  | Aktiviere CGOL              |
 | 8  | Standartraum überschreiben? |
+| 9  | Benötigt openGL Renderer    |
 
 int getXOff(): gibt die xoff Variable des OverlayManagers, je nach dem, ob das Overlay angezeigt wird.
 
