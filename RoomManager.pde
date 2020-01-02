@@ -654,7 +654,11 @@ class RoomManager {
 	}
 
 	void switchViewmode() {	// well... switches the view mode (2D -> 3D, 3D -> 2D)
-		viewmode = !viewmode;
+		if(usegl) {
+			viewmode = !viewmode;
+		} else {
+			ov.drawPopup(9);
+		}
 	}
 
 	void resetCamera(boolean viewmode) { // reset the chosen camera to the default view

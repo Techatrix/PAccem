@@ -64,4 +64,5 @@
 	"isprefab": "Is Prefab",
 	"newroomgroup": "New Room group",
 	"selectionid": "Selection id",
+	"roglr": "Use OpenGL Renderer must be on to use this feature."
 }

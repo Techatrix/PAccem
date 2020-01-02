@@ -698,6 +698,26 @@ class OverlayManager extends Overlay {
 					@Override public boolean Visible() {return drawpopup;}
 				};
 			break;
+			case 9: // requires opengl render
+				items[0] =
+				new Popup(
+					new ListView(
+						new Object[] {
+							new SizedBox(true),
+							new Text(lg.get("roglr"),CENTER,3),
+							new SizedBox(true),
+							new EventDetector(new Container(new Text(lg.get("ok")))) {
+								@Override public void onEvent(EventType et, MouseEvent e) {
+									if(et == EventType.MOUSEPRESSED) {drawpopup = false;}
+								}
+							},
+						}, width/4, height/4
+					)) {
+					@Override public void ontrue() {drawpopup = false;}
+					@Override public void onfalse() {drawpopup = false;}
+					@Override public boolean Visible() {return drawpopup;}
+				};
+			break;
 		}
 		drawpopup = true;
 	}

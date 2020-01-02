@@ -64,4 +64,5 @@
 	"isprefab": "Ist Fertigteil",
 	"newroomgroup": "Neue Raumgruppe",
 	"selectionid": "Auswahl id",
+	"roglr": "Nutze OpenGL Renderer muss aktiviert sein, um diese Funktion zu nutzen."
 }
