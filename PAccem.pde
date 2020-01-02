@@ -23,6 +23,7 @@ void settings() { // is being executed once before the window is created	(pre-ma
 	am = new ApplicationManager();
 	am.initSettings();
 }
+
 void setup() { // is being executed once after the window is being created 	(main())
 	am.initSetup();
 }
@@ -35,12 +36,15 @@ void draw() { // is being executed on every frame
 }
 
 /* --------------- mouse input --------------- */
-void mouseWheel(MouseEvent e) {
-	ov.mouseWheel(e);
-	if(ov.isHit()) {
+void mousePressed() {
+	if(ov.isHit() | ov.mousePressed()) {
 		return;
 	}
-	rm.mouseWheel(e);
+	rm.mousePressed();
+}
+void mouseReleased() {
+	ov.mouseReleased();
+	rm.mouseReleased();
 }
 void mouseDragged() {
 	ov.mouseDragged();
@@ -49,15 +53,12 @@ void mouseDragged() {
 	}
 	rm.mouseDragged();
 }
-void mouseReleased() {
-	ov.mouseReleased();
-	rm.mouseReleased();
-}
-void mousePressed() {
-	if(ov.isHit() | ov.mousePressed()) {
+void mouseWheel(MouseEvent e) {
+	ov.mouseWheel(e);
+	if(ov.isHit()) {
 		return;
 	}
-	rm.mousePressed();
+	rm.mouseWheel(e);
 }
 /* --------------- keyboard input --------------- */
 void keyPressed(KeyEvent e) {

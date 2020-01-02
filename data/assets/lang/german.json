@@ -41,7 +41,7 @@
 	"defaultroomname": "Standardraumname",
 	"language": "Sprache",
 	"font": "Schriftart",
-	"darkmode": "Darkmode",
+	"darkmode": "Dark mode",
 	"hideoverlay": "Verstecke Overlay",
 	"fullscreen": "Vollbildmodus",
 	"useglrenderer": "Nutze OpenGL Renderer",

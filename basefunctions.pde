@@ -4,21 +4,19 @@ String getAbout() { // returns the about text
 	text += lg.get("madeby") + ": " + appmaker + "\n";
 	return text;
 }
-
 void setKey(int k, boolean bool) {	// sets the state of some keys(Arrow keys, T)
-  if      (k == UP    | k == 'W')   isKeyUp    = bool;
-  else if (k == DOWN  | k == 'S')   isKeyDown  = bool;
-  else if (k == LEFT  | k == 'A')   isKeyLeft  = bool;
-  else if (k == RIGHT | k == 'D')   isKeyRight = bool;
-  else if (             k == 'T')   isKeyT     = bool;
+  if      (k == UP    | k == 'W')	isKeyUp		= bool;
+  else if (k == DOWN  | k == 'S')	isKeyDown	= bool;
+  else if (k == LEFT  | k == 'A')	isKeyLeft	= bool;
+  else if (k == RIGHT | k == 'D')	isKeyRight	= bool;
+  else if (             k == 'T')	isKeyT		= bool;
 }
-
 String cap(String str) { // converts the first letter of a string to upper case
 	return str.substring(0, 1).toUpperCase() + str.substring(1);
 }
 String fixLength(String str, int length, char c) {
 	while(str.length() < length) {
-		str += c;
+		str = c + str;
 	}
 	return str;
 }

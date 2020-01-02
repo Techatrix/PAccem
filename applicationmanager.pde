@@ -54,6 +54,12 @@ class ApplicationManager {
 		dm = new DataManager();							// initialize datamanager
 		rm = new RoomManager();							// initialize roommanager
 		ov = new OverlayManager();						// initialize overlaymanager
+		
+		if(toovmessages.size() == 1) {
+			ov.checkMessages();
+			ov.drawconsole = false;
+		}
+		ov.checkMessages();
 
 		int[] invalidids = dm.validate();
 		for (int id : invalidids) {
@@ -129,6 +135,7 @@ class ApplicationManager {
 			thread("setfontrawthread");
 		}
 	}
+
 	void setFontRaw() { // uses the chosen font if available or fall back to the default font (Roboto Regular)
 		boolean hit = false;
 		String[] fontnames = PFont.list();
@@ -185,6 +192,7 @@ class ApplicationManager {
 	}
 
 }
+
 // this is the only way (i know) how to execute a function in a class in thread()
 void setFontRawThread() { // used for in "void setfont(String newfontname)"
 	am.setFontRaw();

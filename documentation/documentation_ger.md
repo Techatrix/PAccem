@@ -24,14 +24,14 @@ Einleitung
 
 ![](media/toolbar.png)
 
-| Nummer | Werkzeug, Verwendung                                                              |
-|--------|-----------------------------------------------------------------------------------|
-| 1      | Bewegen Werkzeug, Zum umzusehen in der 2D Ansicht                                 |
-| 2      | Zeichnen Werkzeug, Zum Raumgrundriss erstellen                                    |
-| 3      | Möbel Werkzeug, Zum Platzieren von neuen Möbeln                                   |
-| 4      | Auswahl Werkzeug, Zum auszuwählen von Möbel,um sie zu verschieben oder zu löschen |
-| 5      | Füll Werkzeug, Zum ausfüllen eines Bereiches im Raumgitter                        |
-| 6      | Fenster Werkzeug, Zum platzieren von Fenstern                                     |
+| Nummer | Werkzeug, Verwendung                                            |
+|--------|-----------------------------------------------------------------|
+| 1      | Bewegen Werkzeug, zum Umsehen in der 2D Ansicht               |
+| 2      | Zeichnen Werkzeug, zum Raumgrundriss erstellen                  |
+| 3      | Möbel Werkzeug, zum Platzieren von neuen Möbeln                 |
+| 4      | Auswahl Werkzeug, zum Verschieben oder löschen von Möbelstücken |
+| 5      | Füll Werkzeug, zum Ausfüllen eines Bereiches im Raumgitter      |
+| 6      | Fenster Werkzeug, zum Platzieren von Fenstern                   |
 
 Vererbung
 ---------
@@ -44,6 +44,23 @@ Komposition
 -----------
 
 ![](media/composition.png)
+
+Einstellungen
+-----------
+
+| Name                  | Beschreibung                                                        |
+|-----------------------|---------------------------------------------------------------------|
+| Standartraumname      | Name des Raumes, welcher geladen wird, wenn das Programm startet    |
+| Sprache               | Sprache des Programms                                               |
+| Schriftart            | Schriftart name                                                     |
+| Dark mode             | Verdunkelt das Programmaussehen                                     |
+| Verstecke Overlay     | Versteckt das Overlay                                               |
+| Vollbild              | Vollbildmodus                                                       |
+| Nutze OpenGl Renderer | Ermöglich die 3D Ansicht (benötigt eine OpenGL Grafikkarte und x64) |
+| Breite                | Breite des Programmfensters                                         |
+| Höhe                  | Höhe des Programmfensters                                           |
+| Kantenglättung        | Menge an Kantenglättung (2 -> 2x Kantenglättung, etc.)              |
+| Gitterliniendicke     | Dicke der Gitterlinien                                              |
 
 Klassenübersicht
 ----------------
@@ -231,6 +248,8 @@ boolean checkover(): Ermittelt, ob die Maus auf das Möbelstück zeigt
 
 boolean checkover(int xpos, int ypos): Ermittelt, ob das Möbelstück in der gegebenen Gitterposition liegt
 
+Clip getBoundary(): gibt die Grenzen des Möbelstücks zurück
+
 boolean setXPos(int value): Legt die x Position des Möbelstücks fest
 
 boolean setYPos(int value): Legt die y Position des Möbelstücks fest
@@ -344,6 +363,10 @@ void drawPopup(int id): Öffnet ein Popup (unterschiedlich je nach id)
 | 6  | Wähle Farbe                 |
 | 7  | Aktiviere CGOL              |
 | 8  | Standartraum überschreiben? |
+
+int getXOff(): gibt die xoff Variable des OverlayManagers, je nach dem, ob das Overlay angezeigt wird.
+
+int getYOff(): gibt die yoff Variable des OverlayManagers, je nach dem, ob das Overlay angezeigt wird.
 
 ### Overlay
 
@@ -576,6 +599,10 @@ final String githublink: Link zum GitHub Repository
 Alle weiteren im Programm verwendeten Konstanten sind in PConstants definiert. (siehe Anhang)
 
 ### Overlay Elemente
+
+#### CheckBox
+
+Ein CheckBox for displaying boolean settings.
 
 #### Container
 

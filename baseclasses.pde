@@ -8,10 +8,10 @@ class PWH extends Point { // point, width and height
 	int _height = 0;
 }
 class RPoint extends Point { // rotation and point 
-	float rot = 0;
+	int rot = 0;
 }
 class RPWH extends PWH { // rotation, point, width and height
-	float rot = 0;
+	int rot = 0;
 }
 /* --------------- temporary classes --------------- */
 // used for final values in an abstract class

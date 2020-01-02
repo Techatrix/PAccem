@@ -6,12 +6,7 @@ abstract class Visible implements IOverlay {
 	Visible(Object item) {
 		this.item = item;
 	}
-	boolean mouseWheel(MouseEvent e) {
-		if(Visible()) {
-			return mouseWheelItem(item, e);
-		}
-		return false;
-	}
+
 	boolean mousePressed() {
 		if(Visible()) {
 			return mousePressedItem(item);
@@ -24,7 +19,12 @@ abstract class Visible implements IOverlay {
 		}
 		return false;
 	}
-
+	boolean mouseWheel(MouseEvent e) {
+		if(Visible()) {
+			return mouseWheelItem(item, e);
+		}
+		return false;
+	}
 	void keyPressed() {
 		if(Visible()) {
 			keyPressedItem(item);

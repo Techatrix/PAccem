@@ -10,6 +10,7 @@ class Box {
 		this.h = round(h);
 	}
 }
+
 class TabData {
 	String name;
 	int id;
@@ -34,6 +35,7 @@ abstract class Builder{
 
 	abstract Object i(int i);
 }
+
 abstract class ListViewBuilder{
 	ListView build(int length, int _width, int _height) {
 		return build(length, _width, _height, 30, Dir.DOWN);
@@ -73,28 +75,6 @@ interface IOverlay {
 }
 
 /* --------------- dynamic casting --------------- */
-boolean mouseWheelItem(Object item, MouseEvent e) {
-	if (item instanceof Tabbar) {
-		return ((Tabbar)item).mouseWheel(e);
-	} else if (item instanceof ListView) {
-		return ((ListView)item).mouseWheel(e);
-	} else if (item instanceof GridView) {
-		return ((GridView)item).mouseWheel(e);
-	} else if (item instanceof Container) {
-		return ((Container)item).mouseWheel(e);
-	} else if (item instanceof Transform) {
-		return ((Transform)item).mouseWheel(e);
-	} else if (item instanceof Dynamic) {
-		return ((Dynamic)item).mouseWheel(e);
-	} else if (item instanceof Visible) {
-		return ((Visible)item).mouseWheel(e);
-	} else if (item instanceof EventDetector) {
-		return ((EventDetector)item).mouseWheel(e);
-	} else if (item instanceof Popup) {
-		return ((Popup)item).mouseWheel(e);
-	}
-	return false;
-}
 boolean mousePressedItem(Object item) {
 	if (item instanceof Tabbar) {
 		return ((Tabbar)item).mousePressed();
@@ -118,6 +98,8 @@ boolean mousePressedItem(Object item) {
 		((Popup)item).mousePressed();
 	} else if (item instanceof Slider) {
 		((Slider)item).mousePressed();
+	} else if (item instanceof CheckBox) {
+		((CheckBox)item).mousePressed();
 	}
 	return false;
 }
@@ -142,6 +124,28 @@ boolean mouseDraggedItem(Object item) {
 		((Popup)item).mouseDragged();
 	} else if (item instanceof Slider) {
 		((Slider)item).mouseDragged();
+	}
+	return false;
+}
+boolean mouseWheelItem(Object item, MouseEvent e) {
+	if (item instanceof Tabbar) {
+		return ((Tabbar)item).mouseWheel(e);
+	} else if (item instanceof ListView) {
+		return ((ListView)item).mouseWheel(e);
+	} else if (item instanceof GridView) {
+		return ((GridView)item).mouseWheel(e);
+	} else if (item instanceof Container) {
+		return ((Container)item).mouseWheel(e);
+	} else if (item instanceof Transform) {
+		return ((Transform)item).mouseWheel(e);
+	} else if (item instanceof Dynamic) {
+		return ((Dynamic)item).mouseWheel(e);
+	} else if (item instanceof Visible) {
+		return ((Visible)item).mouseWheel(e);
+	} else if (item instanceof EventDetector) {
+		return ((EventDetector)item).mouseWheel(e);
+	} else if (item instanceof Popup) {
+		return ((Popup)item).mouseWheel(e);
 	}
 	return false;
 }
@@ -201,6 +205,8 @@ boolean getisItemHit(Object item) {
 		return ((Popup)item).isHit();
 	} else if(item instanceof Slider) {
 		return ((Slider)item).isHit();
+	} else if(item instanceof CheckBox) {
+		return ((CheckBox)item).isHit();
 	}
 	return false;
 }
@@ -233,6 +239,8 @@ void drawItem(Object item, boolean hit) {
 		((Popup)item).draw(hit);
 	} else if(item instanceof Slider) {
 		((Slider)item).draw(hit);
+	} else if(item instanceof CheckBox) {
+		((CheckBox)item).draw(hit);
 	} else if(item instanceof SizedBox) {} else {
 		if(deb) {
 			toovmessages.add("drawItem(): " + item + " unhandeled");
@@ -270,6 +278,8 @@ void setItemWH(Object item, int _width, int _height) {
 		((Popup)item).setWH(_width, _height);
 	} else if(item instanceof Slider) {
 		((Slider)item).setWH(_width, _height);
+	} else if(item instanceof CheckBox) {
+		((CheckBox)item).setWH(_width, _height);
 	} else {
 		if(deb && item != null) {
 			toovmessages.add("setItemWH(): " + item + " unhandeled");
@@ -307,6 +317,8 @@ void setItemXY(Object item, int xpos, int ypos) {
 		((Popup)item).setXY(xpos, ypos);
 	} else if(item instanceof Slider) {
 		((Slider)item).setXY(xpos, ypos);
+	} else if(item instanceof CheckBox) {
+		((CheckBox)item).setXY(xpos, ypos);
 	} else {
 		if(deb && item != null) {
 			toovmessages.add("setItemXY(): " + item + " unhandeled");
@@ -344,6 +356,8 @@ Box getItemBoundary(Object item) {
 		return ((Popup)item).getBoundary();
 	} else if(item instanceof Slider) {
 		return ((Slider)item).getBoundary();
+	} else if(item instanceof CheckBox) {
+		return ((CheckBox)item).getBoundary();
 	} else {
 		if(deb) {
 			toovmessages.add("getBoundary(): " + item + " unhandeled");
