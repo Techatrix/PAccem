@@ -89,7 +89,7 @@ class OverlayManager extends Overlay {
 										if(st.strings[0].value == ov.newroomname) {
 											drawPopup(8);
 										} else {
-											rm.save(rm.name);
+											rm.save(ov.newroomname);
 											ov.build();
 										}
 									}
@@ -103,19 +103,15 @@ class OverlayManager extends Overlay {
 					new ListViewBuilder() {
 						@Override public Object i(int i) {
 							final Temp temp = new Temp(i);
-							return new Container(new SetValueText(lg.get(st.get(temp.i).name), st.get(temp.i).value, new SetValueStyle(st.get(temp.i).type)) {
-								@Override public void onchange() {
-									String result = st.set(temp.i, newvalue);
-									if(result != null) {
-										value = result;
+							final STemp stemp = new STemp(lg.get(st.get(temp.i).name));
+
+							switch(st.get(temp.i).type) {
+								case 1: // boolean
+								boolean val = st.get(temp.i).value.equals("true") ? true : false;
+								return new Container(new CheckBox(stemp.s, val, LEFT) {
+									@Override public void onchange() {
+										st.set(temp.i, str(value));
 										switch(temp.i) {
-											case 1:
-											lg.setLang(st.strings[1].value);
-											ov.build();
-											break;
-											case 2:
-											am.setFont(st.strings[2].value);
-											break;
 											case 3:
 											am.recalculateColor();
 											break;
@@ -130,6 +126,33 @@ class OverlayManager extends Overlay {
 											break;
 											case 6: // OPENGL Renderer
 											drawPopup(0);
+											break;
+										}
+									}
+								});
+								case 3: // float
+								return new Container(new Slider(stemp.s, float(st.get(temp.i).value)/5, LEFT) {
+									@Override public void onchange(float newvalue) {
+										st.set(temp.i, str(constrain((float)round(value*50)/10, 0, 5)));
+										value = constrain(newvalue, 0, 1);
+									}
+									@Override public String gettext() {
+										return str(constrain((float)round(value*50)/10, 0, 5));
+									}
+								});
+							}
+							return new Container(new SetValueText(lg.get(st.get(temp.i).name), st.get(temp.i).value, new SetValueStyle(st.get(temp.i).type), LEFT) {
+								@Override public void onchange() {
+									String result = st.set(temp.i, newvalue);
+									if(result != null && value != newvalue) {
+										value = result;
+										switch(temp.i) {
+											case 1:
+											lg.setLang(st.strings[1].value);
+											ov.build();
+											break;
+											case 2:
+											am.setFont(st.strings[2].value);
 											break;
 											case 7: // Width
 											surface.setSize(st.ints[0].value,st.ints[1].value);
@@ -216,7 +239,6 @@ class OverlayManager extends Overlay {
 											}
 										},200,30),
 										// select roomgroup
-										// TODO: Icon
 										new EventDetector(new Container(new Text("S"),70,30, (rm.newroomgroup == temp.i) ? color(c[3]) : color(c[5]))) {
 											@Override public void onEvent(EventType et, MouseEvent e) {
 												if(et == EventType.MOUSEPRESSED) {
@@ -235,6 +257,7 @@ class OverlayManager extends Overlay {
 															drawPopup(4);
 														} else {
 															rm.roomgrid.removeRoomGroup(temp.i);
+															rm.newroomgroup = constrain(rm.newroomgroup, 0, rm.roomgrid.roomgroups.size()-1);
 															ov.build();
 														}
 													} else {
@@ -260,9 +283,9 @@ class OverlayManager extends Overlay {
 								if(i != o.length-1) {
 									FurnitureData fd = dm.getFurnitureData(pr.furnitureids[i]);
 									total += fd.price * pr.furniturecounts[i];
-									o[i] = new Text(pr.furniturecounts[i]+" * "+fd.name+"("+fd.price+")"+": "+fd.price*pr.furniturecounts[i]);
+									o[i] = new Text(pr.furniturecounts[i]+" * "+fd.name+"("+fd.price+")"+": "+fd.price*pr.furniturecounts[i], LEFT);
 								} else {
-									o[i] = new Text(lg.get("total") + ": " + total);
+									o[i] = new Text(lg.get("total") + ": " + total, LEFT);
 								}
 							}
 
@@ -366,6 +389,9 @@ class OverlayManager extends Overlay {
 					} else {
 						if(td.id == -1) {
 							rm.switchViewmode();
+							if(rm.viewmode) {
+								tabid = -1;
+							}
 						} else {
 							if(tabid == td.id) {
 								tabid = -1;
@@ -382,37 +408,39 @@ class OverlayManager extends Overlay {
 		};
 		// Tool bar
 		items[2] =
-		new Transform(
-			new ListViewBuilder() {
-				@Override public Object i(int i) {
-					final Temp temp = new Temp(i);
-					if (i < 6) {
-						return new EventDetector(new Container(new Image(dm.icons[temp.i+1]))) {
-							@Override public void onEvent(EventType et, MouseEvent e) {
-								if(et == EventType.MOUSEPRESSED) {
-									rm.tool = temp.i;
-									if(rm.tool == 2) {
-										tabid = (tabid == 6) ? -1 : 6;
+		new Visible(
+			new Transform(
+				new ListViewBuilder() {
+					@Override public Object i(int i) {
+						final Temp temp = new Temp(i);
+						if (i < 6) {
+							return new EventDetector(new Container(new Image(dm.icons[temp.i+1]))) {
+								@Override public void onEvent(EventType et, MouseEvent e) {
+									if(et == EventType.MOUSEPRESSED) {
+										rm.tool = temp.i;
+										if(rm.tool == 2) {
+											tabid = (tabid == 6) ? -1 : 6;
+										}
 									}
 								}
-							}
-						};
-					} else {
-						if(i == 6) {
-							return new SizedBox(true);
+							};
 						} else {
-							return new EventDetector(new Container(new Image(dm.icons[7]))) {
-							@Override public void onEvent(EventType et, MouseEvent e) {
-								if(et == EventType.MOUSEPRESSED) {
-									drawconsole = !drawconsole;
+							if(i == 6) {
+								return new SizedBox(true);
+							} else {
+								return new EventDetector(new Container(new Image(dm.icons[7]))) {
+								@Override public void onEvent(EventType et, MouseEvent e) {
+									if(et == EventType.MOUSEPRESSED) {
+										drawconsole = !drawconsole;
+									}
 								}
+							};
 							}
-						};
 						}
 					}
-				}
-			}.build(8, xoff, height-yoff, xoff, Dir.DOWN), 0,yoff
-		);
+				}.build(8, xoff, height-yoff, xoff, Dir.DOWN), 0,yoff
+			)
+		) {@Override public boolean Visible() {return !rm.viewmode;}};
 		// Message Box
 		items[3] = 
 		new Visible(
@@ -442,7 +470,7 @@ class OverlayManager extends Overlay {
 					}
 				},xoff, height-messageboxheight
 			)
-		) {@Override public boolean Visible() {return drawconsole;}};
+		) {@Override public boolean Visible() {return drawconsole && !rm.viewmode;}};
 		setItems(items);
 	}
 
@@ -456,7 +484,7 @@ class OverlayManager extends Overlay {
 		}
 	}
 	void printMessage(String text) { // add a message to the console
-		messages.add(fixLength(str(hour()), 2, '0') + ":" + fixLength(str(minute()), 2, '0') +": " + text);
+		messages.add(fixLength(str(hour()), 2, '0') + ":" + fixLength(str(minute()), 2, '0') + ":" + fixLength(str(second()), 2, '0') + ": " + text);
 		if(messages.size() > messageboxheight/30) {
 			consoleoff -= 30;
 		}
@@ -566,6 +594,7 @@ class OverlayManager extends Overlay {
 					@Override public void ontrue() {
 						drawpopup = false;
 						rm.roomgrid.removeRoomGroup((int)tempdata);
+						rm.newroomgroup = constrain(rm.newroomgroup, 0, rm.roomgrid.roomgroups.size()-1);
 						ov.build();
 					}
 					@Override public void onfalse() {drawpopup = false;}
@@ -671,5 +700,19 @@ class OverlayManager extends Overlay {
 			break;
 		}
 		drawpopup = true;
+	}
+
+	int getXOff() {
+		if(visible) {
+			return xoff;
+		}
+		return 0;
+	}
+
+	int getYOff() {
+		if(visible) {
+			return yoff;
+		}
+		return 0;
 	}
 }

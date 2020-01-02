@@ -23,6 +23,20 @@ class ListView extends PWH implements IOverlay {
 		setWH(_width, _height);
 	}
 
+	boolean mousePressed() {
+		for (Object item : items) {
+			mousePressedItem(item);
+		}
+		return isHit();
+	}
+	boolean mouseDragged() {
+		for (Object item : items) {
+			if(mouseDraggedItem(item)) {
+				return true;
+			}
+		}
+		return false;
+	}
 	boolean mouseWheel(MouseEvent ee) {
 		boolean isitemwheelhit = false;
 		for (Object item : items) {
@@ -32,7 +46,6 @@ class ListView extends PWH implements IOverlay {
 				}
 			}
 		}
-
 		if(isHit() && !isitemwheelhit) {
 			int length = 0;
 
@@ -73,20 +86,6 @@ class ListView extends PWH implements IOverlay {
 		}
 		return false;
 	}
-	boolean mousePressed() {
-		for (Object item : items) {
-			mousePressedItem(item);
-		}
-		return isHit();
-	}
-	boolean mouseDragged() {
-		for (Object item : items) {
-			if(mouseDraggedItem(item)) {
-				return true;
-			}
-		}
-		return false;
-	}
 	void keyPressed() {
 		for (Object item : items) {
 			keyPressedItem(item);
@@ -120,11 +119,13 @@ class ListView extends PWH implements IOverlay {
 	boolean isHit() {
 	  	return mouseX >= xpos && mouseX < xpos+_width && mouseY >= ypos && mouseY < ypos+_height;
 	}
+
 	void setXY(int xpos, int ypos) {
 		this.xpos = xpos;
 		this.ypos = ypos;
 		recalculateItems();
 	}
+
 	void setWH(int _width, int _height) {
 		if(this._width == 0 && this._height == 0) {
 			this._width = _width;
@@ -132,6 +133,7 @@ class ListView extends PWH implements IOverlay {
 		}
 		recalculateItems();
 	}
+
 	void recalculateItems() {
 		int sizelength = 0;
 		int expands = 0;
@@ -197,6 +199,7 @@ class ListView extends PWH implements IOverlay {
 			}
 		}
 	}
+
 	int getIndex() {
 		for (int i=0;i<items.length;i++) {
 			Object item = items[i];
@@ -206,4 +209,5 @@ class ListView extends PWH implements IOverlay {
 		}
 		return -1;
 	}
+	
 }

@@ -46,6 +46,23 @@ Composition
 
 ![](media/composition.png)
 
+Settings
+-----------
+
+| Name                | Description                                                        |
+|---------------------|--------------------------------------------------------------------|
+| Default room name   |                                                                    |
+| Language            |                                                                    |
+| Font                |                                                                    |
+| Dark mode           |                                                                    |
+| Hide Overlay        |                                                                    |
+| Fullscreen          |                                                                    |
+| Use OpenGl Renderer |                                                                    |
+| Width               |                                                                    |
+| Height              |                                                                    |
+| Anti-aliasing       |                                                                    |
+| Grid line weight    |                                                                    |
+
 Class Overview
 ----------------
 
@@ -204,6 +221,8 @@ boolean checkover():
 
 boolean checkover(int xpos, int ypos): 
 
+Clip getBoundary(): 
+
 boolean setXPos(int value): 
 
 boolean setYPos(int value): 
@@ -305,6 +324,10 @@ void drawPopup(int id):
 | 6  |                             |
 | 7  |                             |
 | 8  |                             |
+
+int getXOff(): 
+
+int getYOff(): 
 
 ### Overlay
 
@@ -504,6 +527,8 @@ final String appmaker:
 final String githublink: 
 
 ### Overlay Elements
+
+#### CheckBox
 
 #### Container
 

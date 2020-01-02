@@ -7,6 +7,7 @@ class LanguageManager {
 		}
 		setLang(newlang);
 	}
+	
 	boolean setLang(String newlang) { // sets the current language if available
 		newlang = newlang.toLowerCase();
 		File f = new File(sketchPath("data/assets/lang/" + newlang + ".json"));

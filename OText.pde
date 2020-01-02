@@ -23,7 +23,7 @@ class Text extends PWH implements IOverlay {
 			text(text, xpos,ypos);
 		} else {
 			textAlign(align, CENTER);
-			text(text, xpos,ypos, _width, _height);
+			text((align == LEFT ? " " : "") + text, xpos,ypos, _width, _height);
 		}
 	}
 
@@ -39,6 +39,7 @@ class Text extends PWH implements IOverlay {
 		this.xpos = xpos;
 		this.ypos = ypos;
 	}
+
 	void setWH(int _width, int _height) {
 		this._width = _width;
 		this._height = _height;
@@ -51,6 +52,7 @@ abstract class SetValueText extends PWH implements IOverlay {
 	boolean selected = false;
 	String value;
 	String newvalue;
+	int align;
 
 	SetValueText(String text) {
 		this(text, "");
@@ -62,12 +64,17 @@ abstract class SetValueText extends PWH implements IOverlay {
 		this(text, "", valuestyle);
 	}
 	SetValueText(String text, String value, SetValueStyle valuestyle) {
+		this(text, value, valuestyle, CENTER);
+	}
+	SetValueText(String text, String value, SetValueStyle valuestyle, int align) {
 		this.text = text;
 		this.value = value;
 		this.newvalue = value;
 		this.valuestyle = valuestyle;
+		this.align = align;
 		setWH(-1, -1);
 	}
+
 	boolean mousePressed() {
 		if(isHit()) {
 			selected = true;
@@ -77,6 +84,7 @@ abstract class SetValueText extends PWH implements IOverlay {
 		selected = false;
 		return false;
 	}
+
 	void keyPressed() {
 		if(selected) {
 			if (keyCode == BACKSPACE) {
@@ -124,8 +132,8 @@ abstract class SetValueText extends PWH implements IOverlay {
 			textAlign(LEFT, TOP);
 			text(text + ": " + newvalue, xpos,ypos);
 		} else {
-			textAlign(CENTER, CENTER);
-			text(text + ": " + newvalue, xpos,ypos, _width, _height);
+			textAlign(align, CENTER);
+			text((align == LEFT ? " " : "") + text + ": " + newvalue, xpos,ypos, _width, _height);
 		}
 	}
 
@@ -142,6 +150,7 @@ abstract class SetValueText extends PWH implements IOverlay {
 		this.xpos = xpos;
 		this.ypos = ypos;
 	}
+
 	void setWH(int _width, int _height) {
 		this._width = _width;
 		this._height = _height;
@@ -150,9 +159,14 @@ abstract class SetValueText extends PWH implements IOverlay {
 
 abstract class GetValueText extends PWH implements IOverlay {
 	String text;
+	int align;
 
 	GetValueText(String text) {
+		this(text, CENTER);
+	}
+	GetValueText(String text, int align) {
 		this.text = text;
+		this.align = align;
 		setWH(-1, -1);
 	}
 
@@ -165,8 +179,8 @@ abstract class GetValueText extends PWH implements IOverlay {
 			textAlign(LEFT, TOP);
 			text(text + ": " + getvalue(), xpos,ypos);
 		} else {
-			textAlign(CENTER, CENTER);
-			text(text + ": " + getvalue(), xpos,ypos, _width, _height);
+			textAlign(align, CENTER);
+			text((align == LEFT ? " " : "") + text + ": " + getvalue(), xpos,ypos, _width, _height);
 		}
 	}
 
@@ -183,6 +197,7 @@ abstract class GetValueText extends PWH implements IOverlay {
 		this.xpos = xpos;
 		this.ypos = ypos;
 	}
+
 	void setWH(int _width, int _height) {
 		this._width = _width;
 		this._height = _height;

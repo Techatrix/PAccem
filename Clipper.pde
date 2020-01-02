@@ -30,6 +30,7 @@ class Clipper {
 			noClip();
 		}
 	}
+
 }
 
 class Clip {

@@ -124,56 +124,56 @@ class Grid {
 							pg.vertex(x+1, 0, y);
 							pg.vertex(x+1, 0, y+1);
 							if(t.window[0]) { // right window
-								pg.vertex(x+1, -0.33, y+1);
-								pg.vertex(x+1, -0.33, y);
-								pg.vertex(x+1, -0.66, y);
-								pg.vertex(x+1, -0.66, y+1);
+								pg.vertex(x+1, -1.1, y+1);
+								pg.vertex(x+1, -1.1, y);
+								pg.vertex(x+1, -1.75, y);
+								pg.vertex(x+1, -1.75, y+1);
 							}
-							pg.vertex(x+1, -1, y+1);
-							pg.vertex(x+1, -1, y);
+							pg.vertex(x+1, -2, y+1);
+							pg.vertex(x+1, -2, y);
 						}
 						if(!getTileState(x-1,y)) { // left side
 							pg.vertex(x, 0, y);
 							pg.vertex(x, 0, y+1);
 							if(t.window[1]) { // left window
-								pg.vertex(x, -0.33, y+1);
-								pg.vertex(x, -0.33, y);
-								pg.vertex(x, -0.66, y);
-								pg.vertex(x, -0.66, y+1);
+								pg.vertex(x, -1.1, y+1);
+								pg.vertex(x, -1.1, y);
+								pg.vertex(x, -1.75, y);
+								pg.vertex(x, -1.75, y+1);
 							}
-							pg.vertex(x, -1, y+1);
-							pg.vertex(x, -1, y);
+							pg.vertex(x, -2, y+1);
+							pg.vertex(x, -2, y);
 						}
 						if(!getTileState(x,y+1)) { // bottom side
 							pg.vertex(x  , 0, y+1);
 							pg.vertex(x+1, 0, y+1);
 							if(t.window[2]) { // bottom window
-								pg.vertex(x+1, -0.33, y+1);
-								pg.vertex(x  , -0.33, y+1);
-								pg.vertex(x  , -0.66, y+1);
-								pg.vertex(x+1, -0.66, y+1);
+								pg.vertex(x+1, -1.1, y+1);
+								pg.vertex(x  , -1.1, y+1);
+								pg.vertex(x  , -1.75, y+1);
+								pg.vertex(x+1, -1.75, y+1);
 							}
-							pg.vertex(x+1, -1, y+1);
-							pg.vertex(x  , -1, y+1);
+							pg.vertex(x+1, -2, y+1);
+							pg.vertex(x  , -2, y+1);
 						}
 						if(!getTileState(x,y-1)) { // top side
 							pg.vertex(x  , 0, y);
 							pg.vertex(x+1, 0, y);
 							if(t.window[3]) { // top window
-								pg.vertex(x+1, -0.33, y);
-								pg.vertex(x  , -0.33, y);
-								pg.vertex(x  , -0.66, y);
-								pg.vertex(x+1, -0.66, y);
+								pg.vertex(x+1, -1.1, y);
+								pg.vertex(x  , -1.1, y);
+								pg.vertex(x  , -1.75, y);
+								pg.vertex(x+1, -1.75, y);
 							}
-							pg.vertex(x+1, -1, y);
-							pg.vertex(x  , -1, y);
+							pg.vertex(x+1, -2, y);
+							pg.vertex(x  , -2, y);
 						}
 						pg.endShape();
 					}
 				}
 			}
 		}
-		strokeCap(ROUND);
+		strokeCap(CORNER);
 	}
 
 	void fillTool(boolean value, int x, int y) { // apply the fill tool
@@ -199,11 +199,16 @@ class Grid {
 
 	boolean setTileState(boolean value, int x, int y) { // sets the state of the grid tile on given state
 		if(isinGrid(x,y)) {
-			tiles[x][y].state = value;
+			if(value == false) {
+				tiles[x][y] = new GridTile();
+			} else {
+				tiles[x][y].state = value;
+			}
 			return true;
 		}
 		return false;
 	}
+
 	boolean getTileState(int x, int y) { // return the state of the grid tile on the chosen position
 		return getTile(x,y).state;
 	}
@@ -215,6 +220,7 @@ class Grid {
 		}
 		return false;
 	}
+
 	GridTile getTile(int x, int y) { // return the grid tile on the chosen position if possible
 		if(isinGrid(x,y)) {
 			return tiles[x][y];
@@ -236,16 +242,21 @@ class Grid {
 		}
 		return false;
 	}
+
 	void removeRoomGroup(int id) { // removes a room group and sets all references in the grid to the main room group
-		for (int x=0; x<tiles.length; x++) {
-			for (int y=0; y<tiles[0].length; y++) {
-				if(tiles[x][y].roomgroup == id) {
-					tiles[x][y].roomgroup = 0;
+		println("Remove: " + id);
+		for (int i=id+1;i<roomgroups.size();i++) {
+			for (int x=0; x<tiles.length; x++) {
+				for (int y=0; y<tiles[0].length; y++) {
+					if(tiles[x][y].roomgroup == i) {
+						tiles[x][y].roomgroup -= 1;
+					}
 				}
 			}
 		}
 		roomgroups.remove(id);
 	}
+
 	void addRoomGroup(String name, color value) {
 		roomgroups.add(new RoomGroup(name, value));
 	}
@@ -292,6 +303,7 @@ class Grid {
 		}
 		return count;
 	}
+	
 }
 
 class GridTile {

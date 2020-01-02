@@ -30,8 +30,8 @@ Introduction
 | 2      | Draw Tool, to create to room layout                       |
 | 3      | Furniture Tool, to place new Furnitures                   |
 | 4      | Select Tool, to select furnitures and move or delete them |
-| 6      | Fill Tool, to fill out an area in the room grid           |
-| 7      | Window Tool, to place windows                             |
+| 5      | Fill Tool, to fill out an area in the room grid           |
+| 6      | Window Tool, to place windows                             |
 
 Inheritance 
 ---------
@@ -44,6 +44,23 @@ Composition
 -----------
 
 ![](media/composition.png)
+
+Settings
+-----------
+
+| Name                | Description                                                        |
+|---------------------|--------------------------------------------------------------------|
+| Default room name   | name of the room which is being loaded when the application starts |
+| Language            | language of the program                                           |
+| Font                | font name                                                          |
+| Dark mode           | darkens the programs visuals                                                 |
+| Hide Overlay        | hides the overlay                                                  |
+| Fullscreen          | fullscreen mode                                                    |
+| Use OpenGl Renderer | allows 3d view mode (requires OpenGL graphics card and x64)         |
+| Width               | width of the application window                                    |
+| Height              | height of the application window                                   |
+| Anti-aliasing       | amount of anti aliasing (2 -> 2x anti-aliasing, etc.)              |
+| Grid line weight    | thickness of the grid lines                                        |
 
 Class Overview
 ----------------
@@ -229,6 +246,8 @@ boolean checkover(): checks if the mouse is on the furniture
 
 boolean checkover(int xpos, int ypos): checks if the furniture is on the position
 
+Clip getBoundary(): returns the boundary of the furniture
+
 boolean setXPos(int value): sets the X-Position to the given one
 
 boolean setYPos(int value): sets the Y-Position to the given one
@@ -342,6 +361,10 @@ void drawPopup(int id): opens a Popup
 | 6  | select color            |
 | 7  | activate cgol           |
 | 8  | overwrite default room? |
+
+int getXOff(): return the xoff variable if the overlay is visible
+
+int getYOff(): return the yoff variable if the overlay is visible
 
 ### Overlay
 
@@ -566,6 +589,10 @@ final String appmaker: author
 final String githublink: link to the Github repository
 
 ### Overlay Elements
+
+#### CheckBox
+
+Ein Kontrollkästchen, um Wahrheitswerteinstellungen anzuzeigen.
 
 #### Container
 

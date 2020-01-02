@@ -14,15 +14,6 @@ abstract class Tabbar implements IOverlay {
 		}
 	}
 
-	boolean mouseWheel(MouseEvent e) {
-		boolean result = mouseWheelItem(list, e);
-		if(isValidTab()) {
-			if(mouseWheelItem(tabs[getId()], e)) {
-				result = true;
-			}
-		}
-		return result;
-		}
 	boolean mousePressed() {
 		boolean hit = false;
 		if(mousePressedItem(list)) {
@@ -37,7 +28,26 @@ abstract class Tabbar implements IOverlay {
 		return hit;
 	}
 	boolean mouseDragged() {
-		return false;
+		boolean hit = false;
+		if(mouseDraggedItem(list)) {
+			hit = true;
+			onTab(getListIndex(list));
+		}
+		if(isValidTab()) {
+			if(mouseDraggedItem(tabs[getId()])) {
+				hit = true;
+			}
+		}
+		return hit;
+	}
+	boolean mouseWheel(MouseEvent e) {
+		boolean result = mouseWheelItem(list, e);
+		if(isValidTab()) {
+			if(mouseWheelItem(tabs[getId()], e)) {
+				result = true;
+			}
+		}
+		return result;
 	}
 	void keyPressed() {
 		keyPressedItem(list);
@@ -76,10 +86,12 @@ abstract class Tabbar implements IOverlay {
 			setItemXY(tab, xpos, ypos);
 		}
 	}
+
 	void setWH(int _width, int _height) {
 		setItemWH(list, _width, _height);
 		for (Object tab : tabs) {
 			setItemWH(tab, _width, _height);
 		}
 	}
+	
 }

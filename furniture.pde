@@ -31,70 +31,84 @@ class Furniture extends RPWH {
 		this(fdata, xpos, ypos);
 		this.tint = tint;
 	}
+	Furniture(FurnitureData fdata, int xpos, int ypos, color tint, int rot) {
+		this(fdata, xpos, ypos, tint);
+		this.rot = rot;
+	}
 
 	void draw(boolean viewmode, boolean selected) { // draws the furniture
+		FurnitureData fdata = dm.getFurnitureData(id);
+
 		if(!viewmode) { // 2D
+			push();
 			translate(xpos, ypos);
+			rotate(HALF_PI*rot);
+
+			int dx = (rot>1) ? -fdata._width : 0;
+			int dy = (rot == 1 || rot ==2) ? -fdata._height : 0;
 			tint(tint);
-			if(id == -1) {
-				image(dm.extras[0], 0, 0, _width, _height); // draw not found icon
-			} else {
-				image(dm.furnitures[id].image, 0, 0, _width, _height); // draw furniture
-			}
+			image(fdata.image, dx, dy, fdata._width, fdata._height); // draw furniture
 			noTint();
+
 			if (selected == true) { // draw red selection box if selected
 				noStroke();
-				fill(255,255,255,140);
-				rect(0, 0, _width, _height);
+				fill(255,140);
+				rect(dx, dy, fdata._width, fdata._height);
 			}
-			translate(-xpos, -ypos);
+			pop();
 		} else { // 3D
 			if(id != -1) {
+				pg.push();
 				pg.translate(xpos, 0, ypos);
-				PShape s = dm.furnitures[id].shape;
+				pg.rotateY(-HALF_PI*rot);
+				
+				int dx = (rot>1) ? -fdata._width : 0;
+				int dy = (rot == 1 || rot ==2) ? -fdata._height : 0;
+				pg.translate(dx, 0, dy);
+				
+				PShape s = fdata.shape;
 				s.setFill(tint);
 				pg.shape(s); // draw furniture
-				s.setFill(255);
-				pg.translate(-xpos, 0, -ypos);
+
+				pg.pop();
 			}
 		}
 	}
+
 	void drawFrame(boolean selected) { // draws boundary frame on the furniture
+		push();
 		noStroke();
 		if(selected) {
 			fill(c[8], 100);
 		} else {
-			fill(255,255,255, 70);
+			fill(255, 70);
 		}
 		translate(xpos, ypos);
-		rotate(rot);
-		rect(0,0,_width,_height);
-		rotate(-rot);
-		translate(-xpos, -ypos);
+		rotate(HALF_PI*rot);
+		int dx = (rot>1) ? -_width : 0;
+		int dy = (rot == 1 || rot ==2) ? -_height : 0;
+		rect(dx, dy, _width, _height);
+		pop();
 	}
 
 	boolean checkover() { // checks if the mouse is on the furniture
-		float a = rm.gridtilesize*rm.scale;
+		return checkover(floor(rm.getXPos()), floor(rm.getYPos()));
+	}
 
-		float x = xpos*a+ov.xoff+rm.xoff;
-		float y = ypos*a+ov.yoff+rm.yoff;
-
-		if (mouseX >= x && mouseX < x+_width*a &&
-			mouseY >= y && mouseY < y+_height*a) {
+	boolean checkover(int xpos, int ypos) { // checks if the furniture on the position
+		Clip c = getBoundary();
+		if(c.x <= xpos && xpos < (c.x + c.w) && c.y <= ypos && ypos < (c.y + c.h)) {
 			return true;
 		}
 		return false;
 	}
 
-	boolean checkover(int xpos, int ypos) { // checks if the furniture is on the position
-		for (int x=0;x<_width;x++) {
-			for (int y=0;y<_height;y++) {
-				if(this.xpos+x == xpos && this.ypos+y == ypos) {
-					return true;
-				}
-			}
+	Clip getBoundary() { // returns the boundary of the furniture
+		if(rot % 2 == 0) {
+			return new Clip(xpos,ypos, _width,_height);
+		} else {
+			return new Clip(xpos,ypos,_height, _width);
 		}
-		return false;
 	}
 
 	boolean setXPos(int value) { // sets the X-Position to the given one
@@ -104,6 +118,7 @@ class Furniture extends RPWH {
 		}
 		return false;
 	}
+
 	boolean setYPos(int value) { // sets the Y-Position to the given one
 		if(value > -1 && value <= rm.roomgrid.tiles[0].length-_height) {
 			ypos = value;
@@ -111,8 +126,10 @@ class Furniture extends RPWH {
 		}
 		return false;
 	}
+
 	void move(int dx, int dy) { // moves the furniture in the given direction
 		setXPos(xpos+dx);
 		setYPos(ypos+dy);
 	}
+	
 }

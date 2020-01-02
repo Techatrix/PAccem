@@ -49,13 +49,6 @@ class Overlay {
 		return false;
 	}
 	/* --------------- mouse input --------------- */
-	void mouseWheel(MouseEvent e) {
-		if(visible) {
-			for (Object item : items) {
-				mouseWheelItem(item, e);
-			}
-		}
-	}
 	boolean mousePressed() {
 		boolean hit = false;
 		if(visible) {
@@ -81,6 +74,13 @@ class Overlay {
 			}
 		}
 		return hit;
+	}
+	void mouseWheel(MouseEvent e) {
+		if(visible) {
+			for (Object item : items) {
+				mouseWheelItem(item, e);
+			}
+		}
 	}
 	/* --------------- keyboard input --------------- */
 	void keyPressed(KeyEvent e) {

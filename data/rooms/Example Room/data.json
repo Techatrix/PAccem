@@ -1,0 +1,22 @@
+{
+  "gridtilesize": 50,
+  "roomgroups": [
+    {
+      "red": 50,
+      "green": 50,
+      "blue": 50,
+      "name": "Main"
+    },
+    {
+      "red": 40,
+      "green": 40,
+      "blue": 40,
+      "name": "Kitchen"
+    }
+  ],
+  "xgridsize": 15,
+  "scale": 1.2099987268447876,
+  "ygridsize": 15,
+  "yoff": -4,
+  "xoff": -247.14434814453125
+}

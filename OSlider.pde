@@ -2,13 +2,18 @@ abstract class Slider extends PWH implements IOverlay {
 	String text;
 	boolean selected = false;
 	float value;
+	int align;
 
 	Slider(String text) {
 		this(text, 0.0);
 	}
 	Slider(String text, float value) {
+		this(text, value, CENTER);
+	}
+	Slider(String text, float value, int align) {
 		this.text = text;
 		this.value = value;
+		this.align = align;
 	}
 
 	boolean mousePressed() {
@@ -17,7 +22,6 @@ abstract class Slider extends PWH implements IOverlay {
 			onchange(constrain(map(mouseX, xpos, xpos+_width,0,1), 0,1));
 			return true;
 		}
-		//newvalue = value;
 		selected = false;
 		return false;
 	}
@@ -27,8 +31,6 @@ abstract class Slider extends PWH implements IOverlay {
 			return true;
 		}
 		return false;
-	}
-	void keyPressed() {
 	}
 
 	abstract void onchange(float newvalue);
@@ -44,8 +46,8 @@ abstract class Slider extends PWH implements IOverlay {
 			textAlign(LEFT, TOP);
 			text(text + ": " + gettext(), xpos,ypos);
 		} else {
-			textAlign(CENTER, CENTER);
-			text(text + ": " + gettext(), xpos,ypos, _width, _height);
+			textAlign(align, CENTER);
+			text((align == LEFT ? " " : "") + text + ": " + gettext(), xpos,ypos, _width, _height);
 		}
 	}
 
@@ -61,8 +63,10 @@ abstract class Slider extends PWH implements IOverlay {
 		this.xpos = xpos;
 		this.ypos = ypos;
 	}
+
 	void setWH(int _width, int _height) {
 		this._width = _width;
 		this._height = _height;
 	}
+	
 }

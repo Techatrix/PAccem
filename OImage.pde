@@ -53,6 +53,7 @@ class Image extends PWH implements IOverlay {
 		this.xpos = xpos;
 		this.ypos = ypos;
 	}
+
 	void setWH(int _width, int _height) {
 		this._width = _width;
 		this._height = _height;
@@ -77,4 +78,5 @@ class Image extends PWH implements IOverlay {
 			return new Box(w, h);
 		}
 	}
+	
 }

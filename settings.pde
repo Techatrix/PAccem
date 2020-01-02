@@ -21,7 +21,7 @@ class Settings {
 		colors[3] = new SettingColorValue("gridlinecolor", color(255, 255, 255));
 		*/
 		// these settings should explain themselves
-		strings[0] = new SettingStringValue("defaultroomname", "new Room");
+		strings[0] = new SettingStringValue("defaultroomname", "new room");
 		strings[1] = new SettingStringValue("language", "english");
 		strings[2] = new SettingStringValue("font", "Roboto");
 
@@ -32,7 +32,7 @@ class Settings {
 
 		ints[0] = new SettingIntValue("width", 1200, 600, displayWidth);
 		ints[1] = new SettingIntValue("height", 800, 600, displayHeight);
-		ints[2] = new SettingIntValue("antialiasing", 4, 0, 8);
+		ints[2] = new SettingIntValue("antialiasing", 2, 0, 8);
 
 		floats[0] = new SettingFloatValue("gridlineweight", 1);
 

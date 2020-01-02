@@ -19,14 +19,14 @@ class Transform implements IOverlay {
 		this.yoff = yoff;
 		this.ali = ali;
 	}
-	boolean mouseWheel(MouseEvent e) {
-		return mouseWheelItem(item, e);
-	}
 	boolean mousePressed() {
 		return mousePressedItem(item);
 	}
 	boolean mouseDragged() {
 		return mouseDraggedItem(item);
+	}
+	boolean mouseWheel(MouseEvent e) {
+		return mouseWheelItem(item, e);
 	}
 	void keyPressed() {
 		keyPressedItem(item);
