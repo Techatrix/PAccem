@@ -76,19 +76,14 @@ class Furniture extends RPWH {
 	}
 
 	void drawFrame(boolean selected) { // draws boundary frame on the furniture
-		push();
 		noStroke();
 		if(selected) {
 			fill(c[8], 100);
 		} else {
 			fill(255, 70);
 		}
-		translate(xpos, ypos);
-		rotate(HALF_PI*rot);
-		int dx = (rot>1) ? -_width : 0;
-		int dy = (rot == 1 || rot ==2) ? -_height : 0;
-		rect(dx, dy, _width, _height);
-		pop();
+		Clip c = getBoundary();
+		rect(c.x, c.y, c.w, c.h);
 	}
 
 	boolean checkover() { // checks if the mouse is on the furniture

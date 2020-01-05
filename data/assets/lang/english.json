@@ -64,5 +64,14 @@
 	"isprefab": "Is Prefab",
 	"newroomgroup": "New Room group",
 	"selectionid": "Selection id",
-	"roglr": "Use OpenGL Renderer must be on to use this feature."
+	"roglr": "Use OpenGL Renderer must be on to use this feature.",
+	"notile": "No Tile ",
+	"fitw": "Furniture in the way ",
+	"outofroom": "Out of Room ",
+	"cantmovefurn": "Can't move Furniture",
+	"doesntexist": "doesn't exist",
+	"gridsizeevaluated": "gridsize has been evaluated from room.json",
+	"furnidisinvalid": "Furniture ID is invalid",
+	"furnposisinvalid": "Furniture position is invalid",
+	"activatecgol": "Activate CGOL?",
 }

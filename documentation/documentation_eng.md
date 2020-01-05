@@ -154,10 +154,10 @@ void recalculateColor(): recalculates the easily accessible color values accordi
 
 void manageArgs(): handles all arguments which have been handed over to the program
 
-| Name     | Action                   |
-|----------|--------------------------|
-| \-debug  | activates the debug mode |
-| \-noblur | deactivates blurring     |
+| Name       | Action                   |
+|------------|--------------------------|
+| \-debug    | activates the debug mode |
+| \-nofilter | deactivates filters      |
 
 void loop(): set window size according to the width & height setting
 
@@ -187,11 +187,15 @@ DataManager loads (all) Assets from data/assets and saves, validates and convert
 
 #### Variables
 
-final PImage[] icons: 
+final PImage[] icons: list of all icons
 
-final FurnitureData[] furnitures: 
+final PImage[] extras: list of all extra images(data/assets/img/)
 
-final PrefabData[] prefabs: 
+final FurnitureData[] furnitures: list of all furnitures that can be used
+
+final PrefabData[] prefabs: list of all prefabs that can be used
+
+final PShader[] filters: list of all filters/shaders
 
 #### Functions
 
@@ -463,7 +467,9 @@ float getXPos(): Converts Mouse-X position to room grid X-Position
 
 float getYPos(): Converts Mouse-Y position to room grid Y-Position
 
-boolean isFurniture(int xpos, int ypos): return whether or not there is a Furniture at the given position
+boolean isFurniture(int xpos, int ypos): returns whether or not there is a Furniture at the given position
+
+boolean isFurnitureBlock(boolean debug): returns whether or not a furniture is placeable at the mouse position
 
 int getXGridSize(): get X-Size of the current room grid
 
@@ -607,6 +613,10 @@ Creates a new Child/Element with the abstract function getItem() and then draws 
 #### EventDetector
 
 Detects mouse and keyboard events of its Child/Element and executes his abstract onEvent() function.
+
+#### Filter
+
+Applys a Filter/Shader to its Child/Element.
 
 #### GridView
 

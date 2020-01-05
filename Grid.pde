@@ -28,25 +28,17 @@ class Grid {
 			scale(gts);
 			stroke(c[1]);
 			/* --------------- room grid grid lines --------------- */
-			if(rm.scale >= 1) { // close view
+			if(rm.scale >= 0.75) { // close view
 				for (int x=1;x<=tiles.length;x++) { // Lines along Y-Axis
-					if(x % 5 == 0) {
- 						strokeWeight(1.5*st.floats[0].value/gts*2);
-					} else {
- 						strokeWeight(1.5*st.floats[0].value/gts);
-					}
+ 					strokeWeight(1.5*st.floats[0].value/gts * ((x % 5 == 0) ? 2 : 1));
 					line(x,0,x,tiles[0].length);
 				}
 				for (int y=1; y<=tiles[0].length;y++) { // Lines along X-Axis
-					if(y % 5 == 0) {
- 						strokeWeight(1.5*st.floats[0].value/gts*2);
-					} else {
- 						strokeWeight(1.5*st.floats[0].value/gts);
-					}
+ 					strokeWeight(1.5*st.floats[0].value/gts * ((y % 5 == 0) ? 2 : 1));
 					line(0,y,tiles.length,y);
 				}
 			} else { // far view
- 				strokeWeight(1.5*st.floats[0].value/gts);
+ 				strokeWeight(2*st.floats[0].value/gts);
 				for (int x=1;x<=tiles.length;x++) { // Lines along Y-Axis
 					if(x % 5 == 0) { // Include Border
 						line(x,0,x,tiles[0].length);
@@ -116,9 +108,6 @@ class Grid {
 						pg.strokeWeight(st.floats[0].value/gts);
 
 						GridTile t = getTile(x,y);
-						if(t == null) {
-							break;
-						}
 
 						if(!getTileState(x+1,y)) { // right side
 							pg.vertex(x+1, 0, y);
@@ -176,24 +165,24 @@ class Grid {
 		strokeCap(CORNER);
 	}
 
-	void fillTool(boolean value, int x, int y) { // apply the fill tool
-		if(getTileState(x,y) != value) {
-			if(!rm.isFurniture(x,y) || value) {
-				setTileState(value, x,y);
+	void fillTool(boolean value, int xpos, int ypos) {
+		ArrayList<int[]> filltiles = new ArrayList<int[]>();
+		filltiles.add(new int[]{xpos,ypos});
 
-				if(isinGrid(x+1, y)) {
-					fillTool(value, x+1,y);
-				}
-				if(isinGrid(x-1, y)) {
-					fillTool(value, x-1,y);
-				}
-				if(isinGrid(x, y+1)) {
-					fillTool(value, x,y+1);
-				}
-				if(isinGrid(x, y-1)) {
-					fillTool(value, x,y-1);
+		while(filltiles.size() != 0) {
+			int x = filltiles.get(0)[0];
+			int y = filltiles.get(0)[1];
+			if(x > -1 && x < tiles.length && y > -1 && y < tiles[0].length) {
+				if(tiles[x][y].state != value && (!rm.isFurniture(x,y) || value)) {
+					tiles[x][y].state = value;
+
+					filltiles.add(new int[] {x+1,y});
+					filltiles.add(new int[] {x-1,y});
+					filltiles.add(new int[] {x,y+1});
+					filltiles.add(new int[] {x,y-1});
 				}
 			}
+			filltiles.remove(0);
 		}
 	}
 

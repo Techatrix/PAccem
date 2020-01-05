@@ -7,7 +7,6 @@ OverlayManager ov;		// creates and manages the GUI
 Clipper cl;				// allows pushing and popping of clip()
 
 PGraphics pg;			// used for 3D-graphics
-PShader blurshader;		// blur shader
 PFont font;				// the current font
 boolean usegl;			// opengl setting when the application has started
 boolean allowcgol;		// ?
@@ -16,7 +15,7 @@ ArrayList<String> toovmessages;// messages which are send to the overlay
 int[] c = new int[9];	// easily accessible color values (0-8 => 0 - 255 or 255 - 0)
 boolean isKeyUp, isKeyRight, isKeyLeft, isKeyDown, isKeyT;	// state of these keys
 boolean deb = false;	// debug mode
-boolean disableblur = false;	// whether or not blur is disabled
+boolean disablefilters = false;	// whether or not filters are disabled
 
 /* --------------- main --------------- */
 void settings() { // is being executed once before the window is created	(pre-main())

@@ -58,76 +58,25 @@ class RoomManager {
 				}
 				roomgrid.setTile(gt,x,y);
 			} else if(tool == 2) { // place a new furniture or prefab
-				int xpos = floor(getXPos());
-				int ypos = floor(getYPos());
+				if(!isFurnitureBlock(true)) {
+					int xpos = floor(getXPos());
+					int ypos = floor(getYPos());
 
-				if(isprefab) {
-					boolean block = false;
-					PrefabData pdata = dm.getPrefabData(newfurnitureid);
-					for (int x=0;x<pdata._width;x++) {
-						for (int y=0;y<pdata._height;y++) {
-							if(pdata.isFurniture(x,y)) {
-								if(!roomgrid.getTileState(xpos+x,ypos+y) || isFurniture(xpos+x,ypos+y) || !roomgrid.isinGrid(xpos+x,ypos+y)) {
-									String message = "";
-									if(!roomgrid.getTileState(xpos+x,ypos+y)) {
-										message += "No Tile ";
-									}
-									if(isFurniture(xpos+x,ypos+y)) {
-										message += "Furniture in the way ";
-									}
-									if(!roomgrid.isinGrid(xpos+x,ypos+y)) {
-										message += "Out of Room ";
-									}
-									toovmessages.add(message);
-
-									block = true;
-									break;
-								}
-							}
-						}
-					}
-					if(!block) {
-						for (int i=0;i<pdata.furnitures.length;i++) {
-							PrefabFurnitureData pfd = pdata.furnitures[i];
+					if(isprefab) {
+						PrefabData pdata = dm.getPrefabData(newfurnitureid);
+						for (PrefabFurnitureData pfd : pdata.furnitures) {
 							furnitures.add(new Furniture(dm.getFurnitureData(pfd.id), xpos+pfd.xpos, ypos+pfd.ypos, furnituretint, pfd.rot));
 						}
-					}
-
-				} else {
-					boolean block = false;
-					FurnitureData fdata = dm.getFurnitureData(newfurnitureid);
-
-					for (int x=0;x<fdata._width;x++) {
-						for (int y=0;y<fdata._height;y++) {
-							if(!roomgrid.getTileState(xpos+x,ypos+y) || isFurniture(xpos+x,ypos+y) || !roomgrid.isinGrid(xpos+x,ypos+y)) {
-								String message = "";
-								if(!roomgrid.getTileState(xpos+x,ypos+y)) {
-									message += "No Tile ";
-								}
-								if(isFurniture(xpos+x,ypos+y)) {
-									message += "Furniture in the way ";
-								}
-								if(!roomgrid.isinGrid(xpos+x,ypos+y)) {
-									message += "Out of Room ";
-								}
-								toovmessages.add(message);
-								block = true;
-								break;
-							}
-						}
-					}
-					if(!block) {
+					} else {
+						FurnitureData fdata = dm.getFurnitureData(newfurnitureid);
 						furnitures.add(new Furniture(fdata, xpos, ypos, furnituretint, newfurniturerot));
 					}
 				}
 			} else if(tool == 3) { // select furniture
-				boolean found = false;
 				for (int i=0; i<furnitures.size(); i++) {
-					if(!found) {
-						if(furnitures.get(i).checkover()) {
-							selectionid = i;
-							found = true;
-						}
+					if(furnitures.get(i).checkover()) {
+						selectionid = i;
+						break;
 					}
 				}
 			} else if(tool == 4) { // fill
@@ -312,7 +261,7 @@ class RoomManager {
 						}
 						if(!roomgrid.getTileState(x,y) || isFurniture(x,y) || !roomgrid.isinGrid(x,y)) {
 							a = false;
-							toovmessages.add("Can't move Furniture");
+							toovmessages.add(lg.get("cantmovefurn"));
 							break;
 						}
 					}
@@ -335,26 +284,57 @@ class RoomManager {
 		return (mouseY-yoff-ov.getYOff())/gridtilesize/scale;
 	}
 
-	boolean isFurniture(int xpos, int ypos) { // return whether or not there is a Furniture at the given position
-		for (int i=0; i<furnitures.size(); i++) {
-			if(furnitures.get(i).checkover(xpos, ypos)) {
+	boolean isFurniture(int xpos, int ypos) { // returns whether or not there is a Furniture at the given position
+		for (Furniture f : furnitures) {
+			if(f.checkover(xpos, ypos)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	int getXGridSize() { // get X-Size of the current room grid
-		if(roomgrid == null) {
-			return 5;
+	boolean isFurnitureBlock(boolean debug) { // returns whether or not a furniture is placeable at the mouse position
+		int xpos = floor(getXPos());
+		int ypos = floor(getYPos());
+		int w;
+		int h;
+		if(isprefab) {
+			PrefabData pdata = dm.getPrefabData(newfurnitureid);
+			w = pdata._width;
+			h = pdata._height;
+		} else {
+			FurnitureData fdata = dm.getFurnitureData(newfurnitureid);
+			w = newfurniturerot % 2 == 0 ? fdata._width : fdata._height;
+			h = newfurniturerot % 2 == 0 ? fdata._height : fdata._width;
 		}
+		for (int x=0;x<w;x++) {
+			for (int y=0;y<h;y++) {
+				if(!roomgrid.getTileState(xpos+x,ypos+y) || isFurniture(xpos+x,ypos+y) || !roomgrid.isinGrid(xpos+x,ypos+y)) {
+					if(debug) {
+						String message = "";
+						if(!roomgrid.getTileState(xpos+x,ypos+y)) {
+							message += lg.get("notile");
+						}
+						if(isFurniture(xpos+x,ypos+y)) {
+							message += lg.get("fitw");
+						}
+						if(!roomgrid.isinGrid(xpos+x,ypos+y)) {
+							message += lg.get("outofroom");
+						}
+						toovmessages.add(message);
+					}
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	int getXGridSize() { // get X-Size of the current room grid
 		return roomgrid.tiles.length;
 	}
 
 	int getYGridSize() { // get Y-Size of the current room grid
-		if(roomgrid == null) {
-			return 5;
-		}
 		return roomgrid.tiles[0].length;
 	}
 
@@ -501,13 +481,13 @@ class RoomManager {
 				xg = json1.getInt("xgridsize", 15);
 				yg = json1.getInt("ygridsize", 15);
 			} else {
-				toovmessages.add("data.json does not exist");
+				toovmessages.add("data.json " + lg.get("doesntexist"));
 				json1 = new JSONObject();
 				if(f3.exists()) {
 					JSONArray json = loadJSONArray(path + "/room.json");
 					xg = json.size();
 					yg = json.getJSONArray(0).size();
-					toovmessages.add("gridsize has been evaluated from room.json");
+					toovmessages.add(lg.get("gridsizeevaluated"));
 				}
 			}
 			xoff = json1.getFloat("xoff", 0);
@@ -551,7 +531,7 @@ class RoomManager {
 					}
 					int id = f.getInt("id",-1);
 					if(!dm.validateId(id)) {
-						toovmessages.add("Furniture ID is invalid");
+						toovmessages.add(lg.get("furnidisinvalid"));
 						continue;
 					}
 					int xpos = f.getInt("xpos", 0);
@@ -560,13 +540,13 @@ class RoomManager {
 					FurnitureData fd = dm.getFurnitureData(id);
 
 					if(xpos+fd._width > xg || ypos+fd._height > yg) {
-						toovmessages.add("Furniture position is invalid");
+						toovmessages.add(lg.get("furnposisinvalid"));
 					} else {
 						furnitures.add(new Furniture(fd, xpos, ypos, c, rot));
 					}
 				}
 			} else {
-				toovmessages.add("furnitures.json does not exist");
+				toovmessages.add("furnitures.json " + lg.get("doesntexist"));
 			}
 			//-------------------------------------------------------------------------------
 
@@ -595,7 +575,7 @@ class RoomManager {
 					}
 				}
 			} else {
-				toovmessages.add("room.json does not exist");
+				toovmessages.add("room.json " + lg.get("doesntexist"));
 			}
 		}
 		//-------------------------------------------------------------------------------
@@ -626,6 +606,7 @@ class RoomManager {
 				counts.set(exists, counts.get(exists)+1);
 			}
 		}
+		// convert arraylists to arrays
 		int[] furnitureids = new int[ids.size()];
 		int[] furniturecounts = new int[ids.size()];
 		for (int i=0;i<furnitureids.length;i++) {
@@ -638,7 +619,7 @@ class RoomManager {
 
 	void reset() { // reset everything (mostly everything)
 		resetCamera(true); // reset 3D Camera
-		resetCamera(false); // 2D Camera
+		resetCamera(false); // reset 2D Camera
 		viewmode = false;
 		roomgrid = new Grid(getXGridSize(), getYGridSize());
 		furnitures.clear();
@@ -650,7 +631,7 @@ class RoomManager {
 	void newRoom(int xsize, int ysize) { // create a new room with the chosen size
 		furnitures.clear();
 		roomgrid = new Grid(xsize, ysize);
-		toovmessages.add("New Room " + xsize + "x" + ysize);
+		toovmessages.add(lg.get("newroom") + " " + xsize + "x" + ysize);
 	}
 
 	void switchViewmode() {	// well... switches the view mode (2D -> 3D, 3D -> 2D)
@@ -768,54 +749,17 @@ class RoomManager {
 						fill(c[0], 50);
 						rect(xpos, ypos, pdata._width, pdata._height);
 
-
-
-
-						boolean block = false;
-						for (int i=0;i<pdata.furnitures.length;i++) {
-							PrefabFurnitureData pfd = pdata.furnitures[i];
-							FurnitureData fdata = dm.getFurnitureData(pfd.id);
-							for (int x=0;x<(pfd.rot % 2 == 0 ? fdata._width : fdata._height);x++) {
-								for (int y=0;y<(pfd.rot % 2 == 0 ? fdata._height : fdata._width);y++) {
-									if(!roomgrid.getTileState(xpos+pfd.xpos+x,ypos+pfd.ypos+y) || isFurniture(xpos+pfd.xpos+x,ypos+pfd.ypos+y) || !roomgrid.isinGrid(xpos+pfd.xpos+x,ypos+pfd.ypos+y)) {
-										block = true;
-										break;
-									}
-								}
-							}
-						}
-						color c;
-						if(block) {
-							c = color(furnituretint, 128);
-						} else {
-							c = color(furnituretint);
-						}
-						for (int i=0;i<pdata.furnitures.length;i++) {
-							PrefabFurnitureData pfd = pdata.furnitures[i];
+						color c = color(furnituretint, isFurnitureBlock(false) ? 128 : 255);
+						for (PrefabFurnitureData pfd : pdata.furnitures) {
 							FurnitureData fdata = dm.getFurnitureData(pfd.id);
 							Furniture f =  new Furniture(fdata, xpos+pfd.xpos, ypos+pfd.ypos, c);
 							f.rot = pfd.rot;
 							f.draw(false, false);
 						}
 					} else { // place furniture
+						color c = color(furnituretint, isFurnitureBlock(false) ? 128 : 255);
 						FurnitureData fdata = dm.getFurnitureData(newfurnitureid);
-						boolean block = false;
-						for (int x=0;x<fdata._width;x++) {
-							for (int y=0;y<fdata._height;y++) {
-								if(!roomgrid.getTileState(xpos+x,ypos+y) || isFurniture(xpos+x,ypos+y) || !roomgrid.isinGrid(xpos+x,ypos+y)) {
-									block = true;
-									break;
-								}
-							}
-						}
-						color c;
-						if(block) {
-							c = color(furnituretint, 128);
-						} else {
-							c = color(furnituretint);
-						}
-						Furniture f =  new Furniture(fdata, xpos, ypos, c);
-						f.rot = newfurniturerot;
+						Furniture f =  new Furniture(fdata, xpos, ypos, c, newfurniturerot);
 						f.draw(false, false);
 					}
 				} else if(tool == 3) { // select furniture
@@ -857,7 +801,7 @@ class RoomManager {
 			}
 		} else { // 3D graphics
 			pg.endDraw();
-			image(pg,0,0); // draw the graphics to the screen
+			image(pg,0,0); // draw the 3D graphics to the screen
 		}
 		pop();
 	}

@@ -1,6 +1,8 @@
 abstract class Popup extends PWH implements IOverlay {
 	Object item;
 	boolean blur;
+	boolean pvisible;
+	PImage blurcache;
 
 	Popup() {
 		item = new Container();
@@ -10,6 +12,7 @@ abstract class Popup extends PWH implements IOverlay {
 	}
 	Popup(Object item, boolean blur) {
 		this.blur = blur;
+		this.pvisible = false;
 		this.item = 
 		new Container(
 			new Transform(item, Align.CENTERCENTER)
@@ -21,6 +24,7 @@ abstract class Popup extends PWH implements IOverlay {
 	}
 	Popup(Object[] items, String truetext, String falsetext, boolean blur) {
 		this.blur = blur;
+		this.pvisible = false;
 		Object[] listviewitems = new Object[items.length+1];
 		for (int i=0;i<items.length;i++) {
 			listviewitems[i] = items[i];
@@ -80,10 +84,17 @@ abstract class Popup extends PWH implements IOverlay {
 
 	void draw(boolean hit) {
 		if(Visible()) {
-			if(blur && usegl && !disableblur) {
-				filter(blurshader);
+			if(blur && usegl && !disablefilters) {
+				if(!pvisible) {
+					filter(dm.filters[0]);
+					blurcache = g.get();
+				}
+				image(blurcache,0,0);
 			}
 			drawItem(item, hit);
+			pvisible = true;
+		} else {
+			pvisible = false;
 		}
 	}
 

@@ -87,15 +87,15 @@ abstract class SetValueText extends PWH implements IOverlay {
 
 	void keyPressed() {
 		if(selected) {
-			if (keyCode == BACKSPACE) {
+			if (key == 8) { // BACKSPACE
 				if (newvalue.length() > 0) {
 					newvalue = newvalue.substring(0, newvalue.length()-1);
 				}
-			} else if(keyCode == ENTER) {
+			} else if(key == 10) { // ENTER
 				onchange();
 				newvalue = value;
 				selected = false;
-			} else if(keyCode == ESC) {
+			} else if(key == 27) { // ESC
 				newvalue = value;
 				key = 0;
 				selected = false;

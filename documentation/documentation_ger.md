@@ -155,10 +155,10 @@ void recalculateColor(): Legt die Farbwerte in PAccem/PApplet gegeben nach dem D
 
 void manageArgs(): Verarbeitet alle Argumente, welche an das Programm übergeben wurden.
 
-| Name     | Aktion                    |
-|----------|---------------------------|
-| \-debug  | Aktiviert den Debugmode   |
-| \-noblur | Deaktiviert Weichzeichnen |
+| Name       | Aktion                    |
+|------------|---------------------------|
+| \-debug    | Aktiviert den Debugmode   |
+| \-nofilter | Deaktiviert Filter        |
 
 void loop(): Es wird nachgesehen, ob sich die Programmfenstergröße geändert hat und daraufhin die Fenstergrößeneinstellungen angepasst und ggf. die Größe der 3D-Grafikoberfläche(pg) angepasst.
 
@@ -190,9 +190,13 @@ DataManager lädt (alle) Assets aus data/assets, welcher er abspeichert, validie
 
 final PImage[] icons: Liste aller Icons
 
+final PImage[] extras: Liste aller extra Bilder
+
 final FurnitureData[] furnitures: Liste aller Möbel welche der Nutzer verwenden kann.
 
 final PrefabData[] prefabs: Liste aller Fertigteile welcher der Nutzer verwenden kann.
+
+final PShader[] filters: Liste aller Filter/Shader.
 
 #### Funktionen
 
@@ -467,6 +471,8 @@ float getYPos(): Verwandelt die Maus Y Position in eine Raumgitter Y Position.
 
 boolean isFurniture(int xpos, int ypos): Gibt an, ob sich ein Möbelstück an der gegebenen Position gibt
 
+boolean isFurnitureBlock(boolean debug): Gibt an, ob sich ein Möbelstück an der Maus Position platzierbar ist
+
 int getXGridSize(): Gibt die X Größe/Breite des Raumgitters.
 
 int getYGridSize(): Gibt die Y Größe/Höhe des Raumgitters.
@@ -618,6 +624,10 @@ Erstellt anhand der abstrakten Funktion getItem() ein Kind/Element welches dann 
 #### EventDetector
 
 Erkennt Maus und Keyboard Events vom Nutzer auf sein Kind/Element.
+
+#### Filter
+
+Wendet einen Filter/Shader auf sein Kind/Element an.
 
 #### GridView
 

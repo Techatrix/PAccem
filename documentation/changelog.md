@@ -1,5 +1,19 @@
 #Changelog
 
+## 1.1.1
+- added Filter class
+
+- changed furniture/prefabs list width
+
+- improved translation(now includes console messages)
+
+- improved blur performance (blurred image is being cached)
+
+- improved furniture collision and placement(mostly code cleanup)
+
+## 1.1.0
+- added requires opengl render info
+
 ## 1.0.0 Stable Release
 - added furniture rotation
 
