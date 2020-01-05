@@ -144,10 +144,10 @@ void recalculateColor():
 
 void manageArgs(): 
 
-| Name     | Action                    |
-|----------|---------------------------|
-| \-debug  |                           |
-| \-noblur |                           |
+| Name       | Action                    |
+|------------|---------------------------|
+| \-debug    |                           |
+| \-nofilter |                           |
 
 void loop(): 
 
@@ -175,9 +175,13 @@ Clip:
 
 final PImage[] icons: 
 
+final PImage[] extras: 
+
 final FurnitureData[] furnitures: 
 
 final PrefabData[] prefabs: 
+
+final PShader[] filters: 
 
 #### Functions
 
@@ -423,6 +427,8 @@ float getYPos():
 
 boolean isFurniture(int xpos, int ypos): 
 
+boolean isFurnitureBlock(boolean debug): 
+
 int getXGridSize(): 
 
 int getYGridSize(): 
@@ -536,6 +542,8 @@ final String githublink:
 #### Dynamic
 
 #### EventDetector
+
+#### Filter
 
 #### GridView
 

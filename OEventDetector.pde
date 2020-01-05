@@ -52,6 +52,7 @@ abstract class EventDetector implements IOverlay {
 	}
 
 }
+
 enum EventType {
 	MOUSEWHEEL, MOUSEPRESSED, MOUSERELEASED, MOUSEDRAGGED, KEYPRESSED, KEYRELEASED;
 }

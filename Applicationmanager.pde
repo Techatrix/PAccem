@@ -29,25 +29,6 @@ class ApplicationManager {
 		if(usegl) { // creates graphics according to the opengl setting
 			pg = createGraphics(width,height, P3D);
 			pg.smooth(st.ints[2].value);				// anti-aliasing
-
-			if(!disableblur) {
-				try {
-					blurshader = loadShader("data/assets/shader/blur.glsl");	// Load blur shader
-					blurshader.init();
-					// pass uniforms on to the shader
-					//blurshader.set("blurSize", 9);
-					//blurshader.set("sigma", 3.0);
-					//blurshader.set("samplesize", 1);
-
-					// pixelate shader
-					//blurshader = loadShader("data/assets/shader/pixelate.glsl");
-  					//blurshader.set("resolution", float(width), float(height));
-				} catch(RuntimeException e) {
-					disableblur = true;
-					toovmessages.add("Shader RuntimeException: " + e);
-					toovmessages.add("Disabled blur");
-				}
-			}
 		}
 		cl = new Clipper();								// initialize clipper
 		lg = new LanguageManager(st.strings[1].value);	// initialize languagemanager
@@ -70,7 +51,6 @@ class ApplicationManager {
 	  		surface.setIcon(dm.icons[0]); // sets the window icon on not opengl renderer
 		}
 		setFont(st.strings[2].value);
-		textSize(16);
 	}
 
 	void setTitle(String name) { // sets the window title
@@ -171,8 +151,8 @@ class ApplicationManager {
 				if(arg.equals("-debug")) {
 					deb = true;
 					toovmessages.add("Debugmode activated");
-				} else if(arg.equals("-noblur")) {
-					disableblur = true;
+				} else if(arg.equals("-nofilter")) {
+					disablefilters = true;
 				}
 			}
 		}
@@ -186,6 +166,15 @@ class ApplicationManager {
 			st.ints[1].setValue(height);
 			if(usegl) {
 				pg.setSize(width,height);
+				if(!disablefilters) {
+					try {
+		  				dm.filters[1].set("resolution", float(width), float(height));
+					} catch(RuntimeException e) {
+						disablefilters = true;
+						toovmessages.add("Shader RuntimeException: " + e);
+						toovmessages.add("Disabled filters");
+					}
+				}
 			}
 			ov.build();
 		}

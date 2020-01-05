@@ -3,6 +3,7 @@ class DataManager {
 	final PImage[] extras;				// list of all extra images(data/assets/img/)
 	final FurnitureData[] furnitures;	// list of all furnitures that can be used
 	final PrefabData[] prefabs;			// list of all prefabs that can be used
+	final PShader[] filters;			// list of all filters/shaders
 
 	DataManager() {
 		if(deb) {
@@ -90,6 +91,29 @@ class DataManager {
 
 			prefabs[i] = new PrefabData(_width, _height, name, prefabfurns);
 		}
+		/* --------------- load shaders/filter --------------- */
+		if(usegl && !disablefilters) {
+			filters = new PShader[2];
+			try {
+				filters[0] = loadShader("data/assets/shader/blur.glsl");		// Load blur shader
+				filters[1] = loadShader("data/assets/shader/pixelate.glsl");	// Load pixelate shader
+				filters[0].init();
+				filters[1].init();
+				// pass uniforms on to the shaders
+				filters[0].set("blurSize", 16);
+				filters[0].set("sigma", 2.5);
+				//filters[0].set("samplesize", 1);
+
+  				filters[1].set("resolution", float(width), float(height));
+  				filters[1].set("size", 2.0);
+			} catch(RuntimeException e) {
+				disablefilters = true;
+				toovmessages.add("Shader RuntimeException: " + e);
+				toovmessages.add("Disabled filters");
+			}
+		} else {
+			filters = new PShader[0];
+		}
 	}
 
 	int[] validate() { // checks if in every prefabs the used furnitures are in the given boundary box (can only be executed after class construction)
@@ -129,7 +153,6 @@ class DataManager {
 	}
 
 }
-
 
 class FurnitureData {
 	final int id;
@@ -173,6 +196,7 @@ class PrefabFurnitureData {
 		this.rot = rot;
 	}
 }
+
 class PrefabData {
 	final int _width;
 	final int _height;

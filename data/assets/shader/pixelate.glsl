@@ -13,6 +13,7 @@ uniform float size = 16;
 
 void main()
 {
+	//sth is wrong with the texturecordinates because it shifts everything a tiny bit and hell know why!
 	float xsize = resolution.x / size;
 	float ysize = resolution.y / size;
 

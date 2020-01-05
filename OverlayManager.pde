@@ -307,7 +307,7 @@ class OverlayManager extends Overlay {
 											new Container(
 												new ListView(
 													new Object[] {
-														new Image(dm.furnitures[temp.i].image, 150, round(150*0.75), Fit.RATIO, rm.furnituretint),
+														new Image(dm.furnitures[temp.i].image, 175, round(175*0.75), Fit.RATIO, rm.furnituretint),
 														new Text(dm.furnitures[temp.i].name),
 													}
 												)
@@ -322,23 +322,23 @@ class OverlayManager extends Overlay {
 											}
 										};
 									}
-								}.build(dm.furnitures.length),300, height-yoff-60,2
+								}.build(dm.furnitures.length),350, height-yoff-60,2
 							),
-							new EventDetector(new Container(new Text(lg.get("selectcolor")), 300, 30)) {
+							new EventDetector(new Container(new Text(lg.get("selectcolor")), 350, 30)) {
 								@Override public void onEvent(EventType et, MouseEvent e) {
 									if(et == EventType.MOUSEPRESSED) {
 										drawPopup(6);
 									}
 								}
 							},
-							new EventDetector(new Container(new Text(lg.get("prefablist")), 300, 30)) {
+							new EventDetector(new Container(new Text(lg.get("prefablist")), 350, 30)) {
 								@Override public void onEvent(EventType et, MouseEvent e) {
 									if(et == EventType.MOUSEPRESSED) {
 										tabid = 7;
 									}
 								}
 							},
-						},300, height-yoff
+						},350, height-yoff
 					),0,yoff, Align.TOPRIGHT
 				),
 				// prefab list
@@ -352,7 +352,7 @@ class OverlayManager extends Overlay {
 										return new EventDetector(new Container(
 												new ListView(
 													new Object[] {
-														new Image(dm.prefabs[temp.i].getImage(), 150, round(150*0.75), Fit.RATIO, rm.furnituretint),
+														new Image(dm.prefabs[temp.i].getImage(), 175, round(175*0.75), Fit.RATIO, rm.furnituretint),
 														new Text(dm.prefabs[temp.i].name),
 													}
 												)
@@ -367,16 +367,16 @@ class OverlayManager extends Overlay {
 											}
 										};
 									}
-								}.build(dm.prefabs.length),300, height-yoff-30,2
+								}.build(dm.prefabs.length),350, height-yoff-30,2
 							),
-							new EventDetector(new Container(new Text(lg.get("furnlist")), 300, 30)) {
+							new EventDetector(new Container(new Text(lg.get("furnlist")), 350, 30)) {
 								@Override public void onEvent(EventType et, MouseEvent e) {
 									if(et == EventType.MOUSEPRESSED) {
 										tabid = 6;
 									}
 								}
 							},
-						},300, height-yoff
+						},350, height-yoff
 					),0,yoff, Align.TOPRIGHT
 				),
 			}
@@ -677,7 +677,7 @@ class OverlayManager extends Overlay {
 				new Popup(
 					new Object[] {
 						new SizedBox(true),
-						new Text("Activate CGOL?"),
+						new Text(lg.get("activatecgol")),
 						new SizedBox(true),
 					},lg.get("ok"), lg.get("cancel")) {
 					@Override public void ontrue() {drawpopup = false;allowcgol = true;rm.furnitures = new ArrayList<Furniture>();}
