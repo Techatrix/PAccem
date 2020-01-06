@@ -7,23 +7,29 @@ OverlayManager ov;		// creates and manages the GUI
 Clipper cl;				// allows pushing and popping of clip()
 
 PGraphics pg;			// used for 3D-graphics
+PGraphics shadowMap;	// shadow map framebuffer
+PShader defaultShader;	// default shader which draws the 3D View  with shadow mapping
 PFont font;				// the current font
-boolean usegl;			// opengl setting when the application has started
-boolean allowcgol;		// ?
-ArrayList<String> toovmessages;// messages which are send to the overlay
+ArrayList<String> toovmessages; // messages which are send to the overlay
 
+PVector lightdir = new PVector(-80, 160, -140);	// light direction in 3D
 int[] c = new int[9];	// easily accessible color values (0-8 => 0 - 255 or 255 - 0)
 boolean isKeyUp, isKeyRight, isKeyLeft, isKeyDown, isKeyT;	// state of these keys
-boolean deb = false;	// debug mode
-boolean disablefilters = false;	// whether or not filters are disabled
+
+// arguments
+boolean allowcgol = false;		// ?
+boolean usegl = false;			// opengl setting when the application has started
+boolean usefilters = true;		// whether or not filters are disabled
+boolean useshadowmap = true;	// whether or not shadow mapping should be used
+boolean deb = false;			// debug mode
 
 /* --------------- main --------------- */
-void settings() { // is being executed once before the window is created	(pre-main())
+void settings() { // is being executed once before the window is created (pre-main())
 	am = new ApplicationManager();
 	am.initSettings();
 }
 
-void setup() { // is being executed once after the window is being created 	(main())
+void setup() { // is being executed once after the window is being created (main())
 	am.initSetup();
 }
 

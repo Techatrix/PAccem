@@ -27,11 +27,11 @@ class Filter extends PWH implements IOverlay {
 
 	void draw(boolean hit) {
 		cl.pushClip(xpos, ypos, _width, _height);
-		if(!postfilter && usegl && !disablefilters) {
+		if(!postfilter && usegl && usefilters) {
 			filter(dm.filters[filterid]);
 		}
 		drawItem(item, hit);
-		if(postfilter && usegl && !disablefilters) {
+		if(postfilter && usegl && usefilters) {
 			filter(dm.filters[filterid]);
 		}
 		cl.popClip();

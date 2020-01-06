@@ -91,23 +91,29 @@ Clipper cl: Ermöglicht das Pushen und Poppen von clip() ( siehe: Processing pus
 
 PGraphics pg: Grafikoberfläche für 3D-Grafik
 
-PShader blurshader: Ein Shader welcher Gaussian Blur Effekt enthält. (siehe: data/assets/shader/blur.glsl)
+PGraphics shadowMap: Enthält den frame buffer für die shadow map
+
+PShader defaultShader: Ein Shader welcher die 3D Ansicht mit shadow mapping rendert. (siehe: data/assets/shader/)
 
 PFont font: Die aktuelle Schriftart
 
-boolean usegl: ob die usegl Einstellung zum Programmstartzeitpunkt an oder aus war.
+ArrayList<String> toovmessages: enthält alle Nachrichten, die an die Konsole gesendet werden sollen. (siehe: Overlay)
 
-boolean allowcgol: ?
-
-ArrayList toovmessages: enthält alle Nachrichten, die an die Konsole gesendet werden sollen. (siehe: Overlay)
+PVector lightdir: Richtung des lights für die 3D Ansicht mit shadow mapping
 
 int[] c: Ein Array aus Farbwerten welche sich nach dem Dunkelmodus ausrichten. (0-8 => 0 - 255 oder 255 - 0)
 
 boolean isKeyUp, isKeyRight, isKeyLeft, isKeyDown, isKeyT: Status der einzelnen Tasten
 
-boolean deb: Debugmode
+boolean allowcgol: ?
 
-boolean disableblur: ob Weichzeichnen deaktiviert ist
+boolean usegl: ob die usegl Einstellung zum Programmstartzeitpunkt an oder aus war.
+
+boolean usefilters: ob Filter verwendet werden sollen
+
+boolean useshadowmap: ob shadow mapping verwendet werden soll
+
+boolean deb: ob der Debug Modus aktiviert ist
 
 #### Funktionen
 
@@ -155,10 +161,13 @@ void recalculateColor(): Legt die Farbwerte in PAccem/PApplet gegeben nach dem D
 
 void manageArgs(): Verarbeitet alle Argumente, welche an das Programm übergeben wurden.
 
-| Name       | Aktion                    |
-|------------|---------------------------|
-| \-debug    | Aktiviert den Debugmode   |
-| \-nofilter | Deaktiviert Filter        |
+| Name          | Aktion                      |
+|---------------|-----------------------------|
+| \-debug       | aktiviert den Debug Modus   |
+| \-nofilter    | deaktiviert Filter          |
+| \-noshadowmap | deaktiviert shadow mapping  |
+| \-noopengl    | deaktiviert OpenGL Renderer |
+| \-cgol        | deaktiviert CGOL            |
 
 void loop(): Es wird nachgesehen, ob sich die Programmfenstergröße geändert hat und daraufhin die Fenstergrößeneinstellungen angepasst und ggf. die Größe der 3D-Grafikoberfläche(pg) angepasst.
 
@@ -244,7 +253,7 @@ color tint: Färbung des Möbelstücks
 
 #### Funktionen
 
-void draw(boolean viewmode, boolean selected): Zeichnet/Rendert das Möbelstück
+void draw(PGraphics canvas, boolean viewmode, boolean selected): Zeichnet/Rendert das Möbelstück
 
 void drawFrame(boolean selected): Zeichnet/Rendert eine Box auf dem Möbelstücks
 
@@ -272,7 +281,9 @@ ArrayList roomgroups: Liste aller Raumgruppen
 
 #### Funktionen
 
-void draw(boolean viewmode, float gts): Zeichnet/Rendert das Gitter
+void draw(PGraphics canvas, boolean viewmode, float gts): Zeichnet/Rendert das Gitter
+
+void loop(): Wird für jedes Bild ausgeführt.
 
 void fillTool(boolean value, int x, int y): Wendet das Füll Werkzeug an
 
@@ -590,6 +601,12 @@ String fixLength(String str, int length, char c): Füllt einen String/Text mit e
 void printColor(int c): Schreibt eine Farbe in die Konsole.
 
 void printColorhex(int c): Schreibt eine Farbe in Hexadecimal in die Konsole.
+
+void initShadowPass(): initzialisiert den shadowpass Shader und framebuffer
+
+void initDefaultPass(): initzialisiert den standart Shader
+
+void updateDefaultShader(): schickt Matrixen und den Framebuffer an den standart Shader
 
 #### Constants
 

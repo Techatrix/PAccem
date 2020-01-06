@@ -84,7 +84,7 @@ abstract class Popup extends PWH implements IOverlay {
 
 	void draw(boolean hit) {
 		if(Visible()) {
-			if(blur && usegl && !disablefilters) {
+			if(blur && usegl && usefilters) {
 				if(!pvisible) {
 					filter(dm.filters[0]);
 					blurcache = g.get();

@@ -91,23 +91,29 @@ Clipper cl: allows "pushing" and "popping" of clip() ( see: Processing push(), p
 
 PGraphics pg: used for 3D-graphics
 
-PShader blurshader: blur shader
+PGraphics shadowMap: shadow map framebuffer
+
+PShader defaultShader: default shader which draws the 3D View  with shadow mapping (see: data/assets/shader/)
 
 PFont font: the current font
 
-boolean usegl: opengl setting when the application has started
+ArrayList<String> toovmessages: messages which are send to the overlay
 
-boolean allowcgol: ?
-
-ArrayList toovmessages: messages which are send to the overlay
+PVector lightdir: direction of the light in the 3D shadow mapped view
 
 int[] c: easily accessible color values (0-8 => 0 - 255 or 255 - 0)
 
 boolean isKeyUp, isKeyRight, isKeyLeft, isKeyDown, isKeyT: state of these keys
 
-boolean deb: debug mode
+boolean allowcgol: ?
 
-boolean disableblur: whether or not blur is disabled
+boolean usegl: opengl setting when the application has started
+
+boolean usefilters: whether or not filters are disabled
+
+boolean useshadowmap: whether or not shadow mapping should be used
+
+boolean deb: debug mode
 
 #### Functions
 
@@ -154,10 +160,13 @@ void recalculateColor(): recalculates the easily accessible color values accordi
 
 void manageArgs(): handles all arguments which have been handed over to the program
 
-| Name       | Action                   |
-|------------|--------------------------|
-| \-debug    | activates the debug mode |
-| \-nofilter | deactivates filters      |
+| Name          | Action                      |
+|---------------|-----------------------------|
+| \-debug       | activates the debug mode    |
+| \-nofilter    | deactivates filters         |
+| \-noshadowmap | deactivates shadow mapping  |
+| \-noopengl    | deactivates OpenGL Renderer |
+| \-cgol        | deactivates CGOL            |
 
 void loop(): set window size according to the width & height setting
 
@@ -242,7 +251,7 @@ color tint: tintcolor of the furniture
 
 #### Functions
 
-void draw(boolean viewmode, boolean selected): draws the furniture
+void draw(PGraphics canvas, boolean viewmode, boolean selected): draws the furniture
 
 void drawFrame(boolean selected): draws boundary frame on the furniture
 
@@ -270,7 +279,9 @@ ArrayList roomgroups: list of all room groups
 
 #### Functions
 
-void draw(boolean viewmode, float gts): draw the room grid
+void draw(PGraphics canvas, boolean viewmode, float gts): draw the room grid
+
+void loop(): is being executed on every frame
 
 void fillTool(boolean value, int x, int y): apply the fill tool
 
@@ -584,6 +595,12 @@ String fixLength(String str, int length, char c):
 void printColor(int c): prints a color
 
 void printColorhex(int c): prints a color int hexadecimal
+
+void initShadowPass(): initializes the shadowpass shader and framebuffer
+
+void initDefaultPass(): initializes the default shader
+
+void updateDefaultShader(): sends a matrices and a framebuffer to the default shader
 
 #### Constants
 

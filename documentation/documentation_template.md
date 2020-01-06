@@ -82,25 +82,33 @@ DataManager dm:
 
 OverlayManager ov: 
 
+Clipper cl: 
+
 PGraphics pg: 
 
-PShader blurshader: 
+PGraphics shadowMap: 
+
+PShader defaultShader: 
 
 PFont font: 
 
-boolean usegl: 
+ArrayList<String> toovmessages: 
 
-boolean allowcgol: 
-
-ArrayList toovmessages: 
+PVector lightdir: 
 
 int[] c: 
 
 boolean isKeyUp, isKeyRight, isKeyLeft, isKeyDown, isKeyT: 
 
-boolean deb: 
+boolean allowcgol: 
 
-boolean disableblur: 
+boolean usegl: 
+
+boolean usefilters: 
+
+boolean useshadowmap: 
+
+boolean deb: 
 
 #### Functions
 
@@ -144,10 +152,13 @@ void recalculateColor():
 
 void manageArgs(): 
 
-| Name       | Action                    |
-|------------|---------------------------|
-| \-debug    |                           |
-| \-nofilter |                           |
+| Name          | Action                      |
+|---------------|-----------------------------|
+| \-debug       |                             |
+| \-nofilter    |                             |
+| \-noshadowmap |                             |
+| \-noopengl    |                             |
+| \-cgol        |                             |
 
 void loop(): 
 
@@ -217,7 +228,7 @@ color tint:
 
 #### Functions
 
-void draw(boolean viewmode, boolean selected):
+void draw(PGraphics canvas, boolean viewmode, boolean selected):
 
 void drawFrame(boolean selected): 
 
@@ -243,7 +254,9 @@ ArrayList roomgroups:
 
 #### Functions
 
-void draw(boolean viewmode, float gts): 
+void draw(PGraphics canvas, boolean viewmode, float gts): 
+
+void loop(): 
 
 void fillTool(boolean value, int x, int y): 
 
@@ -522,6 +535,12 @@ String fixLength(String str, int length, char c):
 void printColor(int c): 
 
 void printColorhex(int c): 
+
+void initShadowPass(): 
+
+void initDefaultPass(): 
+
+void updateDefaultShader(): 
 
 #### Constants
 

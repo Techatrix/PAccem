@@ -92,7 +92,7 @@ class DataManager {
 			prefabs[i] = new PrefabData(_width, _height, name, prefabfurns);
 		}
 		/* --------------- load shaders/filter --------------- */
-		if(usegl && !disablefilters) {
+		if(usegl && usefilters) {
 			filters = new PShader[2];
 			try {
 				filters[0] = loadShader("data/assets/shader/blur.glsl");		// Load blur shader
@@ -107,7 +107,7 @@ class DataManager {
   				filters[1].set("resolution", float(width), float(height));
   				filters[1].set("size", 2.0);
 			} catch(RuntimeException e) {
-				disablefilters = true;
+				usefilters = false;
 				toovmessages.add("Shader RuntimeException: " + e);
 				toovmessages.add("Disabled filters");
 			}

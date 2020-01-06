@@ -12,10 +12,16 @@ class LanguageManager {
 		newlang = newlang.toLowerCase();
 		File f = new File(sketchPath("data/assets/lang/" + newlang + ".json"));
 		if (f.exists()) {
-			data = loadJSONObject("data/assets/lang/" + newlang + ".json");
+			data = loadJSONObject(f.getPath());
 			return true;
 		} else {
-			data = loadJSONObject("data/assets/lang/english.json");
+			File ff = new File(sketchPath("data/assets/lang/english.json"));
+			if(ff.exists()) {
+				data = loadJSONObject(ff.getPath());
+			} else {
+				data = new JSONObject();
+			}
+
 		}
 		return false;
 	}
