@@ -9,10 +9,10 @@ class ApplicationManager {
 	}
 
 	void initSettings() { // is being executed once before the window is created
-		manageArgs();
 		st = new Settings();
-		allowcgol=false;
 		usegl = st.booleans[3].value;
+		manageArgs();
+
 		if(st.booleans[2].value) { // full screen
 			fullScreen(usegl ? P2D : JAVA2D);  // creates the window and chooses a renderer according to the opengl setting
 		} else { // not full screen
@@ -48,9 +48,15 @@ class ApplicationManager {
 		}
 
 		if(!usegl) {
-	  		surface.setIcon(dm.icons[0]); // sets the window icon on not opengl renderer
+			surface.setIcon(dm.icons[0]); // sets the window icon on not opengl renderer
 		}
 		setFont(st.strings[2].value);
+		if(usegl && useshadowmap) {
+			pg.beginDraw();
+			initShadowPass();
+			initDefaultPass();
+			pg.endDraw();
+		}
 	}
 
 	void setTitle(String name) { // sets the window title
@@ -152,7 +158,17 @@ class ApplicationManager {
 					deb = true;
 					toovmessages.add("Debugmode activated");
 				} else if(arg.equals("-nofilter")) {
-					disablefilters = true;
+					usefilters = false;
+					toovmessages.add("Filter disabled");
+				} else if(arg.equals("-noshadowmap")) {
+					useshadowmap = false;
+					toovmessages.add("Shadow mapping disabled");
+				} else if(arg.equals("-noopengl")) {
+					usegl = false;
+					toovmessages.add("OpenGL mode disabled");
+				} else if(arg.equals("-cgol")) {
+					allowcgol = true;
+					toovmessages.add("CGOL activated");
 				}
 			}
 		}
@@ -166,11 +182,11 @@ class ApplicationManager {
 			st.ints[1].setValue(height);
 			if(usegl) {
 				pg.setSize(width,height);
-				if(!disablefilters) {
+				if(usefilters) {
 					try {
 		  				dm.filters[1].set("resolution", float(width), float(height));
 					} catch(RuntimeException e) {
-						disablefilters = true;
+						usefilters = false;
 						toovmessages.add("Shader RuntimeException: " + e);
 						toovmessages.add("Disabled filters");
 					}

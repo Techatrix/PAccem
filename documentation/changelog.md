@@ -1,15 +1,30 @@
 #Changelog
 
+## 1.2.0
+- added shadow mapping to 3D View
+
+- added more arguments (-noshadowmap, -noopengl, -cgol);
+
+- added more furnitures (double bed, desk)
+
+- reordered furniture list
+
+- renamed "Door closes" to "Door"
+
+- renamed "Chair 1x1" to "Chair"
+
+- fixed issues with model normals
+
 ## 1.1.1
 - added Filter class
 
 - changed furniture/prefabs list width
 
-- improved translation(now includes console messages)
+- improved translation (now includes console messages)
 
 - improved blur performance (blurred image is being cached)
 
-- improved furniture collision and placement(mostly code cleanup)
+- improved furniture collision and placement (mostly code cleanup)
 
 ## 1.1.0
 - added requires opengl render info
@@ -42,13 +57,13 @@
 
 - added price report
 
-- added documentation(English, German)
+- added documentation (English, German)
 
 - added blur filter
 
 - added room group editing
 
-- added arguments("-debug", "noblur")
+- added arguments ("-debug", "noblur")
 
 - improved translation
 
@@ -103,7 +118,7 @@
 
 - added 3D view controls
 
-- added 3D models(couch, chair)
+- added 3D models (couch, chair)
 
 - removed color settings
 
@@ -112,7 +127,7 @@
 
 - added translation
 
-- added 3D models(tables)
+- added 3D models (tables)
 
 - added room windows to 3D view
 

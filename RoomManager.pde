@@ -156,8 +156,9 @@ class RoomManager {
 		} else { // 3D
 			// move 3D-Camera
 			if(mouseButton == CENTER || mouseButton == RIGHT) {
-				angle2 -= map(mouseY - pmouseY, 0, height, 0, PI);
-				angle1 += map(mouseX - pmouseX, 0, width, 0, TWO_PI);
+				angle1 -= map(mouseX - pmouseX, 0, width, 0, TWO_PI);
+				angle2 += map(mouseY - pmouseY, 0, height, 0, PI);
+				angle2 = -constrain(-angle2, 0.1,TWO_PI);
 			}
 		}
 	}
@@ -632,6 +633,20 @@ class RoomManager {
 		furnitures.clear();
 		roomgrid = new Grid(xsize, ysize);
 		toovmessages.add(lg.get("newroom") + " " + xsize + "x" + ysize);
+		if(usegl && useshadowmap) {
+			int size = max(xsize, ysize)*2;
+			shadowMap.ortho(-size, size, -size, size, 10, 1000);
+			if(useshadowmap != size<=40) {
+				useshadowmap = size<=40;
+				if(useshadowmap) {
+					pg.shader(defaultShader);
+					pg.noStroke();
+					pg.perspective(60 * DEG_TO_RAD, (float)width / height, 10, 1000);
+				} else {
+					pg.resetShader();
+				}
+			}
+		}
 	}
 
 	void switchViewmode() {	// well... switches the view mode (2D -> 3D, 3D -> 2D)
@@ -644,11 +659,11 @@ class RoomManager {
 
 	void resetCamera(boolean viewmode) { // reset the chosen camera to the default view
 		if(viewmode) { // 3D
-			angle1 = PI*5/4;
-			angle2 = -2;
+			angle1 = PI+PI/2;
+			angle2 = -0.1;
 			dxoff = 0;
 			dyoff = 0;
-			dzoff = 0.4;
+			dzoff = 0.5;
 		} else { // 2D
 			xoff = 0;
 			yoff = 0;
@@ -657,17 +672,18 @@ class RoomManager {
 	}
 
 	void draw() { // draw the room grid and furnitures and some other things...
+		roomgrid.loop();
 		push();
 		background(c[8]);
-		// Setup 2D or 3D View
 		if(!viewmode) { // 2D
 			xoff = constrain(xoff, Integer.MIN_VALUE, 0);
 			yoff = constrain(yoff, Integer.MIN_VALUE, 0);
 			// 2D View
 			translate(xoff+ov.getXOff(), yoff+ov.getYOff());
 			scale(scale);
+
+
 		} else { // 3D
-			// move camera according to the given key inputs
 			if(isKeyUp || isKeyDown || isKeyLeft || isKeyRight) {
 				dspeed += 10/frameRate; // acceleration
 				dspeed = constrain(dspeed, 0, 12);
@@ -680,53 +696,83 @@ class RoomManager {
 					dyoff += cos(-angle1+PI/2)*dspeed;
 				}
 				if(isKeyLeft) {
-					dxoff += sin(-angle1)*dspeed;
-					dyoff += cos(-angle1)*dspeed;
-				}
-				if(isKeyRight) {
 					dxoff -= sin(-angle1)*dspeed;
 					dyoff -= cos(-angle1)*dspeed;
+				}
+				if(isKeyRight) {
+					dxoff += sin(-angle1)*dspeed;
+					dyoff += cos(-angle1)*dspeed;
 				}
 			} else {
 				dspeed -= 30/frameRate; // decelerate
 				dspeed = constrain(dspeed, 0, 12);
 			}
 
-			// setup 3D view
-			dxoff = constrain(dxoff, 0, Integer.MAX_VALUE);
-			dyoff = constrain(dyoff, 0, Integer.MAX_VALUE);
-			angle2 = constrain(angle2, -PI+0.1, 0);
 			pg.beginDraw();
-			pg.background(st.booleans[0].value ? 0 : 240);
-			pg.ambientLight(160,160,160);
-			pg.directionalLight(255, 255, 255, 0.3, 1, 0);
+			pg.push();
+			pg.noStroke();
 
-			pg.perspective(60*PI/180, width/height, 1, 10000);
-
-			// setup camera
 			float centerx = sin(angle2) * cos(angle1);
 			float centery = cos(angle2);
 			float centerz = sin(angle2) * sin(angle1);
+			pg.camera(dxoff,height/2*dzoff,dyoff,dxoff+centerx,height/2*dzoff-centery,dyoff+centerz,0,-1,0);
+		
 
-			pg.camera(dxoff,-height/2*dzoff,dyoff, dxoff+centerx,-height/2*dzoff-centery,dyoff+centerz, 0, 1, 0);
 
-			// draw axis
-			pg.pushStyle();
-			pg.strokeWeight(5);
-			pg.stroke(150,0,0);
-			pg.line(0,0,0,1000,0,0); // X
-			pg.stroke(0,150,0);
-			pg.line(0,0,0,0,0,1000); // Z
-			pg.stroke(0,0,150);
-			pg.line(0,0,0,0,1000,0); // Y
-			pg.popStyle();
+
+
+			pg.background(st.booleans[0].value ? 0 : 240);
+
+			if(deb || true) {
+				// debug draw axis
+				pg.pushStyle();
+				pg.strokeWeight(5);
+				pg.stroke(150,0,0);
+				pg.line(0,0,0,1000,0,0); // X
+				pg.stroke(0,150,0);
+				pg.line(0,0,0,0,0,1000); // Z
+				pg.stroke(0,0,150);
+				pg.line(0,0,0,0,1000,0); // Y
+				pg.popStyle();
+			}
+
+			pg.scale(gridtilesize);
+			pg.translate(-getXGridSize()/2,0,getYGridSize()/2);
+			pg.strokeWeight(st.floats[0].value/gridtilesize);
+
+			if(useshadowmap) {
+				// get shadowmap
+				shadowMap.beginDraw();
+
+				// moving shadowmap experimental
+				// final int size = 5;
+				// float xofff = map(mouseX, 0, width, -10, 10);
+				// float yofff = map(mouseY, 0, height, -10, 10);
+				// shadowMap.ortho(-size+xofff, size+xofff, -size+yofff, size+yofff, 5, 1000);
+
+
+				shadowMap.camera(lightdir.x, lightdir.y, lightdir.z, 0, 0, 0, 0, 1, 0);
+				shadowMap.background(255);
+				roomgrid.draw(shadowMap, true, gridtilesize);
+				for (int i=0; i<furnitures.size(); i++) {
+					furnitures.get(i).draw(shadowMap, true, selectionid == i);
+				}
+				shadowMap.endDraw();
+				shadowMap.updatePixels();
+
+				updateDefaultShader();
+			} else {
+				pg.ambientLight(160,160,160);
+				pg.directionalLight(255, 255, 255, 0.3, -1, 0);
+			}
+
 		}
-		// draw room grid
-		roomgrid.draw(viewmode, gridtilesize);
 
+		// draw room grid
+		roomgrid.draw(viewmode ? pg : g, viewmode, gridtilesize);
 		// draw furnitures
 		for (int i=0; i<furnitures.size(); i++) {
-			furnitures.get(i).draw(viewmode, selectionid == i);
+			furnitures.get(i).draw(viewmode ? pg : g, viewmode, selectionid == i);
 		}
 
 		if(!viewmode) { // 2D tool tips
@@ -754,13 +800,13 @@ class RoomManager {
 							FurnitureData fdata = dm.getFurnitureData(pfd.id);
 							Furniture f =  new Furniture(fdata, xpos+pfd.xpos, ypos+pfd.ypos, c);
 							f.rot = pfd.rot;
-							f.draw(false, false);
+							f.draw(g, false, false);
 						}
 					} else { // place furniture
 						color c = color(furnituretint, isFurnitureBlock(false) ? 128 : 255);
 						FurnitureData fdata = dm.getFurnitureData(newfurnitureid);
 						Furniture f =  new Furniture(fdata, xpos, ypos, c, newfurniturerot);
-						f.draw(false, false);
+						f.draw(g, false, false);
 					}
 				} else if(tool == 3) { // select furniture
 					int x = floor(getXPos());
@@ -800,6 +846,7 @@ class RoomManager {
 				}
 			}
 		} else { // 3D graphics
+			pg.pop();
 			pg.endDraw();
 			image(pg,0,0); // draw the 3D graphics to the screen
 		}

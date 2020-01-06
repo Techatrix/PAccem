@@ -35,8 +35,8 @@ class Furniture extends RPWH {
 		this(fdata, xpos, ypos, tint);
 		this.rot = rot;
 	}
-
-	void draw(boolean viewmode, boolean selected) { // draws the furniture
+	
+	void draw(PGraphics canvas, boolean viewmode, boolean selected) { // draws the furniture
 		FurnitureData fdata = dm.getFurnitureData(id);
 
 		if(!viewmode) { // 2D
@@ -58,19 +58,19 @@ class Furniture extends RPWH {
 			pop();
 		} else { // 3D
 			if(id != -1) {
-				pg.push();
-				pg.translate(xpos, 0, ypos);
-				pg.rotateY(-HALF_PI*rot);
+				canvas.push();
+				canvas.translate(xpos, 0.1, -ypos);
+				canvas.rotateY(HALF_PI*rot);
 				
 				int dx = (rot>1) ? -fdata._width : 0;
-				int dy = (rot == 1 || rot ==2) ? -fdata._height : 0;
-				pg.translate(dx, 0, dy);
+				int dy = (rot == 1 || rot ==2) ? fdata._height : 0;
+				canvas.translate(dx, 0, dy);
 				
 				PShape s = fdata.shape;
 				s.setFill(tint);
-				pg.shape(s); // draw furniture
+				canvas.shape(s); // draw furniture
 
-				pg.pop();
+				canvas.pop();
 			}
 		}
 	}

@@ -74,6 +74,8 @@ interface IOverlay {
 	void setWH(int _width, int _height);
 }
 
+// some may say that i should use reflection, but who cares...  :-]
+
 /* --------------- dynamic casting --------------- */
 boolean mousePressedItem(Object item) {
 	if(item instanceof Container) {

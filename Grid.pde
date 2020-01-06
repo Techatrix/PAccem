@@ -12,18 +12,8 @@ class Grid {
 			}
 		}
 	}
-	
-	void draw(boolean viewmode, float gts) { // draw the room grid
-		if(isKeyT) {
-			if(allowcgol) {
-				cgol(); // thats a secret (but you've got the source code so its not hard to find out what it does)
-				// and its not even well hidden
-			} else {
-				if(!ov.drawpopup) {
-					ov.drawPopup(7);
-				}
-			}
-		}
+
+	void draw(PGraphics canvas, boolean viewmode, float gts) { // draw the room grid
 		if(!viewmode) { // setup 2D view
 			scale(gts);
 			stroke(c[1]);
@@ -51,8 +41,8 @@ class Grid {
 				}
 			}
 		} else { // setup 3D view
-			pg.scale(gts);
-			pg.strokeWeight(st.floats[0].value/gts);
+			canvas.push();
+			canvas.translate(0.5,0,-0.5);
 		}
 		/* --------------- draw grid tiles --------------- */
 		strokeCap(PROJECT);
@@ -60,7 +50,7 @@ class Grid {
 			for (int y=0; y<tiles[0].length; y++) {
 				if(getTileState(x,y)) {
 					if(!viewmode) { // 2D
-						noStroke();
+						stroke(roomgroups.get(getTile(x,y).roomgroup).c);
 						fill(roomgroups.get(getTile(x,y).roomgroup).c);
 						rect(x,y,1,1);
 
@@ -94,75 +84,94 @@ class Grid {
 							stroke(c[0]);
 						}
 					} else { // 3D
-						pg.noStroke();
-						pg.fill(roomgroups.get(getTile(x,y).roomgroup).c);
+						canvas.push();
+						canvas.noStroke();
+						canvas.fill(roomgroups.get(getTile(x,y).roomgroup).c);
+						canvas.translate(x,0.05,-y);
+						canvas.box(1,0.1,1);
+						canvas.translate(0,-0.05,0);
 
-						pg.beginShape(QUADS);
-						pg.vertex(x, 0, y);
-						pg.vertex(x+1, 0, y);
-						pg.vertex(x+1, 0, y+1);
-						pg.vertex(x, 0, y+1);
-
-						pg.stroke(200);
-						pg.fill(200);
-						pg.strokeWeight(st.floats[0].value/gts);
+						canvas.fill(200);
 
 						GridTile t = getTile(x,y);
 
 						if(!getTileState(x+1,y)) { // right side
-							pg.vertex(x+1, 0, y);
-							pg.vertex(x+1, 0, y+1);
+							canvas.translate(0.55,1,0);
 							if(t.window[0]) { // right window
-								pg.vertex(x+1, -1.1, y+1);
-								pg.vertex(x+1, -1.1, y);
-								pg.vertex(x+1, -1.75, y);
-								pg.vertex(x+1, -1.75, y+1);
+								canvas.translate(0,-0.4,0);
+								canvas.box(0.1,1.2,1);
+								canvas.translate(0,1.275,0);
+								canvas.box(0.1,0.25,1);
+								canvas.translate(0,-0.875,0);
+							} else {
+								canvas.box(0.1,2,1);
 							}
-							pg.vertex(x+1, -2, y+1);
-							pg.vertex(x+1, -2, y);
+							canvas.translate(-0.55,-1,0);
 						}
 						if(!getTileState(x-1,y)) { // left side
-							pg.vertex(x, 0, y);
-							pg.vertex(x, 0, y+1);
+							canvas.translate(-0.55,1,0);
 							if(t.window[1]) { // left window
-								pg.vertex(x, -1.1, y+1);
-								pg.vertex(x, -1.1, y);
-								pg.vertex(x, -1.75, y);
-								pg.vertex(x, -1.75, y+1);
+								canvas.translate(0,-0.4,0);
+								canvas.box(0.1,1.2,1);
+								canvas.translate(0,1.275,0);
+								canvas.box(0.1,0.25,1);
+								canvas.translate(0,-0.875,0);
+							} else {
+								canvas.box(0.1,2,1);
 							}
-							pg.vertex(x, -2, y+1);
-							pg.vertex(x, -2, y);
+							canvas.translate(0.55,-1,0);
 						}
 						if(!getTileState(x,y+1)) { // bottom side
-							pg.vertex(x  , 0, y+1);
-							pg.vertex(x+1, 0, y+1);
+							canvas.translate(0,1,-0.55);
 							if(t.window[2]) { // bottom window
-								pg.vertex(x+1, -1.1, y+1);
-								pg.vertex(x  , -1.1, y+1);
-								pg.vertex(x  , -1.75, y+1);
-								pg.vertex(x+1, -1.75, y+1);
+								canvas.translate(0,-0.4,0);
+								canvas.box(1,1.2,0.1);
+								canvas.translate(0,1.275,0);
+								canvas.box(1,0.25,0.1);
+								canvas.translate(0,-0.875,0);
+							} else {
+								canvas.box(1,2,0.1);
 							}
-							pg.vertex(x+1, -2, y+1);
-							pg.vertex(x  , -2, y+1);
+							canvas.translate(0,-1,0.55);
 						}
 						if(!getTileState(x,y-1)) { // top side
-							pg.vertex(x  , 0, y);
-							pg.vertex(x+1, 0, y);
+							canvas.translate(0,1,0.55);
 							if(t.window[3]) { // top window
-								pg.vertex(x+1, -1.1, y);
-								pg.vertex(x  , -1.1, y);
-								pg.vertex(x  , -1.75, y);
-								pg.vertex(x+1, -1.75, y);
+								canvas.translate(0,-0.4,0);
+								canvas.box(1,1.2,0.1);
+								canvas.translate(0,1.275,0);
+								canvas.box(1,0.25,0.1);
+								canvas.translate(0,-0.875,0);
+							} else {
+								canvas.box(1,2,0.1);
 							}
-							pg.vertex(x+1, -2, y);
-							pg.vertex(x  , -2, y);
+							canvas.translate(0,-1,-0.55);
 						}
-						pg.endShape();
+
+						canvas.pop();
 					}
 				}
 			}
 		}
 		strokeCap(CORNER);
+		if(viewmode) {
+			canvas.pop();
+		}
+	}
+
+	void loop() { // is being executed on every frame
+		if(isKeyT) {
+			if(allowcgol) {
+				if(frameCount % 5 == 0) {
+					cgol(); // thats a secret (but you've got the source code so its not hard to find out what it does)
+					// and its not even well hidden
+				}
+			} else {
+				if(!ov.drawpopup) {
+					ov.drawPopup(7);
+				}
+			}
+		}
 	}
 
 	void fillTool(boolean value, int xpos, int ypos) {
